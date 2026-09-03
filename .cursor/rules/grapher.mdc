@@ -1,0 +1,102 @@
+---
+description: Use grapher before acting; Cursor must deeply understand every file and media asset—not path-only stubs
+alwaysApply: true
+---
+
+# grapher — shared agent knowledge
+
+**Cursor is the enriching LLM.** `grapher` only stores and retrieves what **you** write. A path in the graph is a pointer, not understanding. You must **deeply consume, understand, and graph** the meaning of every asset — documents, **images**, **videos**, **audio/sound files**, and anything else pending.
+
+## Critical: media is not path metadata
+
+**Unacceptable:** nodes whose `content` is empty, filename-only, or “image at path X”.  
+**Required:** `content` that reflects real comprehension (what it shows/sounds like, structure, text/UI in frame, speech/music/ambient detail, narrative, relevance to the project).
+
+- **Images:** use vision/`Read` on the actual pixels. Describe composition, subjects, text/OCR, UI chrome, diagrams, colors, and project meaning.
+- **Videos:** inspect the media (frames/playback via available tools). Graph scenes, on-screen text, actions, timeline highlights, and how it informs the project — not just the `.mp4` path.
+- **Audio / sound:** listen or otherwise extract meaning (speech, music, SFX, tone). Graph transcript/summary of what is heard and why it matters — not just the `.mp3`/`.wav` path.
+
+If you cannot fully perceive a media file with available tools, say so in `content` and still record everything you *can* determine; do not pretend a path equals understanding.
+
+## Before acting
+
+```bash
+grapher search "<what you need>" --exclude-superseded
+grapher get <id>
+grapher neighbors <id> --depth 2
+grapher audit
+```
+
+When multiple nodes cover the same topic, prefer **current** or **canonical_spec** status. Check supersession edges (`supersedes`) before treating older nodes as truth.
+
+## Truth status (required for findings, decisions, specs)
+
+Set explicit truth status when adding or updating nodes:
+
+- `current` — reflects present reality
+- `canonical_spec` — authoritative specification or plan
+- `proposed` — draft or under consideration
+- `superseded` — replaced; link with `grapher curate supersede NEW OLD`
+- `historical` — past context, still useful
+- `deprecated` / `rejected` — do not act on
+
+Use `grapher curate status <id> <status>` or include status when enriching nodes. Do not overload tags for truth.
+
+## Lifecycle stages
+
+Tag work with lifecycle stage when relevant (`--stage` on init; node `stage` field):
+
+`ideation` → `designing` → `planning` → `developing` → `launching` → `maintaining`
+
+Graph kinds (`knowledge`, `design`, `decision`, `roadmap`, etc.) describe *what* the graph emphasizes; stages describe *where* work sits. Both are orthogonal.
+
+## Ingest a directory — full deep coverage required
+
+When the user points grapher at a directory, **all** documents, images, videos, and audio in that directory must be ingested with deep understanding. Do not skip media. Do not leave pending stubs. Do not stop at paths.
+
+```bash
+grapher ingest ./path/to/dir
+```
+
+Then for **every** item in `pending`:
+
+1. **Consume it deeply** (read / see / watch / listen — as appropriate)
+2. **Understand it** in project context
+3. **Graph that understanding** (path is secondary; `content` is the knowledge):
+
+```bash
+grapher add --id <node_id> --type document|image|video|audio --title "<name>" \
+  --path <path> --content "<deep grounded understanding>" --tags relevant,tags
+```
+
+4. `grapher link` related nodes (`references`, `depicts`, `applies_to`, `related`, …)
+5. Confirm with `grapher scan <DIR>` — **pending 0**, all target files **indexed**. Keep going until done.
+
+Path-only or shallow media nodes = **failed ingest**.
+
+## Mission, provenance, and evidence
+
+Preserve supplied operational context with --project, --mission, --generation, --actor, --role, and --session, or their GRAPHER_* environment defaults. Grapher records declared identity; it does not authenticate roles. Never mark provenance verified without an external attestation. Keep truth status, workflow state, and verification independent. A completed handoff is not automatically an acceptance or completed audit.
+
+During significant work, record durable requirements, decisions, root causes, deviations, blockers, incidents, and evidence. Prefer maintaining one current-state node where meaning is unchanged; when meaning changes, create a new node and use grapher curate supersede NEW OLD. Do not graph formatting edits, shell chatter, or every file save.
+
+After work, update current state and workflow honestly, attach evidence, preserve mission generation and provenance, create supersession links, then run:
+
+    grapher validate
+    grapher audit
+
+Report unresolved contradictions, failed verification, stale checkpoints, and pending ingest. Do not claim semantic completion because code work or tests alone finished.
+
+## Persist other discoveries
+
+```bash
+grapher add --type finding --title "..." --content "..." --tags ...
+```
+
+Rules:
+
+- Prefer search over re-deriving known context
+- Put understanding in `content`; keep originals via `--path`
+- Media (image/video/audio) is first-class and must be deeply graphed
+- `.grapher/knowledge.json` is shared memory across agents/sessions
+- Use `grapher … --json` when you need to parse results

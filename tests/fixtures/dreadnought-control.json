@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "graph": {"name": "control-case", "domain": "operations", "profile": "operations", "kinds": ["operations", "retrospective"], "stages": ["developing", "maintaining"]},
+  "nodes": {
+    "mission-gen-1": {"id": "mission-gen-1", "type": "mission", "title": "Mission generation 1", "content": "Earlier remediation generation completed.", "status": "historical", "workflow_state": "completed", "verification": "partially_verified", "scope": {"project_id": "terminal", "mission_id": "ubuntu-prototype", "generation_id": "gen-1"}, "provenance": {"integrity": "declared"}},
+    "handoff-1": {"id": "handoff-1", "type": "handoff", "title": "Field handoff 1", "content": "Partial closure handoff.", "status": "historical", "workflow_state": "completed", "verification": "partially_verified", "scope": {"project_id": "terminal", "mission_id": "ubuntu-prototype", "generation_id": "gen-1"}, "provenance": {"actor_id": "field", "actor_role": "field-agent", "integrity": "declared"}},
+    "mission-gen-2": {"id": "mission-gen-2", "type": "mission", "title": "Mission generation 2", "content": "Reopened full prototype mission.", "status": "current", "workflow_state": "active", "verification": "unverified", "scope": {"project_id": "terminal", "mission_id": "ubuntu-prototype", "generation_id": "gen-2"}, "provenance": {"integrity": "declared"}},
+    "handoff-2": {"id": "handoff-2", "type": "handoff", "title": "Field handoff 2", "content": "Technical field work is ready and completed; authentic arbiter acceptance is not established.", "status": "current", "workflow_state": "completed", "verification": "verified", "evidence": [{"type": "test", "ref": "prototype-check", "summary": "working prototype verified"}], "scope": {"project_id": "terminal", "mission_id": "ubuntu-prototype", "generation_id": "gen-2"}, "provenance": {"actor_id": "field", "actor_role": "field-agent", "integrity": "declared"}},
+    "acceptance-contaminated": {"id": "acceptance-contaminated", "type": "acceptance", "title": "Contaminated acceptance", "content": "Acceptance was recorded through role-boundary interference and is preserved only as incident evidence.", "status": "historical", "workflow_state": "completed", "verification": "failed", "scope": {"project_id": "terminal", "mission_id": "ubuntu-prototype", "generation_id": "gen-2"}, "provenance": {"actor_id": "interfering-actor", "actor_role": "declared-arbiter", "integrity": "invalidated"}, "finalized_at": "2026-01-01T00:00:00+00:00"}
+  },
+  "edges": [
+    {"from": "handoff-1", "to": "mission-gen-1", "rel": "applies_to"},
+    {"from": "handoff-2", "to": "mission-gen-2", "rel": "applies_to"},
+    {"from": "acceptance-contaminated", "to": "mission-gen-2", "rel": "accepts"},
+    {"from": "mission-gen-2", "to": "mission-gen-1", "rel": "supersedes"}
+  ]
+}

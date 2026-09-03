@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "nodes": {
+    "idea-exhibit-theme": {
+      "id": "idea-exhibit-theme",
+      "type": "concept",
+      "title": "Ocean Life Exhibit Theme",
+      "content": "PROPOSED: Interactive tide pool experience for families.",
+      "path": null,
+      "tags": ["ideation", "exhibit"],
+      "meta": {},
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+    },
+    "finding-tank-leak": {
+      "id": "finding-tank-leak",
+      "type": "finding",
+      "title": "Main tank slow leak",
+      "content": "CURRENT: Seal replaced; monitoring for 72 hours.",
+      "path": null,
+      "tags": ["operations", "maintenance"],
+      "meta": {},
+      "created_at": "2026-01-02T00:00:00+00:00",
+      "updated_at": "2026-01-02T00:00:00+00:00"
+    },
+    "image-floor-plan": {
+      "id": "image-floor-plan",
+      "type": "image",
+      "title": "Gallery floor plan",
+      "content": "Layout showing tide pool zone and touch tanks.",
+      "path": "docs/floor-plan.png",
+      "tags": ["design"],
+      "meta": {},
+      "created_at": "2026-01-03T00:00:00+00:00",
+      "updated_at": "2026-01-03T00:00:00+00:00"
+    }
+  },
+  "edges": [
+    {
+      "from": "image-floor-plan",
+      "to": "idea-exhibit-theme",
+      "rel": "depicts",
+      "created_at": "2026-01-03T00:00:00+00:00"
+    },
+    {
+      "from": "finding-tank-leak",
+      "to": "idea-exhibit-theme",
+      "rel": "applies_to",
+      "created_at": "2026-01-04T00:00:00+00:00"
+    }
+  ]
+}

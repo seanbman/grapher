@@ -1,0 +1,23 @@
+{
+  "profile": "general",
+  "domain": "general",
+  "kinds": [
+    "knowledge"
+  ],
+  "stages": [
+    "designing",
+    "launching",
+    "planning",
+    "maintaining",
+    "developing",
+    "ideation"
+  ],
+  "custom_node_types": [],
+  "custom_relations": {},
+  "custom_kinds": [],
+  "stage_aliases": {},
+  "status_rank_weights": {},
+  "checkpoint_definitions": [],
+  "component_link_rules": [],
+  "relation_aliases": {}
+}

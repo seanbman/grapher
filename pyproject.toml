@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grapher"
+version = "0.4.0"
+description = "Project-local knowledge graph CLI for Cursor and Codex agents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "grapher" }]
+dependencies = []
+
+[project.optional-dependencies]
+embed = ["fastembed>=0.4.0", "numpy>=1.24"]
+dash = ["dash>=2.14", "plotly>=5.18", "numpy>=1.24"]
+dev = ["pytest>=7.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "embed: loads fastembed model (high memory; run separately with scripts/test-embed.sh)",
+]
+addopts = "-m 'not embed'"
+
+[project.scripts]
+grapher = "grapher.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+grapher = ["cursor_assets/**/*", "codex_assets/**/*"]

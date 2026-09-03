@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "nodes": {
+    "auth-module-c42c23a6": {
+      "id": "auth-module-c42c23a6",
+      "type": "document",
+      "title": "Auth module",
+      "content": "JWT login and refresh tokens; secrets loaded from environment variables",
+      "path": "src/auth.py",
+      "tags": [
+        "auth",
+        "api"
+      ],
+      "meta": {},
+      "created_at": "2026-09-01T04:45:42+00:00",
+      "updated_at": "2026-09-01T04:45:42+00:00"
+    },
+    "finding-token-ttl": {
+      "id": "finding-token-ttl",
+      "type": "finding",
+      "title": "Token TTL is 15 minutes",
+      "content": "Access tokens expire after 15 minutes; refresh tokens rotate on use",
+      "path": null,
+      "tags": [
+        "auth"
+      ],
+      "meta": {},
+      "created_at": "2026-09-01T04:47:15+00:00",
+      "updated_at": "2026-09-01T04:47:15+00:00"
+    }
+  },
+  "edges": [
+    {
+      "from": "finding-token-ttl",
+      "to": "auth-module-c42c23a6",
+      "rel": "discovered_in",
+      "created_at": "2026-09-01T04:47:16+00:00"
+    }
+  ]
+}

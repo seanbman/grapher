@@ -1,0 +1,398 @@
+Grapher Post-Implementation Audit and Hardening Notes
+September 3, 2026
+
+This is a serious upgrade. The latest Grapher revision substantially implements the two instruction sets as intended rather than merely adding fields onto the old design.
+
+The architecture now separates truth, workflow, verification, provenance, mission/generation, and operational history in a way that is suitable for the broader Dreadnought project.
+
+The normal non-embedding test suite passes 49/49 tests. Grapher’s own audit also reports 0 validation errors, 0 warnings, and a valid journal with 25 history entries / 22 structured transitions.
+
+WHAT LANDED CORRECTLY
+
+- knowledge.json remains canonical state.
+- history.jsonl is append-only operational history.
+- Truth, workflow, verification, provenance, and scope are genuinely separate concepts.
+- Mission and generation separation exists.
+- Provenance integrity supports:
+  - unknown
+  - declared
+  - verified
+  - contested
+  - invalidated
+- External attestation is preserved without Grapher pretending to authenticate actors.
+- Decisions, requirements, handoffs, acceptances, incidents, audit records, claims, missions, and related concepts are represented as proper graph concepts.
+- Proposed -> executed -> observed -> verified -> canonical are distinct transition phases.
+- Changes record:
+  - before/resulting values
+  - actor
+  - reason
+  - evidence refs
+  - decision IDs
+  - requirement IDs
+  - operation IDs
+  - override/supersession references
+- The Dreadnought control fixture correctly preserves the contaminated acceptance without allowing it to become authoritative truth.
+- Migration remains compatible with v1.
+- Deep ingest remains functional.
+- Cursor guidance is substantially improved.
+- Dash consumes the normalized model.
+- Agent Hub integration already has a clean boundary in integrations/agent_hub.py rather than being embedded directly into Grapher.
+- Grapher has not been turned into an ML or training system. It is correctly accumulating operational evidence that can later be normalized into training data.
+
+RECOMMENDATION
+
+Before beginning the Agent Hub modernization, perform one focused Grapher hardening pass.
+
+Do not redesign the architecture again. The architecture is now fundamentally correct. The remaining work is surgical and should establish the first stable evidence contract for the Dreadnought project.
+
+P0 — FINALIZATION MUST BE AIRTIGHT
+
+The current finalized-record protection is incomplete.
+
+The implementation currently protects only a limited set of fields when add_node() encounters a finalized record, including approximately:
+
+- type
+- title
+- content
+- path
+
+This is insufficient.
+
+A finalized acceptance, audit record, handoff, or other forensic record must not be semantically rewritten after finalization.
+
+Adversarial testing showed that a finalized acceptance record could still have the following rewritten:
+
+- truth status
+- verification state
+- provenance
+
+Additionally, remove_node() can currently delete a finalized record outright.
+
+This violates the forensic model.
+
+REQUIRED BEHAVIOR
+
+Once a record is finalized:
+
+1. Its historical semantic state must become immutable.
+2. It must not be deletable through normal graph mutation operations.
+3. Corrections must occur through a new record that supersedes, invalidates, contests, or otherwise references the old record.
+4. The previous finalized record must remain preserved as historical evidence.
+5. Any narrowly permitted post-finalization operation must be explicitly modeled.
+
+Example:
+
+old finalized acceptance
+    <- superseded_by / invalidated_by / contested_by ->
+new correcting record
+
+The system must distinguish between:
+
+A. rewriting the historical record
+
+and
+
+B. appending a new later judgment about that historical record.
+
+For example, a later provenance invalidation may be valid, but it should preferably be represented as a new attestative or corrective event rather than silently rewriting what the original record claimed at the time it was finalized.
+
+IMPLEMENTATION REQUIREMENTS
+
+- Centralize finalized-record protection rather than checking a small hand-maintained list of fields.
+- Define which fields are immutable after finalization.
+- Prefer an explicit allowlist of post-finalization operations rather than an incomplete denylist.
+- Prevent remove_node() from deleting finalized records through normal operations.
+- If force/administrative deletion exists at all, require an explicit exceptional path, reason, actor, and journal entry.
+- Add tests covering attempted mutation of every major semantic field.
+- Add tests proving finalized records cannot be deleted.
+- Add tests proving correction through supersession/invalidation works without altering the original finalized record.
+
+P0 — MUTATION ACTOR ATTRIBUTION MUST BE COMPLETE
+
+Actor attribution is currently excellent for the add command but incomplete across other semantic mutations.
+
+grapher add supports context such as:
+
+- actor
+- actor kind
+- role
+- session
+- phase
+- reason
+- operation ID
+- evidence
+- decision IDs
+- requirement IDs
+- overrides
+
+However, several other semantic commands do not consistently propagate the same context into history.
+
+Examples include:
+
+- link
+- rm
+- curate
+- checkpoints
+- ingest
+- infer-links
+
+These paths often call save_graph_mutation() without preserving the actual responsible agent or human.
+
+This has already contaminated the current Grapher history.
+
+The implementation agent correctly appears in some history entries as something equivalent to:
+
+codex-provenance-implementer
+actor kind: agent
+
+But relationship mutations performed by that same process can appear instead as:
+
+system_tool
+actor kind: cli
+
+This destroys authorship fidelity.
+
+That is unacceptable for the eventual pipeline:
+
+Grapher evidence
+    ->
+normalization
+    ->
+training corpus
+    ->
+Dreadnought model
+
+REQUIRED BEHAVIOR
+
+Every semantic graph mutation must have an attributable actor context whenever that context is known.
+
+This includes:
+
+- node creation
+- node update
+- node deletion/tombstoning
+- relationship creation
+- relationship removal
+- curation
+- inference
+- ingest
+- checkpoint creation
+- verification changes
+- provenance changes
+- lifecycle transitions
+- supersession
+- invalidation
+- overrides
+- integration-driven mutations
+
+Actor context should include, where applicable:
+
+- actor ID/name
+- actor kind
+- role
+- session
+- phase
+- operation ID
+- reason
+- mission
+- generation
+- originating integration/tool
+
+Do not silently replace a known actor with system_tool merely because the mutation passed through a CLI or integration layer.
+
+The tool is the mechanism.
+The actor is the responsible participant.
+
+Both may be recorded, but they are not the same thing.
+
+AGENT HUB INTEGRATION REQUIREMENTS
+
+integrations/agent_hub.py must propagate actor context through every mutation it causes.
+
+contribute_context() currently accepts node provenance but does not fully propagate the originating actor into the mutation journal.
+
+Fix this.
+
+Also ensure the integration accurately distinguishes between:
+
+- node_created
+- node_updated
+- relationship_created
+- relationship_updated
+- other mutation types
+
+Do not label an update as node_created merely because the integration's top-level operation is called contribute_context.
+
+TEST REQUIREMENTS
+
+Add tests proving:
+
+- link preserves the caller's actor
+- remove/tombstone preserves the caller's actor
+- curate preserves the caller's actor
+- ingest preserves the caller's actor
+- infer-links preserves the caller's actor
+- checkpoints preserve the caller's actor
+- Agent Hub integration preserves the originating actor
+- integration history correctly describes create vs update
+
+P1 — RETRIEVAL RANKING MUST MATCH ITS EXPLANATION
+
+Truth-aware retrieval is already directionally correct.
+
+The current system correctly allows authoritative uncontested evidence to outrank invalidated or contaminated acceptance records for current-state questions.
+
+It also preserves contaminated historical records so they remain retrievable for interference, provenance, or root-cause investigations.
+
+This is exactly the intended behavior.
+
+However, the ranking explanation currently exposes factors such as:
+
+- stage_match
+- kind_match
+- recency_component
+- edge_context_component
+
+These are currently hard-coded to 0.0.
+
+Therefore the documentation currently implies more ranking intelligence than the implementation actually performs.
+
+REQUIRED ACTION
+
+Either:
+
+A. implement these ranking components now
+
+or
+
+B. explicitly mark them as reserved/not-yet-active factors.
+
+Preferred choice: implement them.
+
+In particular, edge context is valuable for Dreadnought-style reasoning.
+
+Relationships such as:
+
+- verified_by
+- supersedes
+- contradicted_by
+- blocks
+- invalidated_by
+- supports
+- depends_on
+
+should affect retrieval relevance where appropriate.
+
+Recency should not blindly dominate truth, but it can be used as a secondary factor when comparing otherwise similar evidence.
+
+Any ranking component shown in explanations must represent a real computed contribution.
+
+P1 — CODEX TRANSPLANT CONTEXT MUST EXPOSE THE NEW MODEL
+
+GRAPHER_CONTEXT.md still reflects too much v1 thinking.
+
+It largely reports a node using simplified pending/indexed-style metadata rather than exposing the new epistemic state.
+
+A transplanted agent should be able to see the important semantics directly.
+
+The rendered context should include, where applicable:
+
+- truth status
+- workflow state
+- verification state
+- lifecycle stage
+- mission
+- generation
+- provenance integrity
+- finalization state
+- relevant evidence
+- supersession/contradiction relationships
+- current authoritative status
+
+The purpose is not to dump the entire graph.
+
+The purpose is to give the receiving agent enough structured context to understand:
+
+- what is believed
+- what has merely been proposed
+- what was executed
+- what was observed
+- what was verified
+- what has been invalidated
+- what remains authoritative
+
+ACCEPTANCE CRITERIA FOR THIS HARDENING PASS
+
+Do not consider the Grapher evidence contract frozen until all of the following are true:
+
+1. Finalized records cannot be semantically rewritten through ordinary mutation paths.
+2. Finalized records cannot be deleted through ordinary mutation paths.
+3. Corrections occur through explicit supersession, invalidation, contestation, or replacement records.
+4. Every semantic mutation preserves the responsible actor when known.
+5. Agent Hub integration preserves actor attribution.
+6. Mutation history correctly distinguishes create, update, delete/tombstone, and relationship operations.
+7. Retrieval explanations contain only real ranking factors.
+8. Edge context and preferably recency contribute meaningfully to retrieval.
+9. Codex transplant output exposes the new epistemic model.
+10. Existing v1 migration and deep-ingest behavior remain intact.
+11. Existing tests continue to pass.
+12. New adversarial tests are added for the above failure modes.
+13. Grapher audit finishes with no validation errors or journal inconsistencies.
+
+ARCHITECTURAL INTERPRETATION
+
+Old Grapher was primarily semantic project memory.
+
+Current Grapher is becoming an operational epistemic record.
+
+It can represent questions such as:
+
+- What did we believe?
+- Who said it?
+- Under what mission?
+- Which generation?
+- Was it proposed or executed?
+- What actually happened?
+- Was that independently verified?
+- What evidence supports it?
+- Was its provenance later invalidated?
+- What replaced it?
+- What remains true now?
+
+That is the correct substrate for Dreadnought.
+
+An important observation from this audit is that Grapher itself currently contains a verified finding claiming finalized-record protections based on passing tests, while adversarial examination shows those protections are only partial.
+
+That is a useful demonstration of why the broader architecture should remain:
+
+Grapher knows
+    ->
+Agent Hub coordinates
+    ->
+Auditor verifies
+    ->
+Dreadnought arbitrates
+
+Grapher should preserve claims, transitions, evidence, and provenance faithfully.
+
+The Auditor should later determine whether the evidence actually proves the claim.
+
+ORDER OF OPERATIONS
+
+Recommended sequence:
+
+1. Grapher 0.4 architecture
+2. Focused hardening patch described in this document
+3. Freeze the Grapher evidence/history contract
+4. Modernize Agent Hub against that stable contract
+5. Build/update Auditor against the resulting workflow
+6. Begin accumulating stable normalized evidence
+7. Only later design normalization/training pipelines for Dreadnought
+
+Do not send Grapher through another large conceptual redesign unless the hardening work exposes a fundamental architectural contradiction.
+
+At present, none is apparent.
+
+The architecture is there.
+
+The next job is to close these specific forensic and attribution holes so Grapher can safely become the first stable foundation of the Dreadnought project.
