@@ -159,6 +159,12 @@ def _require_administrative_attribution(
         _die(f"{flag} requires explicit {' and '.join(missing)}")
 
 
+def _administrative_delete_context(args: argparse.Namespace) -> tuple[dict[str, Any], dict[str, Any]]:
+    scope, provenance = _scope_and_provenance(args)
+    _require_administrative_attribution(args, provenance, flag="--force-finalized")
+    return scope, provenance
+
+
 def _add_mutation_context_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--workspace", default=None)
     parser.add_argument("--project", default=None)
@@ -462,18 +468,28 @@ def cmd_rm(args: argparse.Namespace) -> None:
     path = _graph_path(args)
     before = load_graph(path, normalize=False)
     g = load_graph(path)
+    if args.force_finalized:
+        scope, provenance = _administrative_delete_context(args)
+        action = "node_removed_administratively"
+        extra_context = {"administrative": True, "force_finalized": True}
+    else:
+        scope, provenance = _scope_and_provenance(args)
+        action = "node_removed"
+        extra_context = None
     try:
-        G.remove_node(g, args.id)
+        if args.force_finalized:
+            G._remove_node_unchecked(g, args.id)
+        else:
+            G.remove_node(g, args.id)
     except G.GraphError as e:
         _die(str(e))
-    scope, provenance = _scope_and_provenance(args)
     save_graph_mutation(
         path,
         g,
-        action="node_removed",
+        action=action,
         target=args.id,
         before=before,
-        **_history_kwargs(args, scope=scope, provenance=provenance),
+        **_history_kwargs(args, scope=scope, provenance=provenance, extra_context=extra_context),
     )
     S.remove_node_vector(path, args.id)
     _out({"removed": args.id}, args)
@@ -1295,6 +1311,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="remove a node and its edges (and vector)",
     )
     s.add_argument("id")
+    s.add_argument(
+        "--force-finalized",
+        action="store_true",
+        help="administrative finalized-record deletion; requires --actor and --reason",
+    )
     _add_mutation_context_args(s)
     _add_mutation_history_args(s)
     s.set_defaults(func=cmd_rm)

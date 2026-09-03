@@ -197,21 +197,28 @@ def dedupe_edges(graph: dict[str, Any]) -> int:
     return removed
 
 
-def remove_node(graph: dict[str, Any], node_id: str, *, force: bool = False) -> None:
+def _remove_node_unchecked(graph: dict[str, Any], node_id: str) -> None:
     node = graph["nodes"].get(node_id)
     if node is None:
         raise GraphError(f"node not found: {node_id}")
-    if is_finalized(node) and not force:
-        raise GraphError(
-            f"node {node_id!r} is finalized; ordinary removal is forbidden. "
-            "Preserve it and attach a correcting record instead."
-        )
     del graph["nodes"][node_id]
     graph["edges"] = [
         e
         for e in graph["edges"]
         if e.get("from") != node_id and e.get("to") != node_id
     ]
+
+
+def remove_node(graph: dict[str, Any], node_id: str) -> None:
+    node = graph["nodes"].get(node_id)
+    if node is None:
+        raise GraphError(f"node not found: {node_id}")
+    if is_finalized(node):
+        raise GraphError(
+            f"node {node_id!r} is finalized; ordinary removal is forbidden. "
+            "Preserve it and attach a correcting record instead."
+        )
+    _remove_node_unchecked(graph, node_id)
 
 
 def list_nodes(

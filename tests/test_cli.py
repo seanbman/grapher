@@ -250,3 +250,41 @@ def test_force_finalized_requires_explicit_actor_and_reason(tmp_path: Path):
     )
     assert r.returncode != 0
     assert "--force-finalized requires explicit" in (r.stderr or r.stdout)
+
+
+def test_force_finalized_delete_requires_audit_and_journals_admin_removal(tmp_path: Path):
+    graph_path = _graph_path(tmp_path)
+    graph = load_graph(graph_path)
+    add_node(
+        graph,
+        id="a",
+        type="acceptance",
+        title="Accepted",
+        content="decision",
+        finalized_at="2026-01-01T00:00:00+00:00",
+    )
+    save_graph(graph_path, graph)
+    denied = _run("rm", "a", "--force-finalized", "--graph", str(graph_path))
+    assert denied.returncode != 0
+    assert "requires explicit" in (denied.stderr or denied.stdout)
+
+    allowed = _run(
+        "rm",
+        "a",
+        "--force-finalized",
+        "--graph",
+        str(graph_path),
+        "--actor",
+        "admin",
+        "--actor-kind",
+        "human",
+        "--reason",
+        "remove contaminated forensic test record",
+    )
+    assert allowed.returncode == 0, allowed.stderr
+    assert "a" not in load_graph(graph_path)["nodes"]
+    entry = _history_entries(graph_path)[-1]
+    assert entry["action"] == "node_removed_administratively"
+    assert entry["actor"]["id"] == "admin"
+    assert entry["context"]["administrative"] is True
+    assert entry["context"]["force_finalized"] is True

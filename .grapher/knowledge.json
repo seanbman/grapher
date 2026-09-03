@@ -361,6 +361,37 @@
       },
       "stage": null,
       "scope": {}
+    },
+    "finding-grapher-v041-release-hardening": {
+      "id": "finding-grapher-v041-release-hardening",
+      "type": "finding",
+      "title": "Grapher 0.4.1 release hardening closes audited finalized-delete policy gap",
+      "content": "September 3, 2026 follow-up hardening pass. Package/version metadata was bumped to 0.4.1 in pyproject, module version, egg-info metadata, and uv lock root package entry. The raw remove_node(force=True) administrative escape hatch was eliminated. Finalized-record forced deletion now exists only as an explicit audited CLI path via grapher rm --force-finalized, which requires actor attribution and a reason, records an administrative journal entry, and distinguishes node_removed_administratively from ordinary removal. Added one policy test covering denied unaudited forced deletion plus allowed journaled administrative deletion. Full suite result on the post-change tree: 78 passed in 3.44s on Python 3.12.3.",
+      "path": null,
+      "tags": [
+        "release",
+        "hardening",
+        "provenance",
+        "forensics"
+      ],
+      "meta": {},
+      "created_at": "2026-09-03T19:16:39+00:00",
+      "updated_at": "2026-09-03T19:16:39+00:00",
+      "status": "unclassified",
+      "workflow_state": "not_applicable",
+      "verification": "unverified",
+      "evidence": [],
+      "source_refs": [],
+      "owners": [],
+      "provenance": {
+        "actor_id": "codex",
+        "actor_kind": "agent",
+        "source": "cli",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T19:16:39+00:00"
+      },
+      "stage": null,
+      "scope": {}
     }
   },
   "edges": [
@@ -492,6 +523,24 @@
       "to": "spec-grapher-provenance-readiness",
       "rel": "implements",
       "created_at": "2026-09-03T18:53:47+00:00"
+    },
+    {
+      "from": "finding-grapher-v041-release-hardening",
+      "to": "req-structured-state-transitions",
+      "rel": "implements",
+      "created_at": "2026-09-03T19:16:39+00:00"
+    },
+    {
+      "from": "finding-grapher-v041-release-hardening",
+      "to": "req-attributable-actors-evidence-overrides",
+      "rel": "implements",
+      "created_at": "2026-09-03T19:16:39+00:00"
+    },
+    {
+      "from": "finding-grapher-v041-release-hardening",
+      "to": "finding-grapher-hardening-v041",
+      "rel": "supersedes",
+      "created_at": "2026-09-03T19:16:39+00:00"
     }
   ]
 }

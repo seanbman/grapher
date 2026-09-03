@@ -1,3 +1,21 @@
+Metadata-Version: 2.4
+Name: grapher
+Version: 0.4.1
+Summary: Project-local knowledge graph CLI for Cursor and Codex agents
+Author: grapher
+License: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Provides-Extra: embed
+Requires-Dist: fastembed>=0.4.0; extra == "embed"
+Requires-Dist: numpy>=1.24; extra == "embed"
+Provides-Extra: dash
+Requires-Dist: dash>=2.14; extra == "dash"
+Requires-Dist: plotly>=5.18; extra == "dash"
+Requires-Dist: numpy>=1.24; extra == "dash"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+
 # grapher
 
 Grapher is a local, general-purpose work graph for humans and autonomous agents. It preserves knowledge, lifecycle, truth, evidence, provenance, mission scope, and history in a searchable, inspectable form. Grapher knows; coordinating agents decide what work to perform, and auditors decide what evidence is sufficient.
