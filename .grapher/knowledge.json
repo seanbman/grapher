@@ -392,6 +392,36 @@
       },
       "stage": null,
       "scope": {}
+    },
+    "finding-github-publication-v041": {
+      "id": "finding-github-publication-v041",
+      "type": "finding",
+      "title": "Grapher 0.4.1 published to GitHub",
+      "content": "On September 3, 2026, the local grapher repository was published to github.com/seanbman/grapher. Local branch master was renamed to main, remote bootstrap history containing LICENSE was merged without conflict, main was pushed to origin, and annotated tag v0.4.1 was pushed. Remote main now contains the audited 0.4.1 tree plus the merged bootstrap LICENSE history.",
+      "path": null,
+      "tags": [
+        "release",
+        "github",
+        "publication"
+      ],
+      "meta": {},
+      "created_at": "2026-09-03T19:21:41+00:00",
+      "updated_at": "2026-09-03T19:21:41+00:00",
+      "status": "unclassified",
+      "workflow_state": "not_applicable",
+      "verification": "unverified",
+      "evidence": [],
+      "source_refs": [],
+      "owners": [],
+      "provenance": {
+        "actor_id": "codex",
+        "actor_kind": "agent",
+        "source": "cli",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T19:21:41+00:00"
+      },
+      "stage": null,
+      "scope": {}
     }
   },
   "edges": [
@@ -541,6 +571,12 @@
       "to": "finding-grapher-hardening-v041",
       "rel": "supersedes",
       "created_at": "2026-09-03T19:16:39+00:00"
+    },
+    {
+      "from": "finding-github-publication-v041",
+      "to": "finding-grapher-v041-release-hardening",
+      "rel": "references",
+      "created_at": "2026-09-03T19:21:41+00:00"
     }
   ]
 }
