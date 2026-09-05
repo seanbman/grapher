@@ -118,18 +118,11 @@ jobs:
                   'tests/test_transport.py',
               ],
               stage='developing',
-              evidence=[
-                  {
-                      'type': 'commit',
-                      'ref': 'git:19073806812ef23b2434243add23a5379768d8f6',
-                      'summary': 'Publish/sync Git transport merged to main.',
-                  },
-                  {
-                      'type': 'result',
-                      'ref': 'result-grapher-transport-sync-20260905',
-                      'summary': 'Cross-checkout sync verified after merge.',
-                  },
-              ],
+              evidence=[{
+                  'type': 'commit',
+                  'ref': 'git:19073806812ef23b2434243add23a5379768d8f6',
+                  'summary': 'Publish/sync Git transport merged to main.',
+              }],
           )
 
           add_semantic(
