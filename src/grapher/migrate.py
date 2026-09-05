@@ -179,7 +179,7 @@ def run_migrate(
     from grapher.audit import validate_graph
     validation = validate_graph(migrated, graph_path)
     if not validation["valid"]:
-        raise ValueError(f"migrated graph failed validation: {validation["issues"]}")
+        raise ValueError(f"migrated graph failed validation: {validation['issues']}")
     save_graph_mutation(graph_path, migrated, action="migration_completed", before=data,
                         context={"from_version": current, "to_version": 2})
 
