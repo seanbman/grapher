@@ -41,6 +41,19 @@ Results after correcting edge direction:
 
 The initial symmetric-neighbor extractor incorrectly allowed incoming edges to become context, which could leak later implementation/outcome state backward into earlier targets. Exporter `0.1.1` now accepts only directed antecedent relations emitted by the target.
 
-### Next experiment
+## 2026-09-05 — Case Study 002: pocket-synth legacy corpus
 
-Run the same exporter unchanged against independent project graphs. Compare eligibility/rejection distributions and inspect whether missing directed antecedent relations represent genuine Grapher modeling gaps or merely sparse project history. Do not change Grapher core until that distinction is supported by multiple case studies.
+Pinned public `seanbman/pocket-synth` at `33928620f31c70d86da9a4f9133aec897752f3f0` and analyzed its existing `.grapher/knowledge.json` without modifying or copying the source graph into Grapher.
+
+Exporter `0.1.3` reports:
+
+- 196 nodes / 386 edges;
+- 147 edges use current antecedent relation vocabulary;
+- 78 `finding`, 63 `concept`, 45 `image` nodes;
+- only 1 node uses the current semantic-type vocabulary;
+- 0 canonical semantic objects;
+- 1 candidate, 0 eligible.
+
+### Iteration learned from the case study
+
+The limiting factor is not corpus size or graph connectivity; it is legacy semantic vocabulary/content. The exporter must not weaken eligibility or infer missing semantic fields. The next experiment is a **non-inventive normalization preview** that classifies legacy node types/content into: mechanically mappable, enrichment-required, or non-semantic/context-only. Grapher core should change only if that study reveals a general graph-model deficiency rather than a migration convenience.
