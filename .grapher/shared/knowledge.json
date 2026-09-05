@@ -220,6 +220,40 @@
       "from": "result-grapher-v050-release-20260905",
       "rel": "references",
       "to": "implementation-grapher-git-transport-20260905"
+    },
+    {
+      "created_at": "2026-09-05T07:55:16+00:00",
+      "from": "decision-training-data-study-boundary-20260905",
+      "note": "Keeps training concerns downstream of the canonical Grapher model.",
+      "rel": "satisfies",
+      "to": "constraint-provenance-not-ml-pipeline"
+    },
+    {
+      "created_at": "2026-09-05T07:55:16+00:00",
+      "from": "proposal-training-data-exporter-study-20260905",
+      "note": "Exporter prototype follows the downstream-only research boundary.",
+      "rel": "references",
+      "to": "decision-training-data-study-boundary-20260905"
+    },
+    {
+      "created_at": "2026-09-05T07:55:16+00:00",
+      "from": "result-training-data-interchange-v1-20260905",
+      "rel": "derived_from",
+      "to": "decision-training-data-study-boundary-20260905"
+    },
+    {
+      "created_at": "2026-09-05T07:55:16+00:00",
+      "from": "result-training-data-interchange-v1-20260905",
+      "note": "The next experiment is the read-only exporter prototype.",
+      "rel": "references",
+      "to": "proposal-training-data-exporter-study-20260905"
+    },
+    {
+      "created_at": "2026-09-05T07:55:16+00:00",
+      "from": "result-training-data-interchange-v1-20260905",
+      "note": "v0.5.0 is the study baseline and source of the first fixture.",
+      "rel": "derived_from",
+      "to": "result-grapher-v050-release-20260905"
     }
   ],
   "graph": {
@@ -338,6 +372,51 @@
       "type": "decision",
       "updated_at": "2026-09-05T07:26:08+00:00",
       "verification": "verified",
+      "workflow_state": "completed"
+    },
+    "decision-training-data-study-boundary-20260905": {
+      "content": "{\"decision\":\"Maintain evaluation/training export research as a downstream consumer of Grapher rather than adding model-specific fields or training behavior to Grapher core.\",\"rationale\":\"A model-agnostic work graph should remain reusable while downstream interchange and model adapters can evolve independently as experiments produce evidence.\"}",
+      "created_at": "2026-09-05T07:55:16+00:00",
+      "evidence": [
+        {
+          "ref": "research/training-data/README.md",
+          "summary": "Defines the downstream research boundary, eligibility policy, leakage policy, and study cadence.",
+          "type": "document"
+        }
+      ],
+      "id": "decision-training-data-study-boundary-20260905",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "chatgpt",
+        "actor_kind": "agent",
+        "actor_role": "maintainer",
+        "integrity": "declared",
+        "source": "github"
+      },
+      "scope": {
+        "project_id": "grapher"
+      },
+      "semantic": {
+        "decision": "Maintain evaluation/training export research as a downstream consumer of Grapher rather than adding model-specific fields or training behavior to Grapher core.",
+        "rationale": "A model-agnostic work graph should remain reusable while downstream interchange and model adapters can evolve independently as experiments produce evidence."
+      },
+      "source_refs": [
+        "research/training-data/README.md",
+        "research/training-data/AGENTS.md"
+      ],
+      "stage": "maintaining",
+      "status": "canonical_spec",
+      "tags": [
+        "research",
+        "training-data",
+        "evaluation"
+      ],
+      "title": "Keep evaluation and training data research downstream of Grapher",
+      "type": "decision",
+      "updated_at": "2026-09-05T07:55:16+00:00",
+      "verification": "unverified",
       "workflow_state": "completed"
     },
     "finding-github-publication-v041": {
@@ -624,6 +703,51 @@
       "verification": "verified",
       "workflow_state": "completed"
     },
+    "proposal-training-data-exporter-study-20260905": {
+      "content": "{\"proposal\":\"Build a read-only research exporter outside src/grapher that consumes immutable shared Grapher snapshots and emits Grapher Derived Example v1 candidates with eligibility and rejection metrics.\",\"rationale\":\"Automatic extraction must be measured against real graphs before any export behavior is promoted into Grapher or used to generate model-specific training data.\"}",
+      "created_at": "2026-09-05T07:55:16+00:00",
+      "evidence": [
+        {
+          "ref": "research/training-data/STUDY_LOG.md",
+          "summary": "Initial study log defines the first automatic-export experiment and measurements.",
+          "type": "document"
+        }
+      ],
+      "id": "proposal-training-data-exporter-study-20260905",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "chatgpt",
+        "actor_kind": "agent",
+        "actor_role": "maintainer",
+        "integrity": "declared",
+        "source": "github"
+      },
+      "scope": {
+        "project_id": "grapher"
+      },
+      "semantic": {
+        "proposal": "Build a read-only research exporter outside src/grapher that consumes immutable shared Grapher snapshots and emits Grapher Derived Example v1 candidates with eligibility and rejection metrics.",
+        "rationale": "Automatic extraction must be measured against real graphs before any export behavior is promoted into Grapher or used to generate model-specific training data."
+      },
+      "source_refs": [
+        "research/training-data/schema.v1.json",
+        "research/training-data/STUDY_LOG.md"
+      ],
+      "stage": "planning",
+      "status": "proposed",
+      "tags": [
+        "research",
+        "training-data",
+        "evaluation"
+      ],
+      "title": "Prototype a read-only derived-example exporter",
+      "type": "proposal",
+      "updated_at": "2026-09-05T07:55:16+00:00",
+      "verification": "unverified",
+      "workflow_state": "not_started"
+    },
     "req-attributable-actors-evidence-overrides": {
       "content": "Transition provenance distinguishes human, agent, system/tool, and migration/import sources without an LLM-specific identity model. Evidence retains source attribution when available; an agent report is not automatically equivalent to independent verification. Overrides retain original and overriding transitions, actor, rationale, and resulting state rather than deleting prior records.",
       "created_at": "2026-09-03T12:58:59+00:00",
@@ -863,6 +987,58 @@
       "title": "Grapher v0.5.0 packaged and published",
       "type": "result",
       "updated_at": "2026-09-05T07:34:09+00:00",
+      "verification": "verified",
+      "workflow_state": "completed"
+    },
+    "result-training-data-interchange-v1-20260905": {
+      "content": "{\"result\":\"The repository now contains a model-agnostic Grapher Derived Example v1 JSON Schema, conservative eligibility and leakage rules, a scoped agent policy, a living study log, and a fixture derived from the verified Grapher v0.5.0 release episode.\",\"evidence\":\"research/training-data/schema.v1.json defines the interchange contract; examples/grapher-v050-sequence.json instantiates it against Grapher shared graph hash 676fe99a3507c9d0; README.md and STUDY_LOG.md define the study policy and next experiment.\"}",
+      "created_at": "2026-09-05T07:55:16+00:00",
+      "evidence": [
+        {
+          "ref": "research/training-data/schema.v1.json",
+          "summary": "Canonical current research schema for derived training/evaluation examples.",
+          "type": "document"
+        },
+        {
+          "ref": "research/training-data/examples/grapher-v050-sequence.json",
+          "summary": "First auditable fixture derived from Grapher v0.5.0 graph state.",
+          "type": "document"
+        }
+      ],
+      "id": "result-training-data-interchange-v1-20260905",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "chatgpt",
+        "actor_kind": "agent",
+        "actor_role": "maintainer",
+        "integrity": "declared",
+        "source": "github"
+      },
+      "scope": {
+        "project_id": "grapher"
+      },
+      "semantic": {
+        "evidence": "research/training-data/schema.v1.json defines the interchange contract; examples/grapher-v050-sequence.json instantiates it against Grapher shared graph hash 676fe99a3507c9d0; README.md and STUDY_LOG.md define the study policy and next experiment.",
+        "result": "The repository now contains a model-agnostic Grapher Derived Example v1 JSON Schema, conservative eligibility and leakage rules, a scoped agent policy, a living study log, and a fixture derived from the verified Grapher v0.5.0 release episode."
+      },
+      "source_refs": [
+        "research/training-data/schema.v1.json",
+        "research/training-data/examples/grapher-v050-sequence.json",
+        "research/training-data/README.md",
+        "research/training-data/STUDY_LOG.md"
+      ],
+      "stage": "planning",
+      "status": "current",
+      "tags": [
+        "research",
+        "training-data",
+        "evaluation"
+      ],
+      "title": "Grapher Derived Example v1 research contract initialized",
+      "type": "result",
+      "updated_at": "2026-09-05T07:55:16+00:00",
       "verification": "verified",
       "workflow_state": "completed"
     },
