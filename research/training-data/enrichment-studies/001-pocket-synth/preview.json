@@ -6,6 +6,88 @@
         {
           "constraints": {},
           "field_types": {
+            "observation": "string",
+            "source": "string"
+          },
+          "required_fields": [
+            "observation",
+            "source"
+          ],
+          "type": "observation",
+          "values": {}
+        },
+        {
+          "constraints": {},
+          "field_types": {
+            "impact": "string",
+            "problem": "string"
+          },
+          "required_fields": [
+            "problem",
+            "impact"
+          ],
+          "type": "problem",
+          "values": {}
+        },
+        {
+          "constraints": {},
+          "field_types": {
+            "evidence": "string",
+            "result": "string"
+          },
+          "required_fields": [
+            "result",
+            "evidence"
+          ],
+          "type": "result",
+          "values": {}
+        },
+        {
+          "constraints": {},
+          "field_types": {
+            "failure": "string",
+            "observed_behavior": "string"
+          },
+          "required_fields": [
+            "failure",
+            "observed_behavior"
+          ],
+          "type": "failure",
+          "values": {}
+        },
+        {
+          "constraints": {},
+          "field_types": {
+            "derived_from": "string_list",
+            "lesson": "string"
+          },
+          "required_fields": [
+            "lesson",
+            "derived_from"
+          ],
+          "type": "lesson",
+          "values": {}
+        }
+      ],
+      "disposition": "enrichment_required",
+      "reason": "legacy_type_is_semantically_ambiguous",
+      "rule": "Candidate fields are intentionally empty; semantic meaning must be supplied explicitly.",
+      "source": {
+        "content": "Two abstraction levels in LOOP: (1) Sound/element layer \u2014 pads 1\u20136 and KEYBOARD hold playable samples/synth hits (PLAY/SOUND); step lanes map to pad sounds. (2) Song layer \u2014 6 loop tracks with PCM clips on the timeline (offset, mute/solo, length); project.seq patterns A\u2013D are song-level rhythmic programs; track.seq is per-track step data stored on each loop track. UI: loop-tracks = song arrangement; PATTERN SEQ (loop options A or track menu) = 6-lane Screen 24; TRACK STEP SEQ (track menu) = single-lane Screen 24 for one track. Timeline restructure moved SEQ off soft key B (now MUTE); both seq modes restored via menu/options.",
+        "id": "cassio-abstraction-sounds-song-1116fd88",
+        "path": null,
+        "stage": null,
+        "status": "unclassified",
+        "title": "CASSIO abstraction: sounds \u2192 song",
+        "type": "finding",
+        "verification": "unverified"
+      }
+    },
+    {
+      "candidates": [
+        {
+          "constraints": {},
+          "field_types": {
             "acceptance_condition": "string",
             "requirement": "string"
           },
@@ -75,6 +157,6 @@
       }
     }
   ],
-  "review_count": 2,
+  "review_count": 3,
   "workflow_version": "0.1.0"
 }
