@@ -2,12 +2,21 @@
 
 Grapher is a local, general-purpose work graph for humans and autonomous agents. It preserves knowledge, lifecycle, truth, evidence, provenance, mission scope, and history in a searchable, inspectable form. Grapher knows; coordinating agents decide what work to perform, and auditors decide what evidence is sufficient.
 
-Canonical files:
+Runtime files (local, not Git-shared):
 
-- .grapher/knowledge.json — durable graph truth and preserved history
-- .grapher/vectors.json — derived semantic-search cache; safe to rebuild
-- .grapher/config.json — project configuration and registry extensions
-- .grapher/history.jsonl — append-only semantic mutation journal
+- `.grapher/knowledge.json` — local canonical working graph
+- `.grapher/vectors.json` — derived semantic-search cache; safe to rebuild
+- `.grapher/config.json` — project configuration and registry extensions
+- `.grapher/history.jsonl` — append-only local semantic mutation journal
+- `.grapher/sync-state.json` — last synchronized shared graph hash
+
+Git-shared knowledge:
+
+- `.grapher/shared/knowledge.json` — deterministic normalized snapshot
+- `.grapher/shared/manifest.json` — schema, graph hash, publication id, and embedding metadata
+- `.grapher/shared/history/<publication-id>.json` — immutable publication record
+
+Local graph/history/vector state should not be committed. `grapher publish` is the boundary that creates Git-safe shared state.
 
 ## Install and initialize
 
@@ -27,11 +36,29 @@ Repeated and comma-separated kinds/stages are equivalent:
 
 The default profile and domain are general. Profiles (general, software, product, research, campaign, operations) extend one schema; they do not fork it.
 
+## Git transport
+
+Normal work happens against the local graph. Share durable knowledge through Git with an explicit publish/sync boundary:
+
+    grapher validate
+    grapher audit
+    grapher publish
+    git add .grapher/shared
+    git commit -m "grapher: publish project knowledge"
+    git push
+
+After pulling another agent's publication:
+
+    git pull
+    grapher sync
+
+`grapher publish` refuses invalid graphs and writes a deterministic shared snapshot, manifest, and immutable publication record. `grapher sync` verifies the shared hash and refuses to overwrite unpublished local changes unless `--force` is explicit. Vectors remain local and are rebuilt from shared knowledge. See `docs/GIT_TRANSPORT.md`.
+
 ## General, non-software use
 
     grapher init --name museum-exhibit --profile product --kind brainstorm,design,roadmap --stage ideation,designing,planning
     grapher add --id goal-visitors --type goal --title "Visitor goal" --content "Visitors understand how prairie wetlands store carbon." --status canonical_spec --stage designing
-    grapher add --id task-install --type task --title "Install central case" --content "Rig and level the central specimen case." --status current --workflow-state active --stage launching --owners facilities
+    grapher add --id task-install --type task --title "Install central case" --content '{"action":"Rig and level the central specimen case","expected_outcome":"Central case is installed level and ready for exhibit use"}' --status current --workflow-state active --stage launching --owners facilities
     grapher link task-install goal-visitors --rel satisfies
     grapher checkpoint create --title "Exhibit readiness" --nodes goal-visitors,task-install
     grapher audit
@@ -57,7 +84,7 @@ Contradictions remain explicit with the contradicts relation; a newer timestamp 
 
 Work state is independent of truth: not_started, active, blocked, completed, cancelled, on_hold, or not_applicable.
 
-    grapher add --type task --title "Approve labels" --workflow-state blocked --status current --content "Awaiting accessibility review."
+    grapher add --type task --title "Approve labels" --workflow-state blocked --status current --content '{"action":"Approve final exhibit labels","expected_outcome":"Accessibility-reviewed labels are approved for production"}'
 
 A completed task can produce a current finding; a field handoff does not imply acceptance or audit completion.
 
@@ -68,6 +95,20 @@ Verification is unverified, partially_verified, verified, failed, or not_applica
     grapher add --type claim --title "Case supports rated load" --verification verified --status current --evidence '{"type":"measurement","ref":"load-test-2026-09-03","summary":"Held 200 kg for 30 minutes"}'
 
 Evidence supports tests, files, documents, images, measurements, observations, commits, conversations, external sources, commands, logs, and other domain evidence. Audit reports verified nodes without evidence.
+
+## Typed semantic entries
+
+Durable reasoning/work records use strict semantic contracts for `observation`, `problem`, `question`, `hypothesis`, `requirement`, `constraint`, `proposal`, `decision`, `task`, `implementation`, `test`, `result`, `failure`, and `lesson`.
+
+For these types, `--content` must be a JSON object with the exact required fields for that type. Required values must have the documented type and substantive content; filler and unexpected fields are rejected. For example:
+
+    grapher add --type decision --title "Use typed records" --status current \
+      --content '{"decision":"Normalize semantic entries at write time","rationale":"Downstream tools need stable machine-readable meaning"}'
+
+    grapher add --type task --title "Verify transport" --status current --workflow-state active \
+      --content '{"action":"Run cross-checkout publish/sync verification","expected_outcome":"A second checkout hydrates the identical validated graph"}'
+
+Temporary empty semantic stubs are allowed only while unclassified and unverified. Current, canonical, verified, or finalized semantic records must be complete. Programmatic integrations can inspect contracts with `grapher.semantic.semantic_contract()` and `semantic_contracts()`. See `docs/SEMANTIC_ENTRY_SCHEMA.md`.
 
 ## Relations
 
@@ -170,7 +211,7 @@ Ingest queues document/image/video/audio stubs. Semantic completion requires an 
     grapher codex export ./transplant --name "exhibit-design" --description "Current exhibit decisions"
     grapher codex receive ./transplant
 
-Generated guidance requires search before work, deep-media understanding, graph-worthy updates during and after work, honest verification/evidence, supersession instead of history deletion, and mission/provenance preservation. Core services remain agent-agnostic.
+Generated guidance requires compact working context, search before work, deep-media understanding, strict typed semantic contracts, graph-worthy updates during and after work, honest verification/evidence, supersession instead of history deletion, mission/provenance preservation, and explicit publish/sync at the Git boundary. Core services remain agent-agnostic.
 
 ## Dashboard
 
@@ -182,7 +223,7 @@ Dash reads the same normalized v1/v2 model as the CLI and never migrates on open
 ## Software profile example
 
     grapher init --profile software --domain software --kind knowledge,implementation,decision --stage designing,developing,maintaining
-    grapher add --type requirement --title "Token lifetime" --status canonical_spec --content "Access tokens expire after 15 minutes."
+    grapher add --type requirement --title "Token lifetime" --status canonical_spec --content '{"requirement":"Access tokens expire after 15 minutes","acceptance_condition":"Authentication tests confirm 15-minute access-token expiry"}'
     grapher add --type finding --title "Token TTL implemented" --status current --verification verified --evidence '{"type":"test","ref":"pytest tests/test_auth.py"}'
 
 ## Development
