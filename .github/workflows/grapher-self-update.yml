@@ -1,0 +1,213 @@
+name: Grapher self-documentation
+
+on:
+  push:
+    branches: [release/graph-2026-09-05]
+
+permissions:
+  contents: write
+
+jobs:
+  update-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release/graph-2026-09-05
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Grapher
+        run: python -m pip install -e .
+      - name: Record 2026-09-05 changes in Grapher
+        shell: bash
+        run: |
+          python <<'PY'
+          import json
+          import shutil
+          from pathlib import Path
+
+          from grapher.audit import validate_graph
+          from grapher.graph import add_node, edge_exists, link
+          from grapher.store import load_graph, save_graph
+          from grapher.transport import publish_graph
+
+          root = Path('.')
+          shared = root / '.grapher' / 'shared' / 'knowledge.json'
+          local = root / '.grapher' / 'knowledge.json'
+          manifest_path = root / '.grapher' / 'shared' / 'manifest.json'
+          vectors_path = root / '.grapher' / 'vectors.json'
+
+          shutil.copyfile(shared, local)
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          embedding = manifest.get('embedding') or {}
+          vectors_path.write_text(json.dumps({
+              'version': 1,
+              'provider': embedding.get('provider') or 'fastembed',
+              'model': embedding.get('model') or 'BAAI/bge-small-en-v1.5',
+              'dims': embedding.get('dims'),
+              'vectors': {},
+          }, indent=2) + '\n', encoding='utf-8')
+
+          g = load_graph(local)
+          provenance = {
+              'actor_id': 'chatgpt',
+              'actor_kind': 'agent',
+              'actor_role': 'maintainer',
+              'source': 'github',
+              'integrity': 'declared',
+          }
+          scope = {'project_id': 'grapher'}
+
+          def add_semantic(node_id, node_type, title, payload, *, tags, refs, stage, status='current', evidence=None):
+              add_node(
+                  g,
+                  id=node_id,
+                  type=node_type,
+                  title=title,
+                  content=json.dumps(payload, separators=(',', ':')),
+                  tags=tags,
+                  stage=stage,
+                  status=status,
+                  workflow_state='completed',
+                  verification='verified',
+                  evidence=evidence or [],
+                  source_refs=refs,
+                  scope=scope,
+                  provenance=provenance,
+              )
+
+          add_semantic(
+              'implementation-grapher-semantic-contracts-20260905',
+              'implementation',
+              'Typed semantic contracts and schema introspection implemented',
+              {
+                  'change': 'Added typed semantic entry contracts with exact allowed fields, field-type validation, filler rejection, unexpected-field rejection, and machine-readable contract introspection.',
+                  'component': 'semantic schema registry and write-time validation',
+              },
+              tags=['semantic', 'schema', 'normalization', 'validation'],
+              refs=[
+                  'git:e960bfbe2f4e75b395b17c1bf682acf8b81c9ac6',
+                  'git:de96da05b83836c2a855a8d9400e24cd9d3fce40',
+                  'docs/SEMANTIC_ENTRY_SCHEMA.md',
+                  'src/grapher/semantic.py',
+                  'tests/test_semantic.py',
+              ],
+              stage='developing',
+              evidence=[{
+                  'type': 'commit',
+                  'ref': 'git:de96da05b83836c2a855a8d9400e24cd9d3fce40',
+                  'summary': 'Strict semantic contracts, introspection helpers, and adversarial tests merged to main.',
+              }],
+          )
+
+          add_semantic(
+              'implementation-grapher-git-transport-20260905',
+              'implementation',
+              'Git-backed Grapher publish and sync transport implemented',
+              {
+                  'change': 'Added publish and sync transport for shared Grapher state with canonical graph hashing, publication manifests and history, unpublished-change protection, and vector rebuild on sync.',
+                  'component': 'Git transport boundary',
+              },
+              tags=['transport', 'git', 'synchronization', 'publication'],
+              refs=[
+                  'git:19073806812ef23b2434243add23a5379768d8f6',
+                  'docs/GIT_TRANSPORT.md',
+                  'src/grapher/transport.py',
+                  'tests/test_transport.py',
+              ],
+              stage='developing',
+              evidence=[
+                  {
+                      'type': 'commit',
+                      'ref': 'git:19073806812ef23b2434243add23a5379768d8f6',
+                      'summary': 'Publish/sync Git transport merged to main.',
+                  },
+                  {
+                      'type': 'result',
+                      'ref': 'result-grapher-transport-sync-20260905',
+                      'summary': 'Cross-checkout sync verified after merge.',
+                  },
+              ],
+          )
+
+          add_semantic(
+              'decision-grapher-compact-context-20260905',
+              'decision',
+              'Keep Grapher agent working context compact',
+              {
+                  'decision': 'Keep agent working context compact and persist durable detail in Grapher or repository files instead of conversation windows.',
+                  'rationale': 'This reduces context bloat and repeated rediscovery while preserving full durable project knowledge outside the active agent window.',
+              },
+              tags=['agents', 'context', 'workflow', 'policy'],
+              refs=[
+                  'git:de96da05b83836c2a855a8d9400e24cd9d3fce40',
+                  'AGENTS.md',
+              ],
+              stage='maintaining',
+              status='canonical_spec',
+              evidence=[{
+                  'type': 'commit',
+                  'ref': 'git:de96da05b83836c2a855a8d9400e24cd9d3fce40',
+                  'summary': 'Compact-context rule added to Grapher agent guidance.',
+              }],
+          )
+
+          add_semantic(
+              'result-grapher-20260905-maintenance-baseline',
+              'result',
+              'Grapher 2026-09-05 maintenance baseline established',
+              {
+                  'result': 'Grapher now has typed semantic contracts, Git-backed shared transport, compact-context agent guidance, and verified cross-checkout synchronization.',
+                  'evidence': 'Merged semantic-entry, transport, and contract-hardening commits are present on main; Codex synchronized from the shared snapshot and reported 109 non-embed tests passing.',
+              },
+              tags=['maintenance', 'baseline', 'schema', 'transport'],
+              refs=[
+                  'git:e960bfbe2f4e75b395b17c1bf682acf8b81c9ac6',
+                  'git:19073806812ef23b2434243add23a5379768d8f6',
+                  'git:de96da05b83836c2a855a8d9400e24cd9d3fce40',
+                  'git:d2f1c7dee60e71649989159b747105d145eb5040',
+                  'result-grapher-transport-sync-20260905',
+              ],
+              stage='maintaining',
+              evidence=[{
+                  'type': 'test',
+                  'ref': 'scripts/test.sh -v',
+                  'summary': 'Codex reported 109 non-embed tests passing after synchronization.',
+              }],
+          )
+
+          edges = [
+              ('implementation-grapher-semantic-contracts-20260905', 'spec-grapher-modernization-master', 'implements', None),
+              ('implementation-grapher-git-transport-20260905', 'spec-grapher-modernization-master', 'implements', None),
+              ('decision-grapher-compact-context-20260905', 'spec-grapher-modernization-master', 'applies_to', 'Agent workflow policy for Grapher maintenance and downstream use.'),
+              ('result-grapher-20260905-maintenance-baseline', 'implementation-grapher-semantic-contracts-20260905', 'derived_from', None),
+              ('result-grapher-20260905-maintenance-baseline', 'implementation-grapher-git-transport-20260905', 'derived_from', None),
+              ('result-grapher-20260905-maintenance-baseline', 'decision-grapher-compact-context-20260905', 'derived_from', None),
+              ('result-grapher-20260905-maintenance-baseline', 'result-grapher-transport-sync-20260905', 'verified_by', None),
+          ]
+          for frm, to, rel, note in edges:
+              if not edge_exists(g, frm, to, rel):
+                  link(g, from_id=frm, to_id=to, rel=rel, note=note)
+
+          save_graph(local, g)
+          validation = validate_graph(g, local)
+          if not validation['valid']:
+              raise SystemExit(json.dumps(validation, indent=2))
+
+          result = publish_graph(local)
+          if not result.get('published'):
+              raise SystemExit(f'expected publication, got: {result}')
+          print(json.dumps(result, indent=2))
+          PY
+      - name: Remove one-shot workflow and commit publication
+        shell: bash
+        run: |
+          rm .github/workflows/grapher-self-update.yml
+          rm -f .grapher/knowledge.json .grapher/vectors.json .grapher/sync-state.json
+          git config user.name "grapher-release-bot"
+          git config user.email "grapher-release-bot@users.noreply.github.com"
+          git add .grapher/shared .github/workflows/grapher-self-update.yml
+          git commit -m "docs(graph): record 2026-09-05 Grapher changes"
+          git push origin HEAD:release/graph-2026-09-05
