@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "schema_version": 2,
+  "bootstrap": true,
+  "note": "Legacy runtime graph migrated to shared transport; next grapher publish will stamp the canonical graph hash."
+}
