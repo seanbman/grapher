@@ -7,7 +7,11 @@ import pytest
 from grapher.graph import add_node
 from grapher.model import empty_graph
 from grapher.registry import BUILTIN_NODE_TYPES
-from grapher.semantic import CANONICAL_ENTRY_TYPES
+from grapher.semantic import (
+    CANONICAL_ENTRY_TYPES,
+    SEMANTIC_ENTRY_CONTRACTS,
+    semantic_contract,
+)
 
 
 VALID_PAYLOADS = {
@@ -32,6 +36,10 @@ def test_canonical_entry_types_are_builtin():
     assert CANONICAL_ENTRY_TYPES <= BUILTIN_NODE_TYPES
 
 
+def test_every_semantic_type_has_a_contract():
+    assert set(SEMANTIC_ENTRY_CONTRACTS) == set(VALID_PAYLOADS)
+
+
 @pytest.mark.parametrize("node_type,payload", VALID_PAYLOADS.items())
 def test_semantic_types_store_normalized_payload(node_type: str, payload: dict):
     graph = empty_graph()
@@ -43,6 +51,18 @@ def test_semantic_types_store_normalized_payload(node_type: str, payload: dict):
         content=json.dumps(payload),
     )
     assert node["semantic"] == payload
+
+
+def test_semantic_contract_is_machine_readable_and_strict():
+    contract = semantic_contract("decision")
+    assert contract == {
+        "type": "decision",
+        "required_fields": ["decision", "rationale"],
+        "allowed_fields": ["decision", "rationale"],
+        "field_types": {"decision": "string", "rationale": "string"},
+        "additional_fields": False,
+        "constraints": {},
+    }
 
 
 def test_semantic_content_rejects_free_form_text():
@@ -66,6 +86,41 @@ def test_semantic_content_rejects_missing_required_fields():
             type="decision",
             title="Choose schema",
             content=json.dumps({"decision": "Use typed semantic entries"}),
+        )
+
+
+def test_semantic_content_rejects_unexpected_fields():
+    graph = empty_graph()
+    with pytest.raises(ValueError, match="does not allow field.*notes"):
+        add_node(
+            graph,
+            id="decision-1",
+            type="decision",
+            title="Choose schema",
+            content=json.dumps(
+                {
+                    "decision": "Use typed semantic entries",
+                    "rationale": "Normalize at write time",
+                    "notes": "free-form spillover",
+                }
+            ),
+        )
+
+
+def test_semantic_content_rejects_wrong_field_type():
+    graph = empty_graph()
+    with pytest.raises(ValueError, match="field 'rationale' must be a string"):
+        add_node(
+            graph,
+            id="decision-1",
+            type="decision",
+            title="Choose schema",
+            content=json.dumps(
+                {
+                    "decision": "Use typed semantic entries",
+                    "rationale": ["normalize", "validate"],
+                }
+            ),
         )
 
 
@@ -108,6 +163,19 @@ def test_test_outcome_is_constrained():
             id="test-1",
             type="test",
             title="Loop playback",
+            content=json.dumps(payload),
+        )
+
+
+def test_lesson_derived_from_requires_substantive_string_ids():
+    graph = empty_graph()
+    payload = dict(VALID_PAYLOADS["lesson"], derived_from=["failure-1", "TBD"])
+    with pytest.raises(ValueError, match="derived_from"):
+        add_node(
+            graph,
+            id="lesson-1",
+            type="lesson",
+            title="Loop ownership",
             content=json.dumps(payload),
         )
 
