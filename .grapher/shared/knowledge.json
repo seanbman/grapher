@@ -290,6 +290,13 @@
       "from": "proposal-grapher-enrichment-promotion-study-20260905",
       "rel": "derived_from",
       "to": "result-grapher-enrichment-study-001-20260905"
+    },
+    {
+      "created_at": "2026-09-05T09:11:32+00:00",
+      "from": "result-grapher-transport-reconcile-20260905",
+      "note": "The reconciliation continues the earlier verified local transport synchronization.",
+      "rel": "references",
+      "to": "result-grapher-transport-sync-20260905"
     }
   ],
   "graph": {
@@ -1104,6 +1111,53 @@
       "title": "Exporter prototype Case Study 001 baseline",
       "type": "result",
       "updated_at": "2026-09-05T08:34:25+00:00",
+      "verification": "verified",
+      "workflow_state": "completed"
+    },
+    "result-grapher-transport-reconcile-20260905": {
+      "content": "{\"result\":\"Local transport verification records and 16 incoming research commits were merged without Git conflicts, and the merged shared graph was safely hydrated into the local runtime graph.\",\"evidence\":\"The merged shared graph validated with zero errors and warnings, grapher sync rebuilt vectors for all 29 nodes under a 1.5 GB limit, and the seven focused training-data tests passed.\"}",
+      "created_at": "2026-09-05T09:11:30+00:00",
+      "evidence": [
+        {
+          "ref": "research/training-data/test_exporter.py,research/training-data/test_legacy_normalization.py,research/training-data/test_enrichment.py",
+          "summary": "Seven focused downstream research tests passed after reconciliation.",
+          "type": "test"
+        }
+      ],
+      "id": "result-grapher-transport-reconcile-20260905",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "codex",
+        "actor_kind": "agent",
+        "actor_role": "maintainer",
+        "integrity": "declared",
+        "recorded_at": "2026-09-05T09:11:30+00:00",
+        "source": "cli"
+      },
+      "scope": {},
+      "semantic": {
+        "evidence": "The merged shared graph validated with zero errors and warnings, grapher sync rebuilt vectors for all 29 nodes under a 1.5 GB limit, and the seven focused training-data tests passed.",
+        "result": "Local transport verification records and 16 incoming research commits were merged without Git conflicts, and the merged shared graph was safely hydrated into the local runtime graph."
+      },
+      "source_refs": [
+        "git:c7d4e04",
+        "git:43ed849",
+        "docs/GIT_TRANSPORT.md",
+        "research/training-data/README.md"
+      ],
+      "stage": "maintaining",
+      "status": "current",
+      "tags": [
+        "maintenance",
+        "transport",
+        "reconciliation",
+        "verification"
+      ],
+      "title": "Grapher transport reconciliation verified on 2026-09-05",
+      "type": "result",
+      "updated_at": "2026-09-05T09:11:30+00:00",
       "verification": "verified",
       "workflow_state": "completed"
     },
