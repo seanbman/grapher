@@ -9,11 +9,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-EXPORTER_VERSION = "0.1.0"
+EXPORTER_VERSION = "0.1.1"
 POLICY_VERSION = "research-v1"
 SEMANTIC_TYPES = {"observation","problem","question","hypothesis","requirement","constraint","proposal","decision","task","implementation","test","result","failure","lesson"}
 EXCLUDED_TARGET_STATUSES = {"superseded","rejected","deprecated"}
-GROUNDING_RELS = {"derived_from","references","implements","satisfies","depends_on","requires","applies_to","verified_by","evidenced_by","contradicts"}
+# These relations point from a later/derived record to an antecedent/supporting record.
+ANTECEDENT_RELS = {"derived_from","references","implements","satisfies","depends_on","requires","applies_to","verified_by","evidenced_by"}
 
 
 def load(path: str) -> Any:
@@ -58,12 +59,12 @@ def export_snapshot(graph: dict[str, Any], manifest: dict[str, Any], created_at:
     created_at = created_at or datetime.now(timezone.utc).isoformat()
     nodes = graph.get("nodes") or {}
     edges = graph.get("edges") or []
-    touching: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    outgoing: dict[str, list[dict[str, Any]]] = defaultdict(list)
     contradicted: set[str] = set()
     for e in edges:
         if e.get("rel") == "contradicts": contradicted |= {str(e.get("from")), str(e.get("to"))}
-        if e.get("rel") in GROUNDING_RELS:
-            touching[str(e.get("from"))].append(e); touching[str(e.get("to"))].append(e)
+        if e.get("rel") in ANTECEDENT_RELS:
+            outgoing[str(e.get("from"))].append(e)
 
     examples = []
     reasons = Counter(); candidates = Counter(); rejected_kind = Counter(); seen = set()
@@ -71,8 +72,10 @@ def export_snapshot(graph: dict[str, Any], manifest: dict[str, Any], created_at:
         target = nodes[target_id]
         if target.get("type") not in SEMANTIC_TYPES: continue
         linked, rels = set(), []
-        for e in touching.get(target_id, []):
-            other = str(e["to"] if e.get("from") == target_id else e["from"])
+        # Only edges emitted by the target can supply antecedent context. Treating
+        # incoming edges as context leaks later outcomes/implementations backward.
+        for e in outgoing.get(target_id, []):
+            other = str(e["to"])
             if other in nodes and other != target_id and nodes[other].get("type") in SEMANTIC_TYPES:
                 linked.add(other); rels.append({"from":str(e["from"]),"to":str(e["to"]),"rel":str(e["rel"]),"note":e.get("note")})
         inputs = [nodes[i] for i in sorted(linked)]
