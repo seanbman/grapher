@@ -1,0 +1,42 @@
+name: Rerun training-data case study 001
+
+on:
+  push:
+    branches: [research/exporter-prototype-v1]
+
+permissions:
+  contents: write
+
+jobs:
+  case-study:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/exporter-prototype-v1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python research/training-data/exporter.py --out /tmp/export.json --metrics /tmp/metrics.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('research/training-data/case-studies/001-grapher-self')
+          result=json.loads(Path('/tmp/export.json').read_text())
+          metrics=result['metrics']
+          (root/'metrics.json').write_text(json.dumps(metrics,indent=2,sort_keys=True)+'\n')
+          (root/'sample.json').write_text(json.dumps(result['examples'][:3],indent=2,sort_keys=True)+'\n')
+          (root/'ASSESSMENT.md').write_text(
+              '# Assessment\n\n'
+              f"Exporter: `{metrics['exporter_version']}`. Candidates: {metrics['candidate_count']}; eligible: {metrics['eligible_count']}; rejected: {metrics['rejected_count']}.\n\n"
+              'Key finding: directed antecedent extraction is required to prevent later graph records from leaking into earlier targets. '
+              'This case study also remains a single leakage group, so it is useful for extraction evaluation but not an honest train/eval split by itself.\n'
+          )
+          PY
+          git rm .github/workflows/rerun-case-study-001.yml
+          git add research/training-data/case-studies/001-grapher-self
+          git config user.name grapher-research-bot
+          git config user.email grapher-research-bot@users.noreply.github.com
+          git commit -m "research: refresh case study 001 with directed extraction"
+          git push origin HEAD:research/exporter-prototype-v1
