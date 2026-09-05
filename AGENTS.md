@@ -15,6 +15,7 @@ grapher neighbors <id> --depth 2
 
 Rules:
 
+- Keep working context compact: retrieve only relevant slices, summarize instead of pasting large files/transcripts, avoid repeating known context, and store durable detail in Grapher or repo files rather than the conversation window.
 - Prefer grapher search/get over rediscovering known context.
 - Deep understanding of documents, images, video, and audio lives in node `content` — **paths alone are not knowledge**.
 - For semantic types (`observation`, `problem`, `question`, `hypothesis`, `requirement`, `constraint`, `proposal`, `decision`, `task`, `implementation`, `test`, `result`, `failure`, `lesson`), write `--content` as the required JSON object documented in `docs/SEMANTIC_ENTRY_SCHEMA.md`; free-form semantic filler is rejected.
