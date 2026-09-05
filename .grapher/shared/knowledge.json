@@ -254,6 +254,24 @@
       "note": "v0.5.0 is the study baseline and source of the first fixture.",
       "rel": "derived_from",
       "to": "result-grapher-v050-release-20260905"
+    },
+    {
+      "created_at": "2026-09-05T08:34:25+00:00",
+      "from": "result-grapher-exporter-case-study-001-20260905",
+      "rel": "derived_from",
+      "to": "result-grapher-v050-release-20260905"
+    },
+    {
+      "created_at": "2026-09-05T08:34:25+00:00",
+      "from": "lesson-directed-antecedents-for-derived-examples-20260905",
+      "rel": "derived_from",
+      "to": "result-grapher-exporter-case-study-001-20260905"
+    },
+    {
+      "created_at": "2026-09-05T08:34:25+00:00",
+      "from": "result-grapher-exporter-case-study-001-20260905",
+      "rel": "satisfies",
+      "to": "constraint-provenance-not-ml-pipeline"
     }
   ],
   "graph": {
@@ -703,6 +721,47 @@
       "verification": "verified",
       "workflow_state": "completed"
     },
+    "lesson-directed-antecedents-for-derived-examples-20260905": {
+      "content": "{\"lesson\":\"Training/evaluation extraction must respect relation direction; symmetric graph neighbors can leak later implementation or outcome state backward into earlier targets.\",\"derived_from\":[\"result-grapher-exporter-case-study-001-20260905\"]}",
+      "created_at": "2026-09-05T08:34:25+00:00",
+      "evidence": [
+        {
+          "ref": "research/training-data/case-studies/001-grapher-self/ASSESSMENT.md",
+          "summary": "Case Study 001 identified and corrected symmetric-neighbor leakage.",
+          "type": "document"
+        }
+      ],
+      "id": "lesson-directed-antecedents-for-derived-examples-20260905",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "chatgpt",
+        "actor_kind": "agent",
+        "actor_role": "maintainer",
+        "integrity": "declared",
+        "recorded_at": "2026-09-05T08:34:25+00:00",
+        "source": "cli"
+      },
+      "scope": {},
+      "semantic": {
+        "derived_from": [
+          "result-grapher-exporter-case-study-001-20260905"
+        ],
+        "lesson": "Training/evaluation extraction must respect relation direction; symmetric graph neighbors can leak later implementation or outcome state backward into earlier targets."
+      },
+      "source_refs": [
+        "research/training-data/STUDY_LOG.md"
+      ],
+      "stage": "maintaining",
+      "status": "current",
+      "tags": [],
+      "title": "Derived examples require directed antecedent context",
+      "type": "lesson",
+      "updated_at": "2026-09-05T08:34:25+00:00",
+      "verification": "verified",
+      "workflow_state": "completed"
+    },
     "proposal-training-data-exporter-study-20260905": {
       "content": "{\"proposal\":\"Build a read-only research exporter outside src/grapher that consumes immutable shared Grapher snapshots and emits Grapher Derived Example v1 candidates with eligibility and rejection metrics.\",\"rationale\":\"Automatic extraction must be measured against real graphs before any export behavior is promoted into Grapher or used to generate model-specific training data.\"}",
       "created_at": "2026-09-05T07:55:16+00:00",
@@ -886,6 +945,45 @@
       "title": "Grapher 2026-09-05 maintenance baseline established",
       "type": "result",
       "updated_at": "2026-09-05T07:26:08+00:00",
+      "verification": "verified",
+      "workflow_state": "completed"
+    },
+    "result-grapher-exporter-case-study-001-20260905": {
+      "content": "{\"result\":\"Read-only exporter 0.1.1 produced 13 candidates and 4 eligible derived examples from Grapher self-study after enforcing directed antecedent extraction.\",\"evidence\":\"Case Study 001 metrics: 30.77% eligibility; 3 verified-evidence decision-to-outcome examples; 1 declared-evidence sequence example; 9 rejections, chiefly missing directed predecessors and legacy non-canonical semantic records.\"}",
+      "created_at": "2026-09-05T08:34:25+00:00",
+      "evidence": [
+        {
+          "ref": "research/training-data/case-studies/001-grapher-self/metrics.json",
+          "summary": "Exporter 0.1.1 case-study metrics.",
+          "type": "document"
+        }
+      ],
+      "id": "result-grapher-exporter-case-study-001-20260905",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "chatgpt",
+        "actor_kind": "agent",
+        "actor_role": "maintainer",
+        "integrity": "declared",
+        "recorded_at": "2026-09-05T08:34:25+00:00",
+        "source": "cli"
+      },
+      "scope": {},
+      "semantic": {
+        "evidence": "Case Study 001 metrics: 30.77% eligibility; 3 verified-evidence decision-to-outcome examples; 1 declared-evidence sequence example; 9 rejections, chiefly missing directed predecessors and legacy non-canonical semantic records.",
+        "result": "Read-only exporter 0.1.1 produced 13 candidates and 4 eligible derived examples from Grapher self-study after enforcing directed antecedent extraction."
+      },
+      "source_refs": [
+        "research/training-data/case-studies/001-grapher-self/metrics.json"
+      ],
+      "stage": "maintaining",
+      "status": "current",
+      "tags": [],
+      "title": "Exporter prototype Case Study 001 baseline",
+      "type": "result",
+      "updated_at": "2026-09-05T08:34:25+00:00",
       "verification": "verified",
       "workflow_state": "completed"
     },
