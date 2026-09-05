@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-EXPORTER_VERSION = "0.1.1"
+EXPORTER_VERSION = "0.1.2"
 POLICY_VERSION = "research-v1"
 SEMANTIC_TYPES = {"observation","problem","question","hypothesis","requirement","constraint","proposal","decision","task","implementation","test","result","failure","lesson"}
 EXCLUDED_TARGET_STATUSES = {"superseded","rejected","deprecated"}
@@ -59,6 +59,8 @@ def export_snapshot(graph: dict[str, Any], manifest: dict[str, Any], created_at:
     created_at = created_at or datetime.now(timezone.utc).isoformat()
     nodes = graph.get("nodes") or {}
     edges = graph.get("edges") or []
+    snapshot_ref = manifest.get("snapshot_ref") or f".grapher/shared/history/{manifest.get('publication_id')}.json"
+    source_warning = manifest.get("source_warning")
     outgoing: dict[str, list[dict[str, Any]]] = defaultdict(list)
     contradicted: set[str] = set()
     for e in edges:
@@ -72,8 +74,6 @@ def export_snapshot(graph: dict[str, Any], manifest: dict[str, Any], created_at:
         target = nodes[target_id]
         if target.get("type") not in SEMANTIC_TYPES: continue
         linked, rels = set(), []
-        # Only edges emitted by the target can supply antecedent context. Treating
-        # incoming edges as context leaks later outcomes/implementations backward.
         for e in outgoing.get(target_id, []):
             other = str(e["to"])
             if other in nodes and other != target_id and nodes[other].get("type") in SEMANTIC_TYPES:
@@ -101,10 +101,10 @@ def export_snapshot(graph: dict[str, Any], manifest: dict[str, Any], created_at:
             "schema_version":"1.0",
             "example_id":"gx-"+sid(manifest["graph_hash"],kind,target_id,split_group),
             "example_kind":kind,"purpose":["evaluation","training"],
-            "source":{"graph_hash":manifest["graph_hash"],"graph_version":int(manifest.get("version",1)),"snapshot_ref":f".grapher/shared/history/{manifest.get('publication_id')}.json","project_id":project,"mission_id":mission,"generation_id":generation,"episode_id":sid(split_group,target_id)},
+            "source":{"graph_hash":manifest["graph_hash"],"graph_version":int(manifest.get("version",1)),"snapshot_ref":str(snapshot_ref),"project_id":project,"mission_id":mission,"generation_id":generation,"episode_id":sid(split_group,target_id)},
             "input":{"records":[normalize(n) for n in inputs],"relations":[]},
             "target":{"records":[normalize(target)],"relations":sorted(rels,key=lambda r:(r["from"],r["to"],r["rel"]))},
-            "quality":{"eligible":True,"policy_version":POLICY_VERSION,"evidence_strength":strength,"unresolved_contradiction":False,"target_superseded":False,"warnings":[]},
+            "quality":{"eligible":True,"policy_version":POLICY_VERSION,"evidence_strength":strength,"unresolved_contradiction":False,"target_superseded":False,"warnings":[str(source_warning)] if source_warning else []},
             "split_group":split_group,
             "export":{"exporter":"grapher-research-exporter","exporter_version":EXPORTER_VERSION,"created_at":created_at},
         }
@@ -119,6 +119,7 @@ def export_snapshot(graph: dict[str, Any], manifest: dict[str, Any], created_at:
     total = sum(candidates.values())
     metrics = {
         "graph_hash":manifest["graph_hash"],"exporter_version":EXPORTER_VERSION,"policy_version":POLICY_VERSION,
+        "source_warning":source_warning,
         "candidate_count":total,"eligible_count":len(examples),"rejected_count":total-len(examples),
         "eligibility_rate":round(len(examples)/total,4) if total else 0.0,
         "candidate_by_kind":dict(sorted(candidates.items())),"eligible_by_kind":dict(sorted(eligible.items())),
