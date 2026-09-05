@@ -40,6 +40,7 @@ jobs:
       - name: Build review packet
         working-directory: grapher
         run: |
+          mkdir -p research/training-data/enrichment-studies/001-pocket-synth
           args=()
           while IFS= read -r id; do args+=(--id "$id"); done < /tmp/ids
           python research/training-data/enrichment.py preview \
