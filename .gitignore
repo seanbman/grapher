@@ -5,5 +5,9 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
+.grapher/knowledge.json
+.grapher/history.jsonl
 .grapher/vectors.json
+.grapher/sync-state.json
+.grapher/knowledge.*backup*.json
 tests/fixtures/vectors.json
