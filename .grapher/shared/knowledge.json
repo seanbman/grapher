@@ -1,11 +1,174 @@
 {
-  "version": 2,
+  "edges": [
+    {
+      "created_at": "2026-09-01T04:47:16+00:00",
+      "from": "finding-token-ttl",
+      "rel": "discovered_in",
+      "to": "auth-module-c42c23a6"
+    },
+    {
+      "created_at": "2026-09-03T12:40:07+00:00",
+      "from": "finding-grapher-modernization-v030",
+      "note": "Grapher 0.3 implementation of the modernization directive",
+      "rel": "implements",
+      "to": "spec-grapher-modernization-master"
+    },
+    {
+      "created_at": "2026-09-03T12:59:07+00:00",
+      "from": "spec-grapher-provenance-readiness",
+      "note": "Addendum continues the primary implementation specification without redesign",
+      "rel": "references",
+      "to": "spec-grapher-modernization-master"
+    },
+    {
+      "created_at": "2026-09-03T12:59:08+00:00",
+      "from": "req-structured-state-transitions",
+      "note": "Structured transition requirement from addendum",
+      "rel": "part_of",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T12:59:08+00:00",
+      "from": "req-distinct-decision-outcome-phases",
+      "note": "Decision and phase distinction requirement from addendum",
+      "rel": "part_of",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T12:59:08+00:00",
+      "from": "req-attributable-actors-evidence-overrides",
+      "note": "Actor, evidence, and override provenance requirement from addendum",
+      "rel": "part_of",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T12:59:08+00:00",
+      "from": "constraint-provenance-not-ml-pipeline",
+      "note": "Explicit no-training-functionality architectural constraint",
+      "rel": "part_of",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T12:59:28+00:00",
+      "from": "finding-grapher-provenance-v040",
+      "note": "Grapher 0.4 implementation of provenance addendum",
+      "rel": "implements",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T12:59:28+00:00",
+      "from": "finding-grapher-provenance-v040",
+      "note": "Structured mutation diff and immutable journal transitions",
+      "rel": "satisfies",
+      "to": "req-structured-state-transitions"
+    },
+    {
+      "created_at": "2026-09-03T12:59:28+00:00",
+      "from": "finding-grapher-provenance-v040",
+      "note": "Explicit phase plus decision references keep stages distinct",
+      "rel": "satisfies",
+      "to": "req-distinct-decision-outcome-phases"
+    },
+    {
+      "created_at": "2026-09-03T12:59:29+00:00",
+      "from": "finding-grapher-provenance-v040",
+      "note": "Typed actors, evidence references, and override/supersession transition IDs",
+      "rel": "satisfies",
+      "to": "req-attributable-actors-evidence-overrides"
+    },
+    {
+      "created_at": "2026-09-03T12:59:29+00:00",
+      "from": "finding-grapher-provenance-v040",
+      "note": "No model or training pipeline functionality added",
+      "rel": "satisfies",
+      "to": "constraint-provenance-not-ml-pipeline"
+    },
+    {
+      "created_at": "2026-09-03T12:59:47+00:00",
+      "from": "req-structured-state-transitions",
+      "note": "Requirement extracted directly from the canonical PDF",
+      "rel": "evidenced_by",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T12:59:47+00:00",
+      "from": "req-distinct-decision-outcome-phases",
+      "note": "Requirement extracted directly from the canonical PDF",
+      "rel": "evidenced_by",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T12:59:47+00:00",
+      "from": "req-attributable-actors-evidence-overrides",
+      "note": "Requirement extracted directly from the canonical PDF",
+      "rel": "evidenced_by",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T12:59:47+00:00",
+      "from": "constraint-provenance-not-ml-pipeline",
+      "note": "Constraint extracted directly from the canonical PDF",
+      "rel": "evidenced_by",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T18:53:37+00:00",
+      "from": "finding-grapher-hardening-v041",
+      "rel": "implements",
+      "to": "req-attributable-actors-evidence-overrides"
+    },
+    {
+      "created_at": "2026-09-03T18:53:37+00:00",
+      "from": "finding-grapher-hardening-v041",
+      "rel": "implements",
+      "to": "req-structured-state-transitions"
+    },
+    {
+      "created_at": "2026-09-03T18:53:47+00:00",
+      "from": "finding-grapher-hardening-v041",
+      "rel": "implements",
+      "to": "spec-grapher-provenance-readiness"
+    },
+    {
+      "created_at": "2026-09-03T19:16:39+00:00",
+      "from": "finding-grapher-v041-release-hardening",
+      "rel": "implements",
+      "to": "req-structured-state-transitions"
+    },
+    {
+      "created_at": "2026-09-03T19:16:39+00:00",
+      "from": "finding-grapher-v041-release-hardening",
+      "rel": "implements",
+      "to": "req-attributable-actors-evidence-overrides"
+    },
+    {
+      "created_at": "2026-09-03T19:16:39+00:00",
+      "from": "finding-grapher-v041-release-hardening",
+      "rel": "supersedes",
+      "to": "finding-grapher-hardening-v041"
+    },
+    {
+      "created_at": "2026-09-03T19:21:41+00:00",
+      "from": "finding-github-publication-v041",
+      "rel": "references",
+      "to": "finding-grapher-v041-release-hardening"
+    },
+    {
+      "created_at": "2026-09-05T07:12:57+00:00",
+      "from": "result-grapher-transport-sync-20260905",
+      "note": "The synchronization starts from the verified 0.4.1 release-hardening baseline.",
+      "rel": "references",
+      "to": "finding-grapher-v041-release-hardening"
+    }
+  ],
   "graph": {
-    "name": "knowledge",
     "domain": "general",
     "kinds": [
       "knowledge"
     ],
+    "migrated_at": "2026-09-03T12:39:40+00:00",
+    "name": "knowledge",
+    "profile": "general",
     "stages": [
       "ideation",
       "designing",
@@ -14,133 +177,446 @@
       "launching",
       "maintaining"
     ],
-    "profile": "general",
-    "migrated_at": "2026-09-03T12:39:40+00:00",
     "updated_at": "2026-09-03T12:39:40+00:00"
   },
   "nodes": {
     "auth-module-c42c23a6": {
-      "id": "auth-module-c42c23a6",
-      "type": "document",
-      "title": "Auth module",
       "content": "JWT login and refresh tokens; secrets loaded from environment variables",
+      "created_at": "2026-09-01T04:45:42+00:00",
+      "evidence": [],
+      "id": "auth-module-c42c23a6",
+      "meta": {},
+      "owners": [],
       "path": "src/auth.py",
+      "provenance": {},
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "unclassified",
       "tags": [
         "auth",
         "api"
       ],
-      "meta": {},
-      "created_at": "2026-09-01T04:45:42+00:00",
-      "updated_at": "2026-09-01T04:45:42+00:00",
-      "status": "unclassified",
-      "workflow_state": "not_applicable",
-      "verification": "unverified",
-      "stage": null,
-      "evidence": [],
-      "source_refs": [],
-      "owners": [],
-      "scope": {},
-      "provenance": {}
-    },
-    "finding-token-ttl": {
-      "id": "finding-token-ttl",
-      "type": "finding",
-      "title": "Token TTL is 15 minutes",
-      "content": "Access tokens expire after 15 minutes; refresh tokens rotate on use",
-      "path": null,
-      "tags": [
-        "auth"
-      ],
-      "meta": {},
-      "created_at": "2026-09-01T04:47:15+00:00",
-      "updated_at": "2026-09-01T04:47:15+00:00",
-      "status": "unclassified",
-      "workflow_state": "not_applicable",
-      "verification": "unverified",
-      "stage": null,
-      "evidence": [],
-      "source_refs": [],
-      "owners": [],
-      "scope": {},
-      "provenance": {}
-    },
-    "spec-grapher-modernization-master": {
-      "id": "spec-grapher-modernization-master",
+      "title": "Auth module",
       "type": "document",
-      "title": "Grapher modernization master implementation order",
-      "content": "Canonical modernization directive: evolve Grapher surgically into a general-purpose lifecycle-, truth-, provenance-, scope-, evidence-, and verification-aware work graph. Preserve v1 compatibility and history; use schema v2, atomic journaled mutations, finalized records, truth-aware retrieval, generation-aware multi-agent state, checkpoints, non-destructive compaction, deep media ingest, updated Cursor guidance, and one normalized model shared by CLI and Dash. Grapher records identity and attestation but does not authenticate actors or orchestrate agents.",
-      "path": "docs/Grapher Modernization Master Agent Implementation Order.pdf",
-      "tags": [],
+      "updated_at": "2026-09-01T04:45:42+00:00",
+      "verification": "unverified",
+      "workflow_state": "not_applicable"
+    },
+    "constraint-provenance-not-ml-pipeline": {
+      "content": "Grapher records facts, states, transitions, provenance, evidence, and outcomes. It must not fine-tune models, add model-specific fields or prompts, label decisions good or bad, assume a model architecture, become an ML pipeline, or retain enormous conversations for speculative training. A downstream system may later transform selected records.",
+      "created_at": "2026-09-03T12:59:00+00:00",
+      "evidence": [],
+      "id": "constraint-provenance-not-ml-pipeline",
       "meta": {},
-      "created_at": "2026-09-03T12:39:49+00:00",
-      "updated_at": "2026-09-03T12:39:49+00:00",
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "codex-provenance-implementer",
+        "actor_kind": "agent",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T12:59:00+00:00",
+        "source": "codex"
+      },
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
       "status": "canonical_spec",
-      "workflow_state": "not_applicable",
+      "tags": [
+        "constraint",
+        "compatibility",
+        "no-ml"
+      ],
+      "title": "Record operational history without building ML",
+      "type": "constraint",
+      "updated_at": "2026-09-03T12:59:00+00:00",
       "verification": "verified",
+      "workflow_state": "not_applicable"
+    },
+    "finding-github-publication-v041": {
+      "content": "On September 3, 2026, the local grapher repository was published to github.com/seanbman/grapher. Local branch master was renamed to main, remote bootstrap history containing LICENSE was merged without conflict, main was pushed to origin, and annotated tag v0.4.1 was pushed. Remote main now contains the audited 0.4.1 tree plus the merged bootstrap LICENSE history.",
+      "created_at": "2026-09-03T19:21:41+00:00",
+      "evidence": [],
+      "id": "finding-github-publication-v041",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "codex",
+        "actor_kind": "agent",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T19:21:41+00:00",
+        "source": "cli"
+      },
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "unclassified",
+      "tags": [
+        "release",
+        "github",
+        "publication"
+      ],
+      "title": "Grapher 0.4.1 published to GitHub",
+      "type": "finding",
+      "updated_at": "2026-09-03T19:21:41+00:00",
+      "verification": "unverified",
+      "workflow_state": "not_applicable"
+    },
+    "finding-grapher-hardening-v041": {
+      "content": "September 3, 2026 hardening pass against docs/grapher-hardening-instructions.txt. Finalized records are now semantically immutable across add/update, direct provenance rewrites are blocked, ordinary remove_node deletion is forbidden for finalized records, and curate supersede preserves finalized historical records while attaching a new correction edge. Mutation authorship now propagates through CLI mutation commands, Agent Hub integration paths, and cassio curation journaling without collapsing known actors to system_tool. Ingest journaling now records created_stubs correctly. Added adversarial coverage for major finalized-field rewrites, finalized deletion prevention, supersession preservation, context-derived actor attribution, CLI actor propagation, Agent Hub create/update labeling, and integration relationship attribution. Targeted verification passed 55/55 tests.",
+      "created_at": "2026-09-03T18:53:36+00:00",
+      "evidence": [],
+      "id": "finding-grapher-hardening-v041",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "codex",
+        "actor_kind": "agent",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T18:53:36+00:00",
+        "source": "cli"
+      },
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "superseded",
+      "tags": [
+        "hardening",
+        "provenance",
+        "forensics"
+      ],
+      "title": "Grapher hardening v0.4.1 closes finalized-record and mutation-attribution gaps",
+      "type": "finding",
+      "updated_at": "2026-09-05T07:12:55+00:00",
+      "verification": "unverified",
+      "workflow_state": "not_applicable"
+    },
+    "finding-grapher-modernization-v030": {
+      "content": "Grapher 0.3 implements expanded general and multi-agent registries; normalized scope/provenance/evidence/finalization fields; stable content-only vector identity; attestation-gated verified provenance; finalized-record protections; fsync-backed atomic writes with rollback-on-journal-failure; append-only mutation history across CLI, migration, curation, checkpoints, transfer, ingest, and Agent Hub services; lossless validated v1 migration with backups; intent-, truth-, provenance-, and generation-aware search with explainable factors; strict scope filters; comprehensive validation/audit including supersession/dependency cycles, evidence gaps, stale checkpoints, deep-ingest quality, and generation ambiguity; review-first checkpoint refresh and compaction; upgraded Cursor guidance; provenance/lifecycle Dash views, filters, semantic layouts, details, health, and non-canonical exports; generic museum, CASSIO, and multi-agent control fixtures. Non-embedding regression suite passes 45 tests.",
+      "created_at": "2026-09-03T12:40:00+00:00",
       "evidence": [
         {
-          "type": "document",
-          "ref": "docs/Grapher Modernization Master Agent Implementation Order.pdf",
-          "summary": "Full 100-section implementation directive read and implemented"
+          "ref": ".venv/bin/pytest tests/ -m not-embed -q",
+          "summary": "45 passed",
+          "type": "test"
         }
       ],
-      "source_refs": [],
+      "id": "finding-grapher-modernization-v030",
+      "meta": {},
       "owners": [],
-      "scope": {
-        "project_id": "grapher"
-      },
+      "path": null,
       "provenance": {
         "actor_id": "codex",
         "actor_role": "implementation-agent",
-        "source": "cli",
         "integrity": "declared",
-        "recorded_at": "2026-09-03T12:39:49+00:00"
+        "recorded_at": "2026-09-03T12:40:00+00:00",
+        "source": "cli"
       },
-      "stage": null
-    },
-    "finding-grapher-modernization-v030": {
-      "id": "finding-grapher-modernization-v030",
-      "type": "finding",
-      "title": "Grapher 0.3 modernization implemented",
-      "content": "Grapher 0.3 implements expanded general and multi-agent registries; normalized scope/provenance/evidence/finalization fields; stable content-only vector identity; attestation-gated verified provenance; finalized-record protections; fsync-backed atomic writes with rollback-on-journal-failure; append-only mutation history across CLI, migration, curation, checkpoints, transfer, ingest, and Agent Hub services; lossless validated v1 migration with backups; intent-, truth-, provenance-, and generation-aware search with explainable factors; strict scope filters; comprehensive validation/audit including supersession/dependency cycles, evidence gaps, stale checkpoints, deep-ingest quality, and generation ambiguity; review-first checkpoint refresh and compaction; upgraded Cursor guidance; provenance/lifecycle Dash views, filters, semantic layouts, details, health, and non-canonical exports; generic museum, CASSIO, and multi-agent control fixtures. Non-embedding regression suite passes 45 tests.",
-      "path": null,
-      "tags": [],
-      "meta": {},
-      "created_at": "2026-09-03T12:40:00+00:00",
-      "updated_at": "2026-09-03T12:40:00+00:00",
-      "status": "current",
-      "workflow_state": "completed",
-      "verification": "verified",
-      "evidence": [
-        {
-          "type": "test",
-          "ref": ".venv/bin/pytest tests/ -m not-embed -q",
-          "summary": "45 passed"
-        }
-      ],
+      "scope": {
+        "project_id": "grapher"
+      },
       "source_refs": [
         "README.md",
         "tests/test_modernization.py"
       ],
+      "stage": null,
+      "status": "current",
+      "tags": [],
+      "title": "Grapher 0.3 modernization implemented",
+      "type": "finding",
+      "updated_at": "2026-09-03T12:40:00+00:00",
+      "verification": "verified",
+      "workflow_state": "completed"
+    },
+    "finding-grapher-provenance-v040": {
+      "content": "Grapher 0.4 keeps v1/v2 canonical graph reads unchanged and records structured, immutable transition arrays in the separate JSONL journal. save_graph_mutation now diffs nodes and edges into stable typed transitions with before/after values, model-agnostic actor kind, proposed/executed/observed/verified/canonical phase, rationale, evidence refs, related decisions and requirements, overrides/supersession, and operation correlation. Dependency, blocker, evidence, supersession, truth, workflow, verification, lifecycle, finalization, node, and general relation events are typed. Legacy hash-only records remain readable. grapher history queries by entity, operation, or event type; audit validates the journal. Evidence types now explicitly cover command output, human observation, agent reports, external artifacts, and Grapher-derived state. README documents the model. Full non-embedding suite passes 49 tests.",
+      "created_at": "2026-09-03T12:59:20+00:00",
+      "evidence": [
+        {
+          "ref": "pytest tests/ -m not-embed",
+          "summary": "49 tests passed",
+          "type": "test"
+        }
+      ],
+      "id": "finding-grapher-provenance-v040",
+      "meta": {},
       "owners": [],
-      "scope": {
-        "project_id": "grapher"
+      "path": null,
+      "provenance": {
+        "actor_id": "codex-provenance-implementer",
+        "actor_kind": "agent",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T12:59:20+00:00",
+        "source": "codex"
       },
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "current",
+      "tags": [
+        "implementation",
+        "provenance",
+        "history",
+        "v0.4.0"
+      ],
+      "title": "Grapher 0.4 structured provenance implemented",
+      "type": "finding",
+      "updated_at": "2026-09-03T12:59:20+00:00",
+      "verification": "verified",
+      "workflow_state": "completed"
+    },
+    "finding-grapher-v041-release-hardening": {
+      "content": "September 3, 2026 follow-up hardening pass. Package/version metadata was bumped to 0.4.1 in pyproject, module version, egg-info metadata, and uv lock root package entry. The raw remove_node(force=True) administrative escape hatch was eliminated. Finalized-record forced deletion now exists only as an explicit audited CLI path via grapher rm --force-finalized, which requires actor attribution and a reason, records an administrative journal entry, and distinguishes node_removed_administratively from ordinary removal. Added one policy test covering denied unaudited forced deletion plus allowed journaled administrative deletion. Full suite result on the post-change tree: 78 passed in 3.44s on Python 3.12.3.",
+      "created_at": "2026-09-03T19:16:39+00:00",
+      "evidence": [],
+      "id": "finding-grapher-v041-release-hardening",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "codex",
+        "actor_kind": "agent",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T19:16:39+00:00",
+        "source": "cli"
+      },
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "unclassified",
+      "tags": [
+        "release",
+        "hardening",
+        "provenance",
+        "forensics"
+      ],
+      "title": "Grapher 0.4.1 release hardening closes audited finalized-delete policy gap",
+      "type": "finding",
+      "updated_at": "2026-09-03T19:16:39+00:00",
+      "verification": "unverified",
+      "workflow_state": "not_applicable"
+    },
+    "finding-token-ttl": {
+      "content": "Access tokens expire after 15 minutes; refresh tokens rotate on use",
+      "created_at": "2026-09-01T04:47:15+00:00",
+      "evidence": [],
+      "id": "finding-token-ttl",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {},
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "unclassified",
+      "tags": [
+        "auth"
+      ],
+      "title": "Token TTL is 15 minutes",
+      "type": "finding",
+      "updated_at": "2026-09-01T04:47:15+00:00",
+      "verification": "unverified",
+      "workflow_state": "not_applicable"
+    },
+    "req-attributable-actors-evidence-overrides": {
+      "content": "Transition provenance distinguishes human, agent, system/tool, and migration/import sources without an LLM-specific identity model. Evidence retains source attribution when available; an agent report is not automatically equivalent to independent verification. Overrides retain original and overriding transitions, actor, rationale, and resulting state rather than deleting prior records.",
+      "created_at": "2026-09-03T12:58:59+00:00",
+      "evidence": [],
+      "id": "req-attributable-actors-evidence-overrides",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "codex-provenance-implementer",
+        "actor_kind": "agent",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T12:58:59+00:00",
+        "source": "codex"
+      },
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "canonical_spec",
+      "tags": [
+        "actors",
+        "evidence",
+        "overrides",
+        "provenance"
+      ],
+      "title": "Attribute actors evidence and overrides",
+      "type": "requirement",
+      "updated_at": "2026-09-03T12:58:59+00:00",
+      "verification": "verified",
+      "workflow_state": "not_applicable"
+    },
+    "req-distinct-decision-outcome-phases": {
+      "content": "A decision such as request verification must remain distinct from later failed verification, revision, and passed verification outcomes. Proposed, executed, observed, verified, and canonical phases must not be silently converted into each other; each remains independently reconstructable in history.",
+      "created_at": "2026-09-03T12:58:58+00:00",
+      "evidence": [],
+      "id": "req-distinct-decision-outcome-phases",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "codex-provenance-implementer",
+        "actor_kind": "agent",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T12:58:58+00:00",
+        "source": "codex"
+      },
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "canonical_spec",
+      "tags": [
+        "decisions",
+        "outcomes",
+        "phases",
+        "provenance"
+      ],
+      "title": "Keep decisions outcomes and action phases distinct",
+      "type": "requirement",
+      "updated_at": "2026-09-03T12:58:58+00:00",
+      "verification": "verified",
+      "workflow_state": "not_applicable"
+    },
+    "req-structured-state-transitions": {
+      "content": "Every meaningful mutation records immutable field- or relation-level transitions. Records include a stable transition ID, affected entity, event type, previous and resulting value, timestamp, actor/source, optional rationale and evidence references, related decision and requirement IDs, supersession/override transition IDs, and a shared operation ID. Covered changes include workflow, verification, truth status, lifecycle, decisions and requirements, evidence, blockers, dependencies, incidents/deviations, checkpoints, and canonical truth.",
+      "created_at": "2026-09-03T12:58:57+00:00",
+      "evidence": [],
+      "id": "req-structured-state-transitions",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "codex-provenance-implementer",
+        "actor_kind": "agent",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T12:58:57+00:00",
+        "source": "codex"
+      },
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "canonical_spec",
+      "tags": [
+        "provenance",
+        "transitions",
+        "auditability"
+      ],
+      "title": "Preserve structured graph state transitions",
+      "type": "requirement",
+      "updated_at": "2026-09-03T12:58:57+00:00",
+      "verification": "verified",
+      "workflow_state": "not_applicable"
+    },
+    "result-grapher-transport-sync-20260905": {
+      "content": "{\"result\":\"The local Grapher checkout fast-forwarded from 73ed149 to de96da0, hydrated its local graph from the pulled shared snapshot, and restored the configured embedding and dashboard capabilities.\",\"evidence\":\"git fetch reported 23 upstream commits; grapher sync completed; validation reported zero errors after curation; capped reindex covered all 14 nodes; and scripts/test.sh -v passed 109 non-embed tests.\"}",
+      "created_at": "2026-09-05T07:12:55+00:00",
+      "evidence": [
+        {
+          "ref": "scripts/test.sh -v",
+          "summary": "109 non-embed tests passed under the project 768 MB cap after the transport update.",
+          "type": "test"
+        }
+      ],
+      "id": "result-grapher-transport-sync-20260905",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "codex",
+        "actor_kind": "agent",
+        "actor_role": "maintainer",
+        "integrity": "declared",
+        "recorded_at": "2026-09-05T07:13:18+00:00",
+        "source": "cli"
+      },
+      "scope": {},
+      "semantic": {
+        "evidence": "git fetch reported 23 upstream commits; grapher sync completed; validation reported zero errors after curation; capped reindex covered all 14 nodes; and scripts/test.sh -v passed 109 non-embed tests.",
+        "result": "The local Grapher checkout fast-forwarded from 73ed149 to de96da0, hydrated its local graph from the pulled shared snapshot, and restored the configured embedding and dashboard capabilities."
+      },
+      "source_refs": [
+        "git:de96da0",
+        "docs/GIT_TRANSPORT.md",
+        "docs/SEMANTIC_ENTRY_SCHEMA.md"
+      ],
+      "stage": "maintaining",
+      "status": "current",
+      "tags": [
+        "maintenance",
+        "transport",
+        "synchronization",
+        "verification"
+      ],
+      "title": "Grapher transport synchronization verified on 2026-09-05",
+      "type": "result",
+      "updated_at": "2026-09-05T07:13:18+00:00",
+      "verification": "verified",
+      "workflow_state": "completed"
+    },
+    "spec-grapher-modernization-master": {
+      "content": "Canonical modernization directive: evolve Grapher surgically into a general-purpose lifecycle-, truth-, provenance-, scope-, evidence-, and verification-aware work graph. Preserve v1 compatibility and history; use schema v2, atomic journaled mutations, finalized records, truth-aware retrieval, generation-aware multi-agent state, checkpoints, non-destructive compaction, deep media ingest, updated Cursor guidance, and one normalized model shared by CLI and Dash. Grapher records identity and attestation but does not authenticate actors or orchestrate agents.",
+      "created_at": "2026-09-03T12:39:49+00:00",
+      "evidence": [
+        {
+          "ref": "docs/Grapher Modernization Master Agent Implementation Order.pdf",
+          "summary": "Full 100-section implementation directive read and implemented",
+          "type": "document"
+        }
+      ],
+      "id": "spec-grapher-modernization-master",
+      "meta": {},
+      "owners": [],
+      "path": "docs/Grapher Modernization Master Agent Implementation Order.pdf",
       "provenance": {
         "actor_id": "codex",
         "actor_role": "implementation-agent",
-        "source": "cli",
         "integrity": "declared",
-        "recorded_at": "2026-09-03T12:40:00+00:00"
+        "recorded_at": "2026-09-03T12:39:49+00:00",
+        "source": "cli"
       },
-      "stage": null
+      "scope": {
+        "project_id": "grapher"
+      },
+      "source_refs": [],
+      "stage": null,
+      "status": "canonical_spec",
+      "tags": [],
+      "title": "Grapher modernization master implementation order",
+      "type": "document",
+      "updated_at": "2026-09-03T12:39:49+00:00",
+      "verification": "verified",
+      "workflow_state": "not_applicable"
     },
     "spec-grapher-provenance-readiness": {
-      "id": "spec-grapher-provenance-readiness",
-      "type": "document",
-      "title": "Grapher provenance and future training readiness addendum",
       "content": "Canonical addendum to the modernization specification. Grapher must answer both current canonical state and how it came to exist. Meaningful graph mutations retain structured transition history with stable IDs, affected entities, typed changes, before/after values, timestamps, model-agnostic actor/source classification, rationale, attributable evidence, related decisions and requirements, supersession or override references, and operation correlation. Decisions, later outcomes, proposed actions, execution, observation, verification, and final canonical state remain distinct. Current state stays efficient and history is complementary. Preserve keyed-node and migration compatibility. Do not build ML or training functionality, model-specific fields, prompts, quality labels, or transcript hoards.",
+      "created_at": "2026-09-03T12:58:42+00:00",
+      "evidence": [
+        {
+          "ref": "docs/Grapher Provenance and Future Training Readiness.pdf",
+          "summary": "Full four-page source inspected",
+          "type": "document"
+        }
+      ],
+      "id": "spec-grapher-provenance-readiness",
+      "meta": {},
+      "owners": [],
       "path": "docs/Grapher Provenance and Future Training Readiness.pdf",
+      "provenance": {
+        "actor_id": "codex-provenance-implementer",
+        "actor_kind": "agent",
+        "integrity": "declared",
+        "recorded_at": "2026-09-03T12:59:58+00:00",
+        "source": "codex"
+      },
+      "scope": {},
+      "source_refs": [],
+      "stage": null,
+      "status": "canonical_spec",
       "tags": [
         "specification",
         "provenance",
@@ -148,435 +624,12 @@
         "auditability",
         "training-readiness"
       ],
-      "meta": {},
-      "created_at": "2026-09-03T12:58:42+00:00",
+      "title": "Grapher provenance and future training readiness addendum",
+      "type": "document",
       "updated_at": "2026-09-03T12:59:58+00:00",
-      "status": "canonical_spec",
-      "workflow_state": "not_applicable",
       "verification": "verified",
-      "evidence": [
-        {
-          "type": "document",
-          "ref": "docs/Grapher Provenance and Future Training Readiness.pdf",
-          "summary": "Full four-page source inspected"
-        }
-      ],
-      "source_refs": [],
-      "owners": [],
-      "scope": {},
-      "provenance": {
-        "actor_id": "codex-provenance-implementer",
-        "actor_kind": "agent",
-        "source": "codex",
-        "integrity": "declared",
-        "recorded_at": "2026-09-03T12:59:58+00:00"
-      },
-      "stage": null
-    },
-    "req-structured-state-transitions": {
-      "id": "req-structured-state-transitions",
-      "type": "requirement",
-      "title": "Preserve structured graph state transitions",
-      "content": "Every meaningful mutation records immutable field- or relation-level transitions. Records include a stable transition ID, affected entity, event type, previous and resulting value, timestamp, actor/source, optional rationale and evidence references, related decision and requirement IDs, supersession/override transition IDs, and a shared operation ID. Covered changes include workflow, verification, truth status, lifecycle, decisions and requirements, evidence, blockers, dependencies, incidents/deviations, checkpoints, and canonical truth.",
-      "path": null,
-      "tags": [
-        "provenance",
-        "transitions",
-        "auditability"
-      ],
-      "meta": {},
-      "created_at": "2026-09-03T12:58:57+00:00",
-      "updated_at": "2026-09-03T12:58:57+00:00",
-      "status": "canonical_spec",
-      "workflow_state": "not_applicable",
-      "verification": "verified",
-      "evidence": [],
-      "source_refs": [],
-      "owners": [],
-      "provenance": {
-        "actor_id": "codex-provenance-implementer",
-        "actor_kind": "agent",
-        "source": "codex",
-        "integrity": "declared",
-        "recorded_at": "2026-09-03T12:58:57+00:00"
-      },
-      "stage": null,
-      "scope": {}
-    },
-    "req-distinct-decision-outcome-phases": {
-      "id": "req-distinct-decision-outcome-phases",
-      "type": "requirement",
-      "title": "Keep decisions outcomes and action phases distinct",
-      "content": "A decision such as request verification must remain distinct from later failed verification, revision, and passed verification outcomes. Proposed, executed, observed, verified, and canonical phases must not be silently converted into each other; each remains independently reconstructable in history.",
-      "path": null,
-      "tags": [
-        "decisions",
-        "outcomes",
-        "phases",
-        "provenance"
-      ],
-      "meta": {},
-      "created_at": "2026-09-03T12:58:58+00:00",
-      "updated_at": "2026-09-03T12:58:58+00:00",
-      "status": "canonical_spec",
-      "workflow_state": "not_applicable",
-      "verification": "verified",
-      "evidence": [],
-      "source_refs": [],
-      "owners": [],
-      "provenance": {
-        "actor_id": "codex-provenance-implementer",
-        "actor_kind": "agent",
-        "source": "codex",
-        "integrity": "declared",
-        "recorded_at": "2026-09-03T12:58:58+00:00"
-      },
-      "stage": null,
-      "scope": {}
-    },
-    "req-attributable-actors-evidence-overrides": {
-      "id": "req-attributable-actors-evidence-overrides",
-      "type": "requirement",
-      "title": "Attribute actors evidence and overrides",
-      "content": "Transition provenance distinguishes human, agent, system/tool, and migration/import sources without an LLM-specific identity model. Evidence retains source attribution when available; an agent report is not automatically equivalent to independent verification. Overrides retain original and overriding transitions, actor, rationale, and resulting state rather than deleting prior records.",
-      "path": null,
-      "tags": [
-        "actors",
-        "evidence",
-        "overrides",
-        "provenance"
-      ],
-      "meta": {},
-      "created_at": "2026-09-03T12:58:59+00:00",
-      "updated_at": "2026-09-03T12:58:59+00:00",
-      "status": "canonical_spec",
-      "workflow_state": "not_applicable",
-      "verification": "verified",
-      "evidence": [],
-      "source_refs": [],
-      "owners": [],
-      "provenance": {
-        "actor_id": "codex-provenance-implementer",
-        "actor_kind": "agent",
-        "source": "codex",
-        "integrity": "declared",
-        "recorded_at": "2026-09-03T12:58:59+00:00"
-      },
-      "stage": null,
-      "scope": {}
-    },
-    "constraint-provenance-not-ml-pipeline": {
-      "id": "constraint-provenance-not-ml-pipeline",
-      "type": "constraint",
-      "title": "Record operational history without building ML",
-      "content": "Grapher records facts, states, transitions, provenance, evidence, and outcomes. It must not fine-tune models, add model-specific fields or prompts, label decisions good or bad, assume a model architecture, become an ML pipeline, or retain enormous conversations for speculative training. A downstream system may later transform selected records.",
-      "path": null,
-      "tags": [
-        "constraint",
-        "compatibility",
-        "no-ml"
-      ],
-      "meta": {},
-      "created_at": "2026-09-03T12:59:00+00:00",
-      "updated_at": "2026-09-03T12:59:00+00:00",
-      "status": "canonical_spec",
-      "workflow_state": "not_applicable",
-      "verification": "verified",
-      "evidence": [],
-      "source_refs": [],
-      "owners": [],
-      "provenance": {
-        "actor_id": "codex-provenance-implementer",
-        "actor_kind": "agent",
-        "source": "codex",
-        "integrity": "declared",
-        "recorded_at": "2026-09-03T12:59:00+00:00"
-      },
-      "stage": null,
-      "scope": {}
-    },
-    "finding-grapher-provenance-v040": {
-      "id": "finding-grapher-provenance-v040",
-      "type": "finding",
-      "title": "Grapher 0.4 structured provenance implemented",
-      "content": "Grapher 0.4 keeps v1/v2 canonical graph reads unchanged and records structured, immutable transition arrays in the separate JSONL journal. save_graph_mutation now diffs nodes and edges into stable typed transitions with before/after values, model-agnostic actor kind, proposed/executed/observed/verified/canonical phase, rationale, evidence refs, related decisions and requirements, overrides/supersession, and operation correlation. Dependency, blocker, evidence, supersession, truth, workflow, verification, lifecycle, finalization, node, and general relation events are typed. Legacy hash-only records remain readable. grapher history queries by entity, operation, or event type; audit validates the journal. Evidence types now explicitly cover command output, human observation, agent reports, external artifacts, and Grapher-derived state. README documents the model. Full non-embedding suite passes 49 tests.",
-      "path": null,
-      "tags": [
-        "implementation",
-        "provenance",
-        "history",
-        "v0.4.0"
-      ],
-      "meta": {},
-      "created_at": "2026-09-03T12:59:20+00:00",
-      "updated_at": "2026-09-03T12:59:20+00:00",
-      "status": "current",
-      "workflow_state": "completed",
-      "verification": "verified",
-      "evidence": [
-        {
-          "type": "test",
-          "ref": "pytest tests/ -m not-embed",
-          "summary": "49 tests passed"
-        }
-      ],
-      "source_refs": [],
-      "owners": [],
-      "provenance": {
-        "actor_id": "codex-provenance-implementer",
-        "actor_kind": "agent",
-        "source": "codex",
-        "integrity": "declared",
-        "recorded_at": "2026-09-03T12:59:20+00:00"
-      },
-      "stage": null,
-      "scope": {}
-    },
-    "finding-grapher-hardening-v041": {
-      "id": "finding-grapher-hardening-v041",
-      "type": "finding",
-      "title": "Grapher hardening v0.4.1 closes finalized-record and mutation-attribution gaps",
-      "content": "September 3, 2026 hardening pass against docs/grapher-hardening-instructions.txt. Finalized records are now semantically immutable across add/update, direct provenance rewrites are blocked, ordinary remove_node deletion is forbidden for finalized records, and curate supersede preserves finalized historical records while attaching a new correction edge. Mutation authorship now propagates through CLI mutation commands, Agent Hub integration paths, and cassio curation journaling without collapsing known actors to system_tool. Ingest journaling now records created_stubs correctly. Added adversarial coverage for major finalized-field rewrites, finalized deletion prevention, supersession preservation, context-derived actor attribution, CLI actor propagation, Agent Hub create/update labeling, and integration relationship attribution. Targeted verification passed 55/55 tests.",
-      "path": null,
-      "tags": [
-        "hardening",
-        "provenance",
-        "forensics"
-      ],
-      "meta": {},
-      "created_at": "2026-09-03T18:53:36+00:00",
-      "updated_at": "2026-09-03T18:53:36+00:00",
-      "status": "unclassified",
-      "workflow_state": "not_applicable",
-      "verification": "unverified",
-      "evidence": [],
-      "source_refs": [],
-      "owners": [],
-      "provenance": {
-        "actor_id": "codex",
-        "actor_kind": "agent",
-        "source": "cli",
-        "integrity": "declared",
-        "recorded_at": "2026-09-03T18:53:36+00:00"
-      },
-      "stage": null,
-      "scope": {}
-    },
-    "finding-grapher-v041-release-hardening": {
-      "id": "finding-grapher-v041-release-hardening",
-      "type": "finding",
-      "title": "Grapher 0.4.1 release hardening closes audited finalized-delete policy gap",
-      "content": "September 3, 2026 follow-up hardening pass. Package/version metadata was bumped to 0.4.1 in pyproject, module version, egg-info metadata, and uv lock root package entry. The raw remove_node(force=True) administrative escape hatch was eliminated. Finalized-record forced deletion now exists only as an explicit audited CLI path via grapher rm --force-finalized, which requires actor attribution and a reason, records an administrative journal entry, and distinguishes node_removed_administratively from ordinary removal. Added one policy test covering denied unaudited forced deletion plus allowed journaled administrative deletion. Full suite result on the post-change tree: 78 passed in 3.44s on Python 3.12.3.",
-      "path": null,
-      "tags": [
-        "release",
-        "hardening",
-        "provenance",
-        "forensics"
-      ],
-      "meta": {},
-      "created_at": "2026-09-03T19:16:39+00:00",
-      "updated_at": "2026-09-03T19:16:39+00:00",
-      "status": "unclassified",
-      "workflow_state": "not_applicable",
-      "verification": "unverified",
-      "evidence": [],
-      "source_refs": [],
-      "owners": [],
-      "provenance": {
-        "actor_id": "codex",
-        "actor_kind": "agent",
-        "source": "cli",
-        "integrity": "declared",
-        "recorded_at": "2026-09-03T19:16:39+00:00"
-      },
-      "stage": null,
-      "scope": {}
-    },
-    "finding-github-publication-v041": {
-      "id": "finding-github-publication-v041",
-      "type": "finding",
-      "title": "Grapher 0.4.1 published to GitHub",
-      "content": "On September 3, 2026, the local grapher repository was published to github.com/seanbman/grapher. Local branch master was renamed to main, remote bootstrap history containing LICENSE was merged without conflict, main was pushed to origin, and annotated tag v0.4.1 was pushed. Remote main now contains the audited 0.4.1 tree plus the merged bootstrap LICENSE history.",
-      "path": null,
-      "tags": [
-        "release",
-        "github",
-        "publication"
-      ],
-      "meta": {},
-      "created_at": "2026-09-03T19:21:41+00:00",
-      "updated_at": "2026-09-03T19:21:41+00:00",
-      "status": "unclassified",
-      "workflow_state": "not_applicable",
-      "verification": "unverified",
-      "evidence": [],
-      "source_refs": [],
-      "owners": [],
-      "provenance": {
-        "actor_id": "codex",
-        "actor_kind": "agent",
-        "source": "cli",
-        "integrity": "declared",
-        "recorded_at": "2026-09-03T19:21:41+00:00"
-      },
-      "stage": null,
-      "scope": {}
+      "workflow_state": "not_applicable"
     }
   },
-  "edges": [
-    {
-      "from": "finding-token-ttl",
-      "to": "auth-module-c42c23a6",
-      "rel": "discovered_in",
-      "created_at": "2026-09-01T04:47:16+00:00"
-    },
-    {
-      "from": "finding-grapher-modernization-v030",
-      "to": "spec-grapher-modernization-master",
-      "rel": "implements",
-      "created_at": "2026-09-03T12:40:07+00:00",
-      "note": "Grapher 0.3 implementation of the modernization directive"
-    },
-    {
-      "from": "spec-grapher-provenance-readiness",
-      "to": "spec-grapher-modernization-master",
-      "rel": "references",
-      "created_at": "2026-09-03T12:59:07+00:00",
-      "note": "Addendum continues the primary implementation specification without redesign"
-    },
-    {
-      "from": "req-structured-state-transitions",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "part_of",
-      "created_at": "2026-09-03T12:59:08+00:00",
-      "note": "Structured transition requirement from addendum"
-    },
-    {
-      "from": "req-distinct-decision-outcome-phases",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "part_of",
-      "created_at": "2026-09-03T12:59:08+00:00",
-      "note": "Decision and phase distinction requirement from addendum"
-    },
-    {
-      "from": "req-attributable-actors-evidence-overrides",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "part_of",
-      "created_at": "2026-09-03T12:59:08+00:00",
-      "note": "Actor, evidence, and override provenance requirement from addendum"
-    },
-    {
-      "from": "constraint-provenance-not-ml-pipeline",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "part_of",
-      "created_at": "2026-09-03T12:59:08+00:00",
-      "note": "Explicit no-training-functionality architectural constraint"
-    },
-    {
-      "from": "finding-grapher-provenance-v040",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "implements",
-      "created_at": "2026-09-03T12:59:28+00:00",
-      "note": "Grapher 0.4 implementation of provenance addendum"
-    },
-    {
-      "from": "finding-grapher-provenance-v040",
-      "to": "req-structured-state-transitions",
-      "rel": "satisfies",
-      "created_at": "2026-09-03T12:59:28+00:00",
-      "note": "Structured mutation diff and immutable journal transitions"
-    },
-    {
-      "from": "finding-grapher-provenance-v040",
-      "to": "req-distinct-decision-outcome-phases",
-      "rel": "satisfies",
-      "created_at": "2026-09-03T12:59:28+00:00",
-      "note": "Explicit phase plus decision references keep stages distinct"
-    },
-    {
-      "from": "finding-grapher-provenance-v040",
-      "to": "req-attributable-actors-evidence-overrides",
-      "rel": "satisfies",
-      "created_at": "2026-09-03T12:59:29+00:00",
-      "note": "Typed actors, evidence references, and override/supersession transition IDs"
-    },
-    {
-      "from": "finding-grapher-provenance-v040",
-      "to": "constraint-provenance-not-ml-pipeline",
-      "rel": "satisfies",
-      "created_at": "2026-09-03T12:59:29+00:00",
-      "note": "No model or training pipeline functionality added"
-    },
-    {
-      "from": "req-structured-state-transitions",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "evidenced_by",
-      "created_at": "2026-09-03T12:59:47+00:00",
-      "note": "Requirement extracted directly from the canonical PDF"
-    },
-    {
-      "from": "req-distinct-decision-outcome-phases",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "evidenced_by",
-      "created_at": "2026-09-03T12:59:47+00:00",
-      "note": "Requirement extracted directly from the canonical PDF"
-    },
-    {
-      "from": "req-attributable-actors-evidence-overrides",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "evidenced_by",
-      "created_at": "2026-09-03T12:59:47+00:00",
-      "note": "Requirement extracted directly from the canonical PDF"
-    },
-    {
-      "from": "constraint-provenance-not-ml-pipeline",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "evidenced_by",
-      "created_at": "2026-09-03T12:59:47+00:00",
-      "note": "Constraint extracted directly from the canonical PDF"
-    },
-    {
-      "from": "finding-grapher-hardening-v041",
-      "to": "req-attributable-actors-evidence-overrides",
-      "rel": "implements",
-      "created_at": "2026-09-03T18:53:37+00:00"
-    },
-    {
-      "from": "finding-grapher-hardening-v041",
-      "to": "req-structured-state-transitions",
-      "rel": "implements",
-      "created_at": "2026-09-03T18:53:37+00:00"
-    },
-    {
-      "from": "finding-grapher-hardening-v041",
-      "to": "spec-grapher-provenance-readiness",
-      "rel": "implements",
-      "created_at": "2026-09-03T18:53:47+00:00"
-    },
-    {
-      "from": "finding-grapher-v041-release-hardening",
-      "to": "req-structured-state-transitions",
-      "rel": "implements",
-      "created_at": "2026-09-03T19:16:39+00:00"
-    },
-    {
-      "from": "finding-grapher-v041-release-hardening",
-      "to": "req-attributable-actors-evidence-overrides",
-      "rel": "implements",
-      "created_at": "2026-09-03T19:16:39+00:00"
-    },
-    {
-      "from": "finding-grapher-v041-release-hardening",
-      "to": "finding-grapher-hardening-v041",
-      "rel": "supersedes",
-      "created_at": "2026-09-03T19:16:39+00:00"
-    },
-    {
-      "from": "finding-github-publication-v041",
-      "to": "finding-grapher-v041-release-hardening",
-      "rel": "references",
-      "created_at": "2026-09-03T19:21:41+00:00"
-    }
-  ]
+  "version": 2
 }
