@@ -26,6 +26,14 @@ You are working with a project that may contain a **grapher** knowledge graph an
    ```
    Then read the written `.grapher/GRAPHER_CONTEXT.md`.
 
+## Typed semantic entries
+
+For durable reasoning/work records, use canonical semantic types:
+
+`observation`, `problem`, `question`, `hypothesis`, `requirement`, `constraint`, `proposal`, `decision`, `task`, `implementation`, `test`, `result`, `failure`, `lesson`.
+
+Their `--content` must be a JSON object containing the type-specific fields documented in `docs/SEMANTIC_ENTRY_SCHEMA.md`. Do not write free-form filler such as `TBD`, `investigate later`, or unsupported conclusions. Empty semantic stubs are temporary only; current, canonical, verified, or finalized semantic records must be complete.
+
 ## Exporting an idea for another project
 
 ```bash
@@ -39,3 +47,4 @@ That writes pack JSON + `GRAPHER_CONTEXT.md` + a short README.
 - Paths are locators; **understanding** is in `content`.
 - Do not treat empty or filename-only media nodes as successful knowledge.
 - Prefer grapher over rediscovering after context is loaded.
+- Preserve uncertainty: hypotheses are hypotheses; results require evidence; decisions require rationale.
