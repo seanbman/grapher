@@ -1,0 +1,32 @@
+name: Publish Grapher v0.5.0
+
+on:
+  push:
+    branches:
+      - release/v0.5.0
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 3df4e343c9dd6ecb7722e34a7e31b3bcb317081a
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build distributions
+        run: |
+          python -m pip install build
+          python -m build
+          test -f dist/grapher-0.5.0.tar.gz
+          ls dist/grapher-0.5.0-*.whl
+          python -c "import pathlib,zipfile; w=next(pathlib.Path('dist').glob('grapher-0.5.0-*.whl')); z=zipfile.ZipFile(w); m=next(n for n in z.namelist() if n.endswith('.dist-info/METADATA')); assert 'Version: 0.5.0' in z.read(m).decode()"
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.5.0 dist/grapher-0.5.0.tar.gz dist/grapher-0.5.0-*.whl --repo seanbman/grapher --target 3df4e343c9dd6ecb7722e34a7e31b3bcb317081a --title "Grapher v0.5.0" --notes "Feature release: strict typed semantic contracts, Git-backed publish/sync transport, compact-context agent guidance, synchronized human/agent documentation, and a verified 2026-09-05 maintenance baseline. See CHANGELOG.md for details."
