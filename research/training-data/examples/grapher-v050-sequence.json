@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "example_id": "grapher-v050-release-sequence",
+  "example_kind": "sequence_completion",
+  "purpose": ["training", "evaluation"],
+  "source": {
+    "graph_hash": "676fe99a3507c9d08ff2b24ce5dbdf3949befe99314851786c86f4cf138a9ffd",
+    "graph_version": 2,
+    "snapshot_ref": ".grapher/shared/history/676fe99a3507c9d0.json",
+    "project_id": "grapher",
+    "mission_id": null,
+    "generation_id": null,
+    "episode_id": "grapher-20260905-v050-release"
+  },
+  "input": {
+    "records": [
+      {
+        "id": "result-grapher-20260905-maintenance-baseline",
+        "type": "result",
+        "title": "Grapher 2026-09-05 maintenance baseline established",
+        "status": "current",
+        "verification": "verified",
+        "workflow_state": "completed",
+        "stage": "maintaining",
+        "content": {
+          "kind": "semantic",
+          "value": {
+            "result": "Grapher now has typed semantic contracts, Git-backed shared transport, compact-context agent guidance, and verified cross-checkout synchronization.",
+            "evidence": "Merged semantic-entry, transport, and contract-hardening commits are present on main; Codex synchronized from the shared snapshot and reported 109 non-embed tests passing."
+          }
+        },
+        "provenance": {
+          "actor_id": "chatgpt",
+          "actor_kind": "agent",
+          "actor_role": "maintainer",
+          "source": "github",
+          "integrity": "declared"
+        },
+        "source_refs": [
+          "git:e960bfbe2f4e75b395b17c1bf682acf8b81c9ac6",
+          "git:19073806812ef23b2434243add23a5379768d8f6",
+          "git:de96da05b83836c2a855a8d9400e24cd9d3fce40",
+          "result-grapher-transport-sync-20260905"
+        ],
+        "evidence_refs": ["scripts/test.sh -v"]
+      }
+    ],
+    "relations": []
+  },
+  "target": {
+    "records": [
+      {
+        "id": "result-grapher-v050-release-20260905",
+        "type": "result",
+        "title": "Grapher v0.5.0 packaged and published",
+        "status": "current",
+        "verification": "verified",
+        "workflow_state": "completed",
+        "stage": null,
+        "content": {
+          "kind": "semantic",
+          "value": {
+            "result": "Grapher v0.5.0 was packaged and published from main with synchronized human and agent documentation, strict semantic contracts, Git-backed publish/sync transport, and compact-context guidance.",
+            "evidence": "Release tag v0.5.0 targets commit 3df4e343; main CI passed; GitHub release 383170519 contains grapher-0.5.0-py3-none-any.whl and grapher-0.5.0.tar.gz built from that commit."
+          }
+        },
+        "provenance": {
+          "actor_id": "chatgpt",
+          "actor_kind": "agent",
+          "actor_role": "maintainer",
+          "source": "github",
+          "integrity": "declared"
+        },
+        "source_refs": [
+          "git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a",
+          "github:release:v0.5.0",
+          "CHANGELOG.md"
+        ],
+        "evidence_refs": [
+          "git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a",
+          "github:release:v0.5.0"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "from": "result-grapher-v050-release-20260905",
+        "to": "result-grapher-20260905-maintenance-baseline",
+        "rel": "derived_from",
+        "note": null
+      }
+    ]
+  },
+  "quality": {
+    "eligible": true,
+    "policy_version": "research-v1",
+    "evidence_strength": "verified",
+    "unresolved_contradiction": false,
+    "target_superseded": false,
+    "warnings": [
+      "This fixture demonstrates interchange structure; it is not evidence that sequence_completion is an effective training objective."
+    ]
+  },
+  "split_group": "grapher/grapher-20260905-v050-release",
+  "export": {
+    "exporter": "manual-research-fixture",
+    "exporter_version": "0.1",
+    "created_at": "2026-09-05T07:45:00Z"
+  }
+}
