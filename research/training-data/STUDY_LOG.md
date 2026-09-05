@@ -2,51 +2,38 @@
 
 ## 2026-09-05 — Study initialized against Grapher v0.5.0
 
-### Baseline
-
-Grapher v0.5.0 is the first suitable baseline because semantic records have strict typed contracts and shared Git transport provides immutable snapshot identity.
-
-### Decision
-
-Use a downstream, model-agnostic interchange format (`Grapher Derived Example v1`) rather than adding training-specific fields to Grapher itself.
-
-### First fixture
-
-`examples/grapher-v050-sequence.json` demonstrates that a derived example can preserve graph identity, typed source/target records, relationships, evidence/provenance, quality state, and leakage grouping without recovering the original transcript.
-
-### What this proves
-
-The graph contains enough normalized structure to represent candidate training/evaluation examples.
-
-### What this does not prove
-
-It does not establish automatic extraction reliability, optimal reasoning, sufficient example kinds, or model improvement.
+Grapher v0.5.0 became the first baseline suitable for downstream training-data research because semantic records have strict typed contracts and shared Git transport provides immutable snapshot identity. The study uses a model-agnostic derived-example format rather than adding training-specific fields to Grapher.
 
 ## 2026-09-05 — Exporter prototype + Case Study 001
 
-Implemented read-only exporter `0.1.1` outside `src/grapher/` and ran it against Grapher's own published graph (`fe42beb0...`).
-
-Results after correcting edge direction: 13 semantic candidates; 4 eligible; 9 rejected. The initial symmetric-neighbor extractor leaked later state backward, so exporter `0.1.1` now accepts only directed antecedent relations emitted by the target.
+Read-only exporter `0.1.1` against Grapher's own published graph produced 13 semantic candidates, 4 eligible and 9 rejected. The case study caught backward leakage from symmetric neighbor extraction, so only directed antecedent relations emitted by the target are now accepted as context.
 
 ## 2026-09-05 — Case Study 002: pocket-synth legacy corpus
 
-Pinned public `seanbman/pocket-synth` at `33928620f31c70d86da9a4f9133aec897752f3f0` and analyzed its existing `.grapher/knowledge.json` without modifying or copying the source graph into Grapher.
-
-Exporter `0.1.3` found 196 nodes / 386 edges, but only 1 current semantic-type node and 0 canonical semantic objects; strict export therefore produced 0 eligible examples. This identified legacy semantic vocabulary/content—not graph size or connectivity—as the limiting factor.
+Pinned `seanbman/pocket-synth@33928620f31c70d86da9a4f9133aec897752f3f0`. Its legacy graph contains 196 nodes / 386 edges, but only 1 current semantic-type node and 0 canonical semantic objects. Strict export correctly produced 0 eligible examples, identifying legacy semantic vocabulary/content as the limiting factor.
 
 ## 2026-09-05 — Legacy normalization study 001
 
-Added read-only preview `0.1.0` and ran it against the same pinned pocket-synth graph.
+Read-only normalization preview `0.1.0` classified the same 196-node graph as:
 
-Results:
-
-- 196 nodes total;
 - 80 `enrichment_required`;
 - 116 `context_only`;
 - 0 `mechanically_mappable`.
 
-The 80 enrichment records are 78 ambiguous `finding` nodes, 1 legacy `instruction`, and 1 free-text `decision`. The remaining concepts, documents, images, video, and checkpoints have no safe semantic retype and remain context-only.
+This ruled out defensible bulk auto-migration.
 
-### Iteration learned
+## 2026-09-05 — Enrichment study 001
 
-There is no defensible bulk auto-migration for this legacy corpus. Normalization should therefore be an explicit enrichment workflow that presents candidate types/required fields to a human or agent, preserves the original record, and creates a typed successor only when the missing semantics are actually supplied. The exporter quality bar remains unchanged.
+Added review-first enrichment workflow `0.1.0`. Preview exposes candidate semantic types and exact contracts while leaving candidate values empty. `compose` requires explicit semantic values, actor attribution and a review reason, then delegates validation to Grapher's canonical semantic validator. It emits a proposed typed successor plus `derived_from` lineage without mutating the source graph.
+
+A deterministic three-record pocket-synth slice produced:
+
+- 2 validator-approved successors: one `observation`, one `decision`;
+- 1 deferred legacy `instruction`;
+- 0 source mutations.
+
+The instruction was deliberately deferred because its prose did not supply the `acceptance_condition` needed for a requirement or the `reason` needed for a constraint. This is the desired failure mode: incomplete legacy meaning remains incomplete rather than being manufactured for normalization.
+
+### Next experiment
+
+Promote the two validated successor bundles into a **disposable copy** of the pinned legacy graph, preserve original records and lineage, then rerun normalization/export metrics. Do not alter the original pocket-synth graph until promotion semantics are proven safe.
