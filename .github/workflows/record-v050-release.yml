@@ -1,0 +1,70 @@
+name: Record Grapher v0.5.0 release
+
+on:
+  push:
+    branches:
+      - release/graph-v0.5.0
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release/graph-v0.5.0
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Grapher
+        run: python -m pip install -e .
+      - name: Record and publish release result
+        run: |
+          python <<'PY'
+          import json
+          import shutil
+          from pathlib import Path
+          from grapher.audit import validate_graph
+          from grapher.graph import add_node, edge_exists, link
+          from grapher.store import load_graph, save_graph
+          from grapher.transport import publish_graph
+
+          root = Path('.')
+          shared = root / '.grapher' / 'shared' / 'knowledge.json'
+          local = root / '.grapher' / 'knowledge.json'
+          manifest = json.loads((root / '.grapher' / 'shared' / 'manifest.json').read_text(encoding='utf-8'))
+          embedding = manifest.get('embedding') or {}
+          shutil.copyfile(shared, local)
+          (root / '.grapher' / 'vectors.json').write_text(json.dumps({'version': 1, 'provider': embedding.get('provider') or 'fastembed', 'model': embedding.get('model') or 'BAAI/bge-small-en-v1.5', 'dims': embedding.get('dims'), 'vectors': {}}, indent=2) + '\n', encoding='utf-8')
+
+          g = load_graph(local)
+          node_id = 'result-grapher-v050-release-20260905'
+          payload = {'result': 'Grapher v0.5.0 was packaged and published from main with synchronized human and agent documentation, strict semantic contracts, Git-backed publish/sync transport, and compact-context guidance.', 'evidence': 'Release tag v0.5.0 targets commit 3df4e343; main CI passed; GitHub release 383170519 contains grapher-0.5.0-py3-none-any.whl and grapher-0.5.0.tar.gz built from that commit.'}
+          add_node(g, id=node_id, type='result', title='Grapher v0.5.0 packaged and published', content=json.dumps(payload, separators=(',', ':')), tags=['release', 'v0.5.0', 'packaging', 'documentation'], stage='maintaining', status='current', workflow_state='completed', verification='verified', evidence=[{'type': 'commit', 'ref': 'git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a', 'summary': 'Release commit on main; CI passed.'}, {'type': 'external_source', 'ref': 'github:release:v0.5.0', 'summary': 'GitHub release contains the 0.5.0 wheel and source tarball.'}], source_refs=['git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a', 'github:release:v0.5.0', 'CHANGELOG.md', 'README.md', 'AGENTS.md', 'pyproject.toml'], scope={'project_id': 'grapher'}, provenance={'actor_id': 'chatgpt', 'actor_kind': 'agent', 'actor_role': 'maintainer', 'source': 'github', 'integrity': 'declared'})
+
+          edges = [('result-grapher-v050-release-20260905', 'result-grapher-20260905-maintenance-baseline', 'derived_from'), ('result-grapher-v050-release-20260905', 'implementation-grapher-semantic-contracts-20260905', 'references'), ('result-grapher-v050-release-20260905', 'implementation-grapher-git-transport-20260905', 'references')]
+          for frm, to, rel in edges:
+              if not edge_exists(g, frm, to, rel):
+                  link(g, from_id=frm, to_id=to, rel=rel)
+
+          save_graph(local, g)
+          report = validate_graph(g, local)
+          if not report['valid']:
+              raise SystemExit(json.dumps(report, indent=2))
+          result = publish_graph(local)
+          if not result.get('published'):
+              raise SystemExit(str(result))
+          print(json.dumps(result, indent=2))
+          PY
+      - name: Commit shared graph publication
+        run: |
+          rm .github/workflows/record-v050-release.yml
+          rm -f .grapher/knowledge.json .grapher/vectors.json .grapher/sync-state.json
+          git config user.name "grapher-release-bot"
+          git config user.email "grapher-release-bot@users.noreply.github.com"
+          git add .grapher/shared .github/workflows/record-v050-release.yml
+          git commit -m "docs(graph): record Grapher v0.5.0 release"
+          git push origin HEAD:release/graph-v0.5.0
