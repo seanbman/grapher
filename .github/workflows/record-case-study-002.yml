@@ -1,0 +1,33 @@
+name: Record training-data case study 002
+on:
+  push:
+    branches: [research/case-study-002-pocket-synth]
+permissions:
+  contents: write
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e .
+      - name: Record and publish study result
+        run: |
+          grapher sync
+          grapher add --id result-training-case-study-002-pocket-synth-20260905 --type result --title "Case Study 002 exposes legacy normalization gap" --content '{"result":"The pinned pocket-synth Grapher corpus contains 196 nodes and 386 edges, but only one node uses the current semantic-type vocabulary and none contain canonical semantic objects, so the strict research exporter correctly produced zero eligible derived examples.","evidence":"Exporter 0.1.3 metrics from the pinned public pocket-synth graph show 196 nodes, 386 edges, 147 current antecedent relations, one semantic-type node, zero canonical semantic nodes, one rejected candidate, and zero eligible examples."}' --status current --verification verified --workflow-state completed --stage maintaining --evidence '{"type":"file","ref":"research/training-data/case-studies/002-pocket-synth/metrics.json","summary":"Pinned Case Study 002 exporter metrics."}' --actor chatgpt --role maintainer --source github
+          grapher add --id proposal-training-legacy-normalization-preview-20260905 --type proposal --title "Preview legacy semantic normalization without invention" --content '{"proposal":"Build a read-only normalization preview that classifies legacy Grapher records as mechanically mappable, semantic-enrichment-required, or context-only before they are considered for derived training/evaluation examples.","rationale":"Case Study 002 shows that useful historical corpora are structurally rich but incompatible with current semantic contracts; weakening exporter eligibility would hide this migration gap and risk inventing training targets."}' --status proposed --verification not_applicable --workflow-state not_started --stage maintaining --actor chatgpt --role maintainer --source github
+          grapher link result-training-case-study-002-pocket-synth-20260905 constraint-provenance-not-ml-pipeline --rel references
+          grapher link proposal-training-legacy-normalization-preview-20260905 result-training-case-study-002-pocket-synth-20260905 --rel derived_from
+          grapher validate
+          grapher audit
+          grapher publish
+      - name: Commit graph publication and remove runner
+        run: |
+          rm .github/workflows/record-case-study-002.yml
+          git config user.name seanbman
+          git config user.email seannicholasburman@gmail.com
+          git add .grapher/shared .github/workflows/record-case-study-002.yml
+          git commit -m "grapher: record training case study 002" || exit 0
+          git push
