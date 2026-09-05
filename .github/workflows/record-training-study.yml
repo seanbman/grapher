@@ -1,0 +1,181 @@
+name: Record training-data study
+
+on:
+  push:
+    branches: [research/training-export-study]
+    paths:
+      - '.github/workflows/record-training-study.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/training-export-study
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Grapher
+        run: python -m pip install -e .
+      - name: Record study
+        shell: bash
+        run: |
+          python <<'PY'
+          import json
+          import shutil
+          from pathlib import Path
+
+          from grapher.audit import validate_graph
+          from grapher.graph import add_node, edge_exists, link
+          from grapher.store import load_graph, save_graph
+          from grapher.transport import publish_graph
+
+          root = Path('.')
+          shared = root / '.grapher' / 'shared' / 'knowledge.json'
+          local = root / '.grapher' / 'knowledge.json'
+          manifest_path = root / '.grapher' / 'shared' / 'manifest.json'
+          vectors_path = root / '.grapher' / 'vectors.json'
+
+          shutil.copyfile(shared, local)
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          embedding = manifest.get('embedding') or {}
+          vectors_path.write_text(json.dumps({
+              'version': 1,
+              'provider': embedding.get('provider') or 'fastembed',
+              'model': embedding.get('model') or 'BAAI/bge-small-en-v1.5',
+              'dims': embedding.get('dims'),
+              'vectors': {},
+          }, indent=2) + '\n', encoding='utf-8')
+
+          g = load_graph(local)
+          provenance = {
+              'actor_id': 'chatgpt',
+              'actor_kind': 'agent',
+              'actor_role': 'maintainer',
+              'source': 'github',
+              'integrity': 'declared',
+          }
+          scope = {'project_id': 'grapher'}
+
+          def add_semantic(node_id, node_type, title, payload, *, status, stage, refs, evidence):
+              if node_id in g['nodes']:
+                  return
+              add_node(
+                  g,
+                  id=node_id,
+                  type=node_type,
+                  title=title,
+                  content=json.dumps(payload, separators=(',', ':')),
+                  tags=['research', 'training-data', 'evaluation'],
+                  stage=stage,
+                  status=status,
+                  workflow_state='completed' if node_type != 'proposal' else 'not_started',
+                  verification='verified' if node_type == 'result' else 'unverified',
+                  evidence=evidence,
+                  source_refs=refs,
+                  scope=scope,
+                  provenance=provenance,
+              )
+
+          add_semantic(
+              'decision-training-data-study-boundary-20260905',
+              'decision',
+              'Keep evaluation and training data research downstream of Grapher',
+              {
+                  'decision': 'Maintain evaluation/training export research as a downstream consumer of Grapher rather than adding model-specific fields or training behavior to Grapher core.',
+                  'rationale': 'A model-agnostic work graph should remain reusable while downstream interchange and model adapters can evolve independently as experiments produce evidence.'
+              },
+              status='canonical_spec',
+              stage='maintaining',
+              refs=['research/training-data/README.md', 'research/training-data/AGENTS.md'],
+              evidence=[{
+                  'type': 'document',
+                  'ref': 'research/training-data/README.md',
+                  'summary': 'Defines the downstream research boundary, eligibility policy, leakage policy, and study cadence.'
+              }],
+          )
+
+          add_semantic(
+              'proposal-training-data-exporter-study-20260905',
+              'proposal',
+              'Prototype a read-only derived-example exporter',
+              {
+                  'proposal': 'Build a read-only research exporter outside src/grapher that consumes immutable shared Grapher snapshots and emits Grapher Derived Example v1 candidates with eligibility and rejection metrics.',
+                  'rationale': 'Automatic extraction must be measured against real graphs before any export behavior is promoted into Grapher or used to generate model-specific training data.'
+              },
+              status='proposed',
+              stage='planning',
+              refs=['research/training-data/schema.v1.json', 'research/training-data/STUDY_LOG.md'],
+              evidence=[{
+                  'type': 'document',
+                  'ref': 'research/training-data/STUDY_LOG.md',
+                  'summary': 'Initial study log defines the first automatic-export experiment and measurements.'
+              }],
+          )
+
+          add_semantic(
+              'result-training-data-interchange-v1-20260905',
+              'result',
+              'Grapher Derived Example v1 research contract initialized',
+              {
+                  'result': 'The repository now contains a model-agnostic Grapher Derived Example v1 JSON Schema, conservative eligibility and leakage rules, a scoped agent policy, a living study log, and a fixture derived from the verified Grapher v0.5.0 release episode.',
+                  'evidence': 'research/training-data/schema.v1.json defines the interchange contract; examples/grapher-v050-sequence.json instantiates it against Grapher shared graph hash 676fe99a3507c9d0; README.md and STUDY_LOG.md define the study policy and next experiment.'
+              },
+              status='current',
+              stage='planning',
+              refs=[
+                  'research/training-data/schema.v1.json',
+                  'research/training-data/examples/grapher-v050-sequence.json',
+                  'research/training-data/README.md',
+                  'research/training-data/STUDY_LOG.md'
+              ],
+              evidence=[
+                  {
+                      'type': 'document',
+                      'ref': 'research/training-data/schema.v1.json',
+                      'summary': 'Canonical current research schema for derived training/evaluation examples.'
+                  },
+                  {
+                      'type': 'document',
+                      'ref': 'research/training-data/examples/grapher-v050-sequence.json',
+                      'summary': 'First auditable fixture derived from Grapher v0.5.0 graph state.'
+                  }
+              ],
+          )
+
+          edges = [
+              ('decision-training-data-study-boundary-20260905', 'constraint-provenance-not-ml-pipeline', 'satisfies', 'Keeps training concerns downstream of the canonical Grapher model.'),
+              ('proposal-training-data-exporter-study-20260905', 'decision-training-data-study-boundary-20260905', 'references', 'Exporter prototype follows the downstream-only research boundary.'),
+              ('result-training-data-interchange-v1-20260905', 'decision-training-data-study-boundary-20260905', 'derived_from', None),
+              ('result-training-data-interchange-v1-20260905', 'proposal-training-data-exporter-study-20260905', 'references', 'The next experiment is the read-only exporter prototype.'),
+              ('result-training-data-interchange-v1-20260905', 'result-grapher-v050-release-20260905', 'derived_from', 'v0.5.0 is the study baseline and source of the first fixture.'),
+          ]
+          for frm, to, rel, note in edges:
+              if not edge_exists(g, frm, to, rel):
+                  link(g, from_id=frm, to_id=to, rel=rel, note=note)
+
+          save_graph(local, g)
+          validation = validate_graph(g, local)
+          if not validation['valid']:
+              raise SystemExit(json.dumps(validation, indent=2))
+
+          result = publish_graph(local)
+          if not result.get('published'):
+              raise SystemExit(f'expected publication, got: {result}')
+          print(json.dumps(result, indent=2))
+          PY
+      - name: Commit graph publication and remove one-shot workflow
+        shell: bash
+        run: |
+          rm .github/workflows/record-training-study.yml
+          rm -f .grapher/knowledge.json .grapher/vectors.json .grapher/sync-state.json
+          git config user.name "grapher-research-bot"
+          git config user.email "grapher-research-bot@users.noreply.github.com"
+          git add .grapher/shared .github/workflows/record-training-study.yml
+          git commit -m "research(graph): record training-data study"
+          git push origin HEAD:research/training-export-study
