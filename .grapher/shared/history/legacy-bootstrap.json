@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "publication_id": "legacy-bootstrap",
+  "published_at": "2026-09-05T06:00:00+00:00",
+  "migration": "legacy-runtime-to-shared",
+  "note": "Initial shared snapshot copied from the previously tracked .grapher/knowledge.json. Legacy mutation history remains available in Git history; future publications use immutable per-publication records."
+}
