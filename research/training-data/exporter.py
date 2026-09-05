@@ -9,11 +9,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-EXPORTER_VERSION = "0.1.2"
+EXPORTER_VERSION = "0.1.3"
 POLICY_VERSION = "research-v1"
 SEMANTIC_TYPES = {"observation","problem","question","hypothesis","requirement","constraint","proposal","decision","task","implementation","test","result","failure","lesson"}
 EXCLUDED_TARGET_STATUSES = {"superseded","rejected","deprecated"}
-# These relations point from a later/derived record to an antecedent/supporting record.
 ANTECEDENT_RELS = {"derived_from","references","implements","satisfies","depends_on","requires","applies_to","verified_by","evidenced_by"}
 
 
@@ -61,12 +60,16 @@ def export_snapshot(graph: dict[str, Any], manifest: dict[str, Any], created_at:
     edges = graph.get("edges") or []
     snapshot_ref = manifest.get("snapshot_ref") or f".grapher/shared/history/{manifest.get('publication_id')}.json"
     source_warning = manifest.get("source_warning")
+    node_types = Counter(str(n.get("type") or "unknown") for n in nodes.values())
+    semantic_node_count = sum(1 for n in nodes.values() if n.get("type") in SEMANTIC_TYPES)
+    canonical_semantic_node_count = sum(1 for n in nodes.values() if n.get("type") in SEMANTIC_TYPES and isinstance(n.get("semantic"), dict) and n.get("semantic"))
     outgoing: dict[str, list[dict[str, Any]]] = defaultdict(list)
     contradicted: set[str] = set()
+    antecedent_edge_count = 0
     for e in edges:
         if e.get("rel") == "contradicts": contradicted |= {str(e.get("from")), str(e.get("to"))}
         if e.get("rel") in ANTECEDENT_RELS:
-            outgoing[str(e.get("from"))].append(e)
+            outgoing[str(e.get("from"))].append(e); antecedent_edge_count += 1
 
     examples = []
     reasons = Counter(); candidates = Counter(); rejected_kind = Counter(); seen = set()
@@ -98,15 +101,12 @@ def export_snapshot(graph: dict[str, Any], manifest: dict[str, Any], created_at:
         split_group = "/".join(str(x or "_") for x in (project,mission,generation)) if any((project,mission,generation)) else "component:"+sid(",".join(sorted([target_id,*linked])))
         strength = "verified" if target.get("verification") == "verified" and evidence_refs(target) else "partial" if target.get("verification") in {"verified","partially_verified"} else "declared" if evidence_refs(target) else "none"
         example = {
-            "schema_version":"1.0",
-            "example_id":"gx-"+sid(manifest["graph_hash"],kind,target_id,split_group),
-            "example_kind":kind,"purpose":["evaluation","training"],
+            "schema_version":"1.0","example_id":"gx-"+sid(manifest["graph_hash"],kind,target_id,split_group),"example_kind":kind,"purpose":["evaluation","training"],
             "source":{"graph_hash":manifest["graph_hash"],"graph_version":int(manifest.get("version",1)),"snapshot_ref":str(snapshot_ref),"project_id":project,"mission_id":mission,"generation_id":generation,"episode_id":sid(split_group,target_id)},
             "input":{"records":[normalize(n) for n in inputs],"relations":[]},
             "target":{"records":[normalize(target)],"relations":sorted(rels,key=lambda r:(r["from"],r["to"],r["rel"]))},
             "quality":{"eligible":True,"policy_version":POLICY_VERSION,"evidence_strength":strength,"unresolved_contradiction":False,"target_superseded":False,"warnings":[str(source_warning)] if source_warning else []},
-            "split_group":split_group,
-            "export":{"exporter":"grapher-research-exporter","exporter_version":EXPORTER_VERSION,"created_at":created_at},
+            "split_group":split_group,"export":{"exporter":"grapher-research-exporter","exporter_version":EXPORTER_VERSION,"created_at":created_at},
         }
         fp = hashlib.sha256(json.dumps({"kind":kind,"input":example["input"]["records"],"target":example["target"]["records"]},sort_keys=True).encode()).hexdigest()
         if fp in seen:
@@ -118,14 +118,12 @@ def export_snapshot(graph: dict[str, Any], manifest: dict[str, Any], created_at:
     groups = Counter(e["split_group"] for e in examples)
     total = sum(candidates.values())
     metrics = {
-        "graph_hash":manifest["graph_hash"],"exporter_version":EXPORTER_VERSION,"policy_version":POLICY_VERSION,
-        "source_warning":source_warning,
-        "candidate_count":total,"eligible_count":len(examples),"rejected_count":total-len(examples),
-        "eligibility_rate":round(len(examples)/total,4) if total else 0.0,
-        "candidate_by_kind":dict(sorted(candidates.items())),"eligible_by_kind":dict(sorted(eligible.items())),
-        "rejected_by_kind":dict(sorted(rejected_kind.items())),"rejection_reasons":dict(sorted(reasons.items())),
-        "evidence_strength":dict(sorted(evidence.items())),"split_group_count":len(groups),"largest_split_group":max(groups.values(),default=0),
-        "duplicate_fingerprints":reasons.get("duplicate_example",0),
+        "graph_hash":manifest["graph_hash"],"exporter_version":EXPORTER_VERSION,"policy_version":POLICY_VERSION,"source_warning":source_warning,
+        "node_count":len(nodes),"edge_count":len(edges),"antecedent_edge_count":antecedent_edge_count,"node_type_counts":dict(sorted(node_types.items())),
+        "semantic_type_node_count":semantic_node_count,"canonical_semantic_node_count":canonical_semantic_node_count,"legacy_semantic_text_node_count":semantic_node_count-canonical_semantic_node_count,
+        "candidate_count":total,"eligible_count":len(examples),"rejected_count":total-len(examples),"eligibility_rate":round(len(examples)/total,4) if total else 0.0,
+        "candidate_by_kind":dict(sorted(candidates.items())),"eligible_by_kind":dict(sorted(eligible.items())),"rejected_by_kind":dict(sorted(rejected_kind.items())),"rejection_reasons":dict(sorted(reasons.items())),
+        "evidence_strength":dict(sorted(evidence.items())),"split_group_count":len(groups),"largest_split_group":max(groups.values(),default=0),"duplicate_fingerprints":reasons.get("duplicate_example",0),
     }
     return {"metrics":metrics,"examples":sorted(examples,key=lambda e:e["example_id"])}
 
