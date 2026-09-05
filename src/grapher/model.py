@@ -14,6 +14,7 @@ from grapher.registry import (
     WORKFLOW_STATES,
     normalize_stage,
 )
+from grapher.semantic import CANONICAL_ENTRY_TYPES, semantic_payload_for_node
 
 # Backward-compatible exports
 NODE_TYPES = BUILTIN_NODE_TYPES
@@ -261,6 +262,24 @@ def make_node(
             node[field] = default
         elif field in ("evidence", "source_refs", "owners"):
             node[field] = []
+
+    # Preserve legacy free-form semantic nodes when their content is untouched.
+    # Any new semantic content (or rewrite) must use the canonical JSON payload.
+    legacy_semantic_unchanged = bool(
+        existing
+        and type in CANONICAL_ENTRY_TYPES
+        and type == existing.get("type")
+        and content == existing.get("content")
+        and not existing.get("semantic")
+    )
+    if not legacy_semantic_unchanged:
+        semantic = semantic_payload_for_node(node)
+        if semantic is not None:
+            node["semantic"] = semantic
+        else:
+            node.pop("semantic", None)
+    elif existing and existing.get("semantic") is not None:
+        node["semantic"] = dict(existing["semantic"])
 
     return normalize_node(node)
 
