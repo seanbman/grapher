@@ -1,0 +1,52 @@
+name: Run training-data case study 002
+on:
+  push:
+    branches: [research/case-study-002-pocket-synth]
+permissions:
+  contents: write
+jobs:
+  case-study:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: seanbman/pocket-synth
+          ref: 33928620f31c70d86da9a4f9133aec897752f3f0
+          path: case-source
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Export pinned pocket-synth graph
+        run: |
+          mkdir -p research/training-data/case-studies/002-pocket-synth
+          python - <<'PY'
+          import hashlib,json,pathlib
+          p=pathlib.Path('case-source/.grapher/knowledge.json')
+          g=json.loads(p.read_text())
+          m={
+            'graph_hash': hashlib.sha256(p.read_bytes()).hexdigest(),
+            'version': int(g.get('version',1)),
+            'snapshot_ref': 'github:seanbman/pocket-synth@33928620f31c70d86da9a4f9133aec897752f3f0:.grapher/knowledge.json',
+            'source_warning': 'legacy_git_snapshot_not_shared_publication'
+          }
+          pathlib.Path('/tmp/source-manifest.json').write_text(json.dumps(m))
+          PY
+          python research/training-data/exporter.py --graph case-source/.grapher/knowledge.json --manifest /tmp/source-manifest.json --out /tmp/result.json --metrics research/training-data/case-studies/002-pocket-synth/metrics.json
+          python - <<'PY'
+          import json,pathlib
+          r=json.loads(pathlib.Path('/tmp/result.json').read_text())
+          sample={'examples':r['examples'][:3]}
+          pathlib.Path('research/training-data/case-studies/002-pocket-synth/sample.json').write_text(json.dumps(sample,indent=2,sort_keys=True)+'\n')
+          m=r['metrics']
+          text=f'''# Case Study 002 — pocket-synth\n\nSource: public `seanbman/pocket-synth` pinned at `33928620f31c70d86da9a4f9133aec897752f3f0`. Source graph is read-only and is not copied into Grapher.\n\nExporter {m['exporter_version']} found **{m['candidate_count']} candidates**, **{m['eligible_count']} eligible**, and **{m['rejected_count']} rejected** ({m['eligibility_rate']:.1%} eligible).\n\nThis graph predates typed semantic contracts/shared publication, so rejection reasons are the primary study signal. See `metrics.json`; `sample.json` contains at most three eligible examples for manual review.\n'''
+          pathlib.Path('research/training-data/case-studies/002-pocket-synth/README.md').write_text(text)
+          PY
+      - name: Commit case-study artifacts and remove runner
+        run: |
+          rm .github/workflows/run-case-study-002.yml
+          git config user.name seanbman
+          git config user.email seannicholasburman@gmail.com
+          git add research/training-data/case-studies/002-pocket-synth .github/workflows/run-case-study-002.yml
+          git commit -m "research: record pocket-synth case study 002" || exit 0
+          git push
