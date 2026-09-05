@@ -1,0 +1,36 @@
+name: Record exporter study result
+
+on:
+  push:
+    branches: [research/exporter-prototype-v1]
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/exporter-prototype-v1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e .
+      - name: Record and publish
+        run: |
+          grapher sync --no-vectors
+          grapher add --id result-grapher-exporter-case-study-001-20260905 --type result --title "Exporter prototype Case Study 001 baseline" --status current --workflow-state completed --verification verified --stage maintaining --actor chatgpt --actor-kind agent --role maintainer --content '{"result":"Read-only exporter 0.1.1 produced 13 candidates and 4 eligible derived examples from Grapher self-study after enforcing directed antecedent extraction.","evidence":"Case Study 001 metrics: 30.77% eligibility; 3 verified-evidence decision-to-outcome examples; 1 declared-evidence sequence example; 9 rejections, chiefly missing directed predecessors and legacy non-canonical semantic records."}' --evidence '{"type":"document","ref":"research/training-data/case-studies/001-grapher-self/metrics.json","summary":"Exporter 0.1.1 case-study metrics."}' --source-ref research/training-data/case-studies/001-grapher-self/metrics.json
+          grapher add --id lesson-directed-antecedents-for-derived-examples-20260905 --type lesson --title "Derived examples require directed antecedent context" --status current --workflow-state completed --verification verified --stage maintaining --actor chatgpt --actor-kind agent --role maintainer --content '{"lesson":"Training/evaluation extraction must respect relation direction; symmetric graph neighbors can leak later implementation or outcome state backward into earlier targets.","derived_from":["result-grapher-exporter-case-study-001-20260905"]}' --evidence '{"type":"document","ref":"research/training-data/case-studies/001-grapher-self/ASSESSMENT.md","summary":"Case Study 001 identified and corrected symmetric-neighbor leakage."}' --source-ref research/training-data/STUDY_LOG.md
+          grapher link result-grapher-exporter-case-study-001-20260905 result-grapher-v050-release-20260905 --rel derived_from
+          grapher link lesson-directed-antecedents-for-derived-examples-20260905 result-grapher-exporter-case-study-001-20260905 --rel derived_from
+          grapher link result-grapher-exporter-case-study-001-20260905 constraint-provenance-not-ml-pipeline --rel satisfies
+          grapher validate
+          grapher publish
+          git rm .github/workflows/record-exporter-study-result.yml
+          git add .grapher/shared
+          git config user.name grapher-research-bot
+          git config user.email grapher-research-bot@users.noreply.github.com
+          git commit -m "grapher: record exporter case study 001 result"
+          git push origin HEAD:research/exporter-prototype-v1
