@@ -17,6 +17,7 @@ SHARED_GRAPH_FILENAME = "knowledge.json"
 MANIFEST_FILENAME = "manifest.json"
 HISTORY_DIRNAME = "history"
 SYNC_STATE_FILENAME = "sync-state.json"
+RECONCILE_STATE_FILENAME = "reconcile-state.json"
 
 
 def _canonical_bytes(value: Any) -> bytes:
@@ -54,7 +55,23 @@ def shared_paths(graph_path: Path) -> dict[str, Path]:
         "manifest": shared / MANIFEST_FILENAME,
         "history": shared / HISTORY_DIRNAME,
         "sync_state": graph_path.parent / SYNC_STATE_FILENAME,
+        "reconcile_state": graph_path.parent / RECONCILE_STATE_FILENAME,
     }
+
+
+def _included_changesets(
+    current_hash: str,
+    previous_manifest: dict[str, Any],
+    reconcile_state_path: Path,
+) -> tuple[list[str], list[str]]:
+    included = set(previous_manifest.get("included_changesets") or [])
+    applied: list[str] = []
+    if reconcile_state_path.is_file():
+        state = _read_json(reconcile_state_path)
+        if state.get("result_graph_hash") == current_hash:
+            applied = sorted(set(state.get("applied_changesets") or []))
+            included.update(applied)
+    return sorted(included), applied
 
 
 def publish_graph(graph_path: Path) -> dict[str, Any]:
@@ -69,8 +86,26 @@ def publish_graph(graph_path: Path) -> dict[str, Any]:
     current_hash = graph_hash(graph)
     previous_manifest = _read_json(paths["manifest"]) if paths["manifest"].is_file() else {}
     previous_hash = previous_manifest.get("graph_hash")
+    included_changesets, applied_changesets = _included_changesets(
+        current_hash,
+        previous_manifest,
+        paths["reconcile_state"],
+    )
+    previous_included = sorted(previous_manifest.get("included_changesets") or [])
 
     if paths["graph"].is_file() and previous_hash == current_hash:
+        if included_changesets != previous_included:
+            manifest = dict(previous_manifest)
+            manifest["included_changesets"] = included_changesets
+            _write_json(paths["manifest"], manifest)
+            _write_json(paths["sync_state"], {"last_synced_hash": current_hash})
+            return {
+                "published": False,
+                "reason": "metadata_updated",
+                "graph_hash": current_hash,
+                "included_changesets": len(included_changesets),
+                "shared_graph": str(paths["graph"]),
+            }
         _write_json(paths["sync_state"], {"last_synced_hash": current_hash})
         return {
             "published": False,
@@ -98,6 +133,7 @@ def publish_graph(graph_path: Path) -> dict[str, Any]:
         "nodes": len(graph.get("nodes") or {}),
         "edges": len(graph.get("edges") or []),
         "embedding": embedding,
+        "changesets": applied_changesets,
     }
     history_path = paths["history"] / f"{publication_id}.json"
     if not history_path.exists():
@@ -110,6 +146,7 @@ def publish_graph(graph_path: Path) -> dict[str, Any]:
         "published_at": ts,
         "graph_hash": current_hash,
         "embedding": embedding,
+        "included_changesets": included_changesets,
     }
     _write_json(paths["manifest"], manifest)
     _write_json(paths["sync_state"], {"last_synced_hash": current_hash})
@@ -117,6 +154,7 @@ def publish_graph(graph_path: Path) -> dict[str, Any]:
         "published": True,
         "publication_id": publication_id,
         "graph_hash": current_hash,
+        "included_changesets": len(included_changesets),
         "shared_graph": str(paths["graph"]),
         "history_record": str(history_path),
         "manifest": str(paths["manifest"]),

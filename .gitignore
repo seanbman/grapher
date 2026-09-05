@@ -9,5 +9,8 @@ build/
 .grapher/history.jsonl
 .grapher/vectors.json
 .grapher/sync-state.json
+.grapher/reconcile-state.json
+.grapher/arms/
+.grapher/conflicts/
 .grapher/knowledge.*backup*.json
 tests/fixtures/vectors.json
