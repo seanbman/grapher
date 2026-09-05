@@ -50,6 +50,26 @@ Tag work with lifecycle stage when relevant (`--stage` on init; node `stage` fie
 
 Graph kinds (`knowledge`, `design`, `decision`, `roadmap`, etc.) describe *what* the graph emphasizes; stages describe *where* work sits. Both are orthogonal.
 
+## Typed semantic entries
+
+Use canonical semantic types for durable reasoning and work records:
+
+`observation`, `problem`, `question`, `hypothesis`, `requirement`, `constraint`, `proposal`, `decision`, `task`, `implementation`, `test`, `result`, `failure`, `lesson`.
+
+For these types, `--content` is a JSON object with required type-specific fields (see `docs/SEMANTIC_ENTRY_SCHEMA.md`). Examples:
+
+```bash
+grapher add --type decision --title "Scheduler cleanup" \
+  --content '{"decision":"Terminate owned voices before loop restart","rationale":"Prevents previous-iteration audio overlap"}' \
+  --status current
+
+grapher add --type hypothesis --title "Stale voice survives" \
+  --content '{"hypothesis":"A stale voice survives loop restart","basis":"Overlap begins exactly at restart","validation_condition":"Trace active voices across restart"}' \
+  --status proposed
+```
+
+Do not use free-form filler (`TBD`, `investigate later`, unsupported conclusions). Empty semantic nodes are temporary working stubs only. `current`, `canonical_spec`, partially/fully verified, and finalized semantic records must be complete. Preserve epistemic type: a hypothesis is not an observation; a proposal is not a decision; a planned test is not a result.
+
 ## Ingest a directory — full deep coverage required
 
 When the user points grapher at a directory, **all** documents, images, videos, and audio in that directory must be ingested with deep understanding. Do not skip media. Do not leave pending stubs. Do not stop at paths.
