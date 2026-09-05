@@ -1,0 +1,56 @@
+{
+  "relation": {
+    "created_at": "2026-09-05T09:04:11.180835+00:00",
+    "from": "observation-enriched-2be2cc940d609f09",
+    "note": "Explicit semantic enrichment of preserved legacy record.",
+    "rel": "derived_from",
+    "to": "cassio-abstraction-sounds-song-1116fd88"
+  },
+  "review": {
+    "candidate_type": "observation",
+    "reason": "The source explicitly describes the two LOOP abstraction levels and their UI/data-model mapping; no additional causal claim is added.",
+    "source_mutated": false,
+    "supplied_fields": [
+      "observation",
+      "source"
+    ],
+    "validated": true
+  },
+  "source": {
+    "content": "Two abstraction levels in LOOP: (1) Sound/element layer \u2014 pads 1\u20136 and KEYBOARD hold playable samples/synth hits (PLAY/SOUND); step lanes map to pad sounds. (2) Song layer \u2014 6 loop tracks with PCM clips on the timeline (offset, mute/solo, length); project.seq patterns A\u2013D are song-level rhythmic programs; track.seq is per-track step data stored on each loop track. UI: loop-tracks = song arrangement; PATTERN SEQ (loop options A or track menu) = 6-lane Screen 24; TRACK STEP SEQ (track menu) = single-lane Screen 24 for one track. Timeline restructure moved SEQ off soft key B (now MUTE); both seq modes restored via menu/options.",
+    "id": "cassio-abstraction-sounds-song-1116fd88",
+    "path": null,
+    "stage": null,
+    "status": "unclassified",
+    "title": "CASSIO abstraction: sounds \u2192 song",
+    "type": "finding",
+    "verification": "unverified"
+  },
+  "successor": {
+    "content": "{\"observation\":\"CASSIO LOOP has two abstraction levels: a playable sound/element layer for pads, keyboard, and step-lane sounds, and a song layer for loop-track PCM clips, pattern sequences, and per-track step data exposed through separate sequencer views.\",\"source\":\"Legacy Grapher finding cassio-abstraction-sounds-song-1116fd88 in the pinned pocket-synth graph.\"}",
+    "evidence": [],
+    "id": "observation-enriched-2be2cc940d609f09",
+    "owners": [],
+    "provenance": {
+      "actor_id": "ChatGPT",
+      "actor_kind": "agent",
+      "actor_role": "semantic-enricher",
+      "integrity": "declared",
+      "recorded_at": "2026-09-05T09:04:11.180835+00:00",
+      "source": "research_enrichment"
+    },
+    "scope": {},
+    "semantic": {
+      "observation": "CASSIO LOOP has two abstraction levels: a playable sound/element layer for pads, keyboard, and step-lane sounds, and a song layer for loop-track PCM clips, pattern sequences, and per-track step data exposed through separate sequencer views.",
+      "source": "Legacy Grapher finding cassio-abstraction-sounds-song-1116fd88 in the pinned pocket-synth graph."
+    },
+    "source_refs": [],
+    "stage": null,
+    "status": "proposed",
+    "title": "CASSIO abstraction: sounds \u2192 song",
+    "type": "observation",
+    "verification": "unverified",
+    "workflow_state": "not_applicable"
+  },
+  "workflow_version": "0.1.0"
+}

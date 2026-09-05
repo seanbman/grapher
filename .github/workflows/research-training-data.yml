@@ -1,0 +1,54 @@
+name: Training-data research
+
+on:
+  push:
+    paths:
+      - 'research/training-data/**'
+      - '.github/workflows/research-training-data.yml'
+  pull_request:
+    paths:
+      - 'research/training-data/**'
+      - '.github/workflows/research-training-data.yml'
+
+jobs:
+  validate-derived-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate research schemas, exporters, previews, and enrichment
+        run: |
+          python -m pip install jsonschema
+          python -m unittest research/training-data/test_exporter.py research/training-data/test_legacy_normalization.py research/training-data/test_enrichment.py -v
+          python research/training-data/exporter.py --metrics /tmp/self-metrics.json --out /tmp/self-export.json
+          python research/training-data/legacy_normalization.py --graph .grapher/shared/knowledge.json --source-ref grapher:self --metrics /tmp/self-normalization.json
+          python research/training-data/enrichment.py preview --graph .grapher/shared/knowledge.json --out /tmp/self-enrichment.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          root = Path('research/training-data')
+          schema = json.loads((root / 'schema.v1.json').read_text())
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+          examples = sorted((root / 'examples').glob('*.json'))
+          exported = json.loads(Path('/tmp/self-export.json').read_text())['examples']
+          if not examples or not exported:
+              raise SystemExit('expected fixture and at least one self-exported example')
+          for path in examples:
+              value = json.loads(path.read_text())
+              errors = list(validator.iter_errors(value))
+              if errors: raise SystemExit(f'{path}: {errors[0].message}')
+          for value in exported:
+              errors = list(validator.iter_errors(value))
+              if errors: raise SystemExit(f'self-export: {errors[0].message}')
+          enrichment = json.loads(Path('/tmp/self-enrichment.json').read_text())
+          if enrichment['workflow_version'] != '0.1.0':
+              raise SystemExit('unexpected enrichment workflow version')
+          print(Path('/tmp/self-metrics.json').read_text())
+          print(Path('/tmp/self-normalization.json').read_text())
+          print(json.dumps({'enrichment_review_count': enrichment['review_count']}, indent=2))
+          PY

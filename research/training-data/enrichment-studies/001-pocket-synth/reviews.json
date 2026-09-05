@@ -1,0 +1,34 @@
+{
+  "source_ref": "github:seanbman/pocket-synth@33928620f31c70d86da9a4f9133aec897752f3f0:.grapher/knowledge.json",
+  "reviews": [
+    {
+      "node_id": "cassio-abstraction-sounds-song-1116fd88",
+      "action": "accept",
+      "type": "observation",
+      "values": {
+        "observation": "CASSIO LOOP has two abstraction levels: a playable sound/element layer for pads, keyboard, and step-lane sounds, and a song layer for loop-track PCM clips, pattern sequences, and per-track step data exposed through separate sequencer views.",
+        "source": "Legacy Grapher finding cassio-abstraction-sounds-song-1116fd88 in the pinned pocket-synth graph."
+      },
+      "actor_id": "ChatGPT",
+      "actor_kind": "agent",
+      "reason": "The source explicitly describes the two LOOP abstraction levels and their UI/data-model mapping; no additional causal claim is added."
+    },
+    {
+      "node_id": "instruction-pdf-graphed",
+      "action": "defer",
+      "reason": "The source contains requirement-like instructions, but it does not provide the acceptance_condition required for a canonical requirement or the reason required for a canonical constraint. Supplying either would add meaning not present in the record."
+    },
+    {
+      "node_id": "operating-precedence-agile-sdlc-43e05582",
+      "action": "accept",
+      "type": "decision",
+      "values": {
+        "decision": "Operate CASSIO agents and Grapher curation under agile SDLC lifecycle stages and truth precedence, favoring verified current implementation over canonical specification, proposed work, and historical or superseded context.",
+        "rationale": "Work should proceed in small verified increments, supersession should be explicit, and deviations from the manual should be graphed rather than allowed to drift silently."
+      },
+      "actor_id": "ChatGPT",
+      "actor_kind": "agent",
+      "reason": "Both the operating precedence and its verification/drift-control rationale are explicitly stated in the legacy record."
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "missing_ids": [],
+  "records": [
+    {
+      "candidates": [
+        {
+          "constraints": {},
+          "field_types": {
+            "observation": "string",
+            "source": "string"
+          },
+          "required_fields": [
+            "observation",
+            "source"
+          ],
+          "type": "observation",
+          "values": {}
+        },
+        {
+          "constraints": {},
+          "field_types": {
+            "impact": "string",
+            "problem": "string"
+          },
+          "required_fields": [
+            "problem",
+            "impact"
+          ],
+          "type": "problem",
+          "values": {}
+        },
+        {
+          "constraints": {},
+          "field_types": {
+            "evidence": "string",
+            "result": "string"
+          },
+          "required_fields": [
+            "result",
+            "evidence"
+          ],
+          "type": "result",
+          "values": {}
+        },
+        {
+          "constraints": {},
+          "field_types": {
+            "failure": "string",
+            "observed_behavior": "string"
+          },
+          "required_fields": [
+            "failure",
+            "observed_behavior"
+          ],
+          "type": "failure",
+          "values": {}
+        },
+        {
+          "constraints": {},
+          "field_types": {
+            "derived_from": "string_list",
+            "lesson": "string"
+          },
+          "required_fields": [
+            "lesson",
+            "derived_from"
+          ],
+          "type": "lesson",
+          "values": {}
+        }
+      ],
+      "disposition": "enrichment_required",
+      "reason": "legacy_type_is_semantically_ambiguous",
+      "rule": "Candidate fields are intentionally empty; semantic meaning must be supplied explicitly.",
+      "source": {
+        "content": "Two abstraction levels in LOOP: (1) Sound/element layer \u2014 pads 1\u20136 and KEYBOARD hold playable samples/synth hits (PLAY/SOUND); step lanes map to pad sounds. (2) Song layer \u2014 6 loop tracks with PCM clips on the timeline (offset, mute/solo, length); project.seq patterns A\u2013D are song-level rhythmic programs; track.seq is per-track step data stored on each loop track. UI: loop-tracks = song arrangement; PATTERN SEQ (loop options A or track menu) = 6-lane Screen 24; TRACK STEP SEQ (track menu) = single-lane Screen 24 for one track. Timeline restructure moved SEQ off soft key B (now MUTE); both seq modes restored via menu/options.",
+        "id": "cassio-abstraction-sounds-song-1116fd88",
+        "path": null,
+        "stage": null,
+        "status": "unclassified",
+        "title": "CASSIO abstraction: sounds \u2192 song",
+        "type": "finding",
+        "verification": "unverified"
+      }
+    },
+    {
+      "candidates": [
+        {
+          "constraints": {},
+          "field_types": {
+            "acceptance_condition": "string",
+            "requirement": "string"
+          },
+          "required_fields": [
+            "requirement",
+            "acceptance_condition"
+          ],
+          "type": "requirement",
+          "values": {}
+        },
+        {
+          "constraints": {},
+          "field_types": {
+            "constraint": "string",
+            "reason": "string"
+          },
+          "required_fields": [
+            "constraint",
+            "reason"
+          ],
+          "type": "constraint",
+          "values": {}
+        }
+      ],
+      "disposition": "enrichment_required",
+      "reason": "legacy_type_is_semantically_ambiguous",
+      "rule": "Candidate fields are intentionally empty; semantic meaning must be supplied explicitly.",
+      "source": {
+        "content": "Phase 1 complete: CASSIO_V1_Complete_Operating_Manual.pdf read from primary text and manual-assets images; structured concepts stored in grapher for scope, hardware, global behavior, navigation, all Screens 01-38, factory library, Glass Poly, library rules, sound engine, recording, persistence, boundaries, six areas, and fast workflows. Graphify-out was purged and must not be used. Phase 2 (Rails Milestone A) must consult these nodes via grapher search/get/neighbors.\n",
+        "id": "instruction-pdf-graphed",
+        "path": null,
+        "stage": null,
+        "status": "unclassified",
+        "title": "PDF fully graphed into grapher (Phase 1)",
+        "type": "instruction",
+        "verification": "unverified"
+      }
+    },
+    {
+      "candidates": [
+        {
+          "constraints": {},
+          "field_types": {
+            "decision": "string",
+            "rationale": "string"
+          },
+          "required_fields": [
+            "decision",
+            "rationale"
+          ],
+          "type": "decision",
+          "values": {}
+        }
+      ],
+      "disposition": "enrichment_required",
+      "reason": "typed_free_text_missing_required_semantic_payload",
+      "rule": "Candidate fields are intentionally empty; semantic meaning must be supplied explicitly.",
+      "source": {
+        "content": "CASSIO agents and Grapher curation operate under agile SDLC precedence. Lifecycle stages (ideation\u2192designing\u2192planning\u2192developing\u2192launching\u2192maintaining) define where work sits, not just labels. Truth precedence when building: (1) verified current implementation, (2) canonical_spec scoped to intent, (3) proposed/designing as next increment, (4) historical/superseded as context only. Work in small developing increments; verify (smoke/tests) before marking current; supersede explicitly; graph deviations from manual rather than silent drift. Bulk v2 status fields are not authoritative until curated with evidence and explanations.",
+        "id": "operating-precedence-agile-sdlc-43e05582",
+        "path": null,
+        "stage": null,
+        "status": "current",
+        "title": "Operating precedence: Agile SDLC",
+        "type": "decision",
+        "verification": "unverified"
+      }
+    }
+  ],
+  "review_count": 3,
+  "workflow_version": "0.1.0"
+}
