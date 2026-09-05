@@ -202,6 +202,24 @@
       "from": "result-grapher-20260905-maintenance-baseline",
       "rel": "verified_by",
       "to": "result-grapher-transport-sync-20260905"
+    },
+    {
+      "created_at": "2026-09-05T07:34:09+00:00",
+      "from": "result-grapher-v050-release-20260905",
+      "rel": "derived_from",
+      "to": "result-grapher-20260905-maintenance-baseline"
+    },
+    {
+      "created_at": "2026-09-05T07:34:09+00:00",
+      "from": "result-grapher-v050-release-20260905",
+      "rel": "references",
+      "to": "implementation-grapher-semantic-contracts-20260905"
+    },
+    {
+      "created_at": "2026-09-05T07:34:09+00:00",
+      "from": "result-grapher-v050-release-20260905",
+      "rel": "references",
+      "to": "implementation-grapher-git-transport-20260905"
     }
   ],
   "graph": {
@@ -790,6 +808,61 @@
       "title": "Grapher transport synchronization verified on 2026-09-05",
       "type": "result",
       "updated_at": "2026-09-05T07:13:18+00:00",
+      "verification": "verified",
+      "workflow_state": "completed"
+    },
+    "result-grapher-v050-release-20260905": {
+      "content": "{\"result\":\"Grapher v0.5.0 was packaged and published from main with synchronized human and agent documentation, strict semantic contracts, Git-backed publish/sync transport, and compact-context guidance.\",\"evidence\":\"Release tag v0.5.0 targets commit 3df4e343; main CI passed; GitHub release 383170519 contains grapher-0.5.0-py3-none-any.whl and grapher-0.5.0.tar.gz built from that commit.\"}",
+      "created_at": "2026-09-05T07:34:09+00:00",
+      "evidence": [
+        {
+          "ref": "git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a",
+          "summary": "Release commit on main; CI passed.",
+          "type": "commit"
+        },
+        {
+          "ref": "github:release:v0.5.0",
+          "summary": "GitHub release contains the 0.5.0 wheel and source tarball.",
+          "type": "external_source"
+        }
+      ],
+      "id": "result-grapher-v050-release-20260905",
+      "meta": {},
+      "owners": [],
+      "path": null,
+      "provenance": {
+        "actor_id": "chatgpt",
+        "actor_kind": "agent",
+        "actor_role": "maintainer",
+        "integrity": "declared",
+        "source": "github"
+      },
+      "scope": {
+        "project_id": "grapher"
+      },
+      "semantic": {
+        "evidence": "Release tag v0.5.0 targets commit 3df4e343; main CI passed; GitHub release 383170519 contains grapher-0.5.0-py3-none-any.whl and grapher-0.5.0.tar.gz built from that commit.",
+        "result": "Grapher v0.5.0 was packaged and published from main with synchronized human and agent documentation, strict semantic contracts, Git-backed publish/sync transport, and compact-context guidance."
+      },
+      "source_refs": [
+        "git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a",
+        "github:release:v0.5.0",
+        "CHANGELOG.md",
+        "README.md",
+        "AGENTS.md",
+        "pyproject.toml"
+      ],
+      "stage": "maintaining",
+      "status": "current",
+      "tags": [
+        "release",
+        "v0.5.0",
+        "packaging",
+        "documentation"
+      ],
+      "title": "Grapher v0.5.0 packaged and published",
+      "type": "result",
+      "updated_at": "2026-09-05T07:34:09+00:00",
       "verification": "verified",
       "workflow_state": "completed"
     },
