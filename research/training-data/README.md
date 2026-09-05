@@ -4,101 +4,65 @@ This directory is a living research area for testing whether Grapher can reliabl
 
 It is deliberately **downstream of Grapher**. Grapher remains a model-agnostic work/provenance graph. No model-specific prompts, quality labels, fine-tuning logic, or training-runtime concerns belong in Grapher's canonical node schema.
 
-## Current canonical research contract
-
-`schema.v1.json` defines **Grapher Derived Example v1**, an intermediate interchange format between a Grapher snapshot and later model-specific datasets.
-
-The intended pipeline is:
+## Current research pipeline
 
 ```text
 Grapher graph
+  -> legacy normalization preview when needed
+  -> explicit semantic enrichment review
+  -> validated typed successor bundle
   -> eligibility/episode extraction
   -> Grapher Derived Example v1
   -> train/eval split
   -> model-specific adapter
-  -> SFT / evaluation / preference / other dataset
 ```
 
-This keeps the source record stable while allowing downstream adapters to change.
+`schema.v1.json` defines **Grapher Derived Example v1**, the model-agnostic interchange format used after normalization.
 
-## What one derived example contains
+## Legacy enrichment workflow
 
-A v1 example preserves:
+`legacy_normalization.py` classifies legacy records as `mechanically_mappable`, `enrichment_required`, or `context_only` without changing the graph.
 
-- the exact source graph hash and snapshot reference;
-- project/mission/generation scope when present;
-- an ordered set of input records and relationships;
-- one or more target records and relationships;
-- normalized semantic or text content;
-- provenance/evidence signals needed to judge eligibility;
-- an explicit quality-policy version and warnings;
-- a `split_group` used to prevent train/evaluation leakage;
-- exporter identity/version.
+`enrichment.py preview` then exposes candidate semantic types and their exact required fields. Candidate values are intentionally empty.
 
-It does **not** contain a chat prompt or model-specific tokenization.
+`enrichment.py compose` accepts a successor only when the reviewer explicitly supplies:
 
-## Initial example kinds
+- one allowed semantic type;
+- every required semantic field;
+- actor id/kind;
+- a review reason.
 
-- `state_to_decision` — prior state/constraints -> recorded decision.
-- `state_to_action` — prior state/decision -> recorded task or implementation.
-- `decision_to_outcome` — decision/implementation -> observed result.
-- `failure_to_lesson` — evidenced failure -> derived lesson.
-- `verification_judgment` — claim/test/evidence -> recorded verification outcome.
-- `sequence_completion` — partial grounded episode -> next recorded semantic state.
+Grapher's canonical semantic validator then validates the supplied payload. The output is a **proposed successor bundle** plus a `derived_from` relation to the preserved legacy record. The source graph is never mutated by the research workflow.
 
-These are hypotheses for study, not claims that each kind will ultimately be useful.
+If required meaning is absent, the record remains deferred. Missing rationale, evidence, acceptance conditions, causes, or relationships must not be invented merely to normalize the corpus.
 
 ## Default eligibility policy: `research-v1`
 
-An exporter should default to conservative inclusion:
-
-1. Every referenced source node and relationship must exist in the same immutable snapshot.
-2. Semantic records must satisfy Grapher's semantic contract.
-3. Empty/pending ingest stubs are excluded.
-4. A target marked `superseded`, `rejected`, or `deprecated` is excluded unless the example is explicitly historical/contrastive.
-5. Unresolved contradictions produce a warning and are excluded by default from positive targets.
-6. Result/test/failure targets require attributable evidence or an explicit verified relation.
-7. Decisions are not treated as "good" merely because they were made; stronger examples should connect decisions to later evidenced outcomes.
-8. Agent-authored material is not treated as independently verified solely because an agent wrote it.
-9. Export must preserve enough source provenance to audit every derived example back to Grapher.
-10. No exporter may invent missing rationale, evidence, outcomes, or relationships to make an episode look complete.
-
-Eligibility is a selection policy, not a truth oracle.
+Export is conservative: canonical semantic contracts, evidence/provenance, truth state, directed antecedent relations, contradiction state, and leakage grouping are preserved. Result/test/failure targets require evidence or verified grounding. Superseded/rejected/deprecated targets are excluded by default. Agent-authored content is not independently verified solely because an agent wrote it.
 
 ## Leakage policy
 
-Random per-example splitting is unsafe because multiple examples can come from the same work episode.
-
-`split_group` should therefore be stable at the strongest available boundary, normally:
-
-```text
-project_id / mission_id / generation_id / episode_id
-```
-
-When those fields are absent, the exporter must derive a deterministic connected-component/episode grouping and record how it was obtained. All examples from one split group stay in the same train/validation/test partition.
+Examples from the same work episode remain in one stable `split_group`; random per-example train/eval splitting is not allowed.
 
 ## Study cadence
 
-This is an ongoing study alongside normal Grapher development. At meaningful Grapher releases or schema changes we should:
+At meaningful Grapher releases or schema changes:
 
-1. export a sample from Grapher's own graph and at least one real external project graph;
-2. count eligible/rejected examples by example kind and rejection reason;
+1. test Grapher's own graph and at least one real external project graph;
+2. measure eligible/rejected examples and normalization pressure;
 3. manually inspect a small stratified sample;
-4. log failure modes in `STUDY_LOG.md`;
-5. adjust extraction/quality policy before changing Grapher's core schema;
-6. only change Grapher itself when the study reveals a general work-graph deficiency, not merely a model-training convenience.
+4. log failure modes and enrichment decisions in `STUDY_LOG.md`;
+5. change Grapher core only for general work-graph deficiencies, not training convenience.
 
 ## Current research questions
 
-- Can explicit semantic relationships reconstruct coherent reasoning/work episodes without transcript recovery?
-- Which relation patterns reliably distinguish correlation from causal sequence?
-- What evidence threshold produces useful targets without discarding too much data?
-- How should superseded and failed paths be used as negative/contrastive examples without teaching obsolete state as canonical truth?
-- Which example kinds are most valuable for very small local models?
-- How much human review is needed before derived examples become suitable for training?
-- What normalization is required for legacy pre-semantic Grapher records?
-- Which grouping strategy best prevents leakage across related project episodes?
+- Can explicit semantic relationships reconstruct coherent work episodes without transcript recovery?
+- Which evidence threshold produces useful targets without discarding too much data?
+- How should failed/superseded paths become contrastive examples safely?
+- How much human/agent review is required for legacy enrichment?
+- Can validated successor bundles be promoted into a disposable copy of a legacy graph without corrupting lineage or truth state?
+- Which grouping strategy best prevents train/evaluation leakage?
 
 ## Non-goals
 
-This research area does not train models, choose a model architecture, score agents as good/bad, or add ML-specific fields to Grapher's graph. Those remain downstream concerns.
+This research area does not train models, choose a model architecture, score agents as good/bad, silently rewrite legacy records, or add ML-specific fields to Grapher's graph.
