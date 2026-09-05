@@ -18,12 +18,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate research schemas, exporters, and previews
+      - name: Validate research schemas, exporters, previews, and enrichment
         run: |
           python -m pip install jsonschema
-          python -m unittest research/training-data/test_exporter.py research/training-data/test_legacy_normalization.py -v
+          python -m unittest research/training-data/test_exporter.py research/training-data/test_legacy_normalization.py research/training-data/test_enrichment.py -v
           python research/training-data/exporter.py --metrics /tmp/self-metrics.json --out /tmp/self-export.json
           python research/training-data/legacy_normalization.py --graph .grapher/shared/knowledge.json --source-ref grapher:self --metrics /tmp/self-normalization.json
+          python research/training-data/enrichment.py preview --graph .grapher/shared/knowledge.json --out /tmp/self-enrichment.json
           python - <<'PY'
           import json
           from pathlib import Path
@@ -44,6 +45,10 @@ jobs:
           for value in exported:
               errors = list(validator.iter_errors(value))
               if errors: raise SystemExit(f'self-export: {errors[0].message}')
+          enrichment = json.loads(Path('/tmp/self-enrichment.json').read_text())
+          if enrichment['workflow_version'] != '0.1.0':
+              raise SystemExit('unexpected enrichment workflow version')
           print(Path('/tmp/self-metrics.json').read_text())
           print(Path('/tmp/self-normalization.json').read_text())
+          print(json.dumps({'enrichment_review_count': enrichment['review_count']}, indent=2))
           PY
