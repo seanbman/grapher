@@ -1,0 +1,41 @@
+name: Rerun training-data case study 002
+on:
+  push:
+    branches: [research/case-study-002-pocket-synth]
+permissions:
+  contents: write
+jobs:
+  case-study:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: seanbman/pocket-synth
+          ref: 33928620f31c70d86da9a4f9133aec897752f3f0
+          path: case-source
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Export pinned pocket-synth graph
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib
+          p=pathlib.Path('case-source/.grapher/knowledge.json'); g=json.loads(p.read_text())
+          pathlib.Path('/tmp/source-manifest.json').write_text(json.dumps({'graph_hash':hashlib.sha256(p.read_bytes()).hexdigest(),'version':int(g.get('version',1)),'snapshot_ref':'github:seanbman/pocket-synth@33928620f31c70d86da9a4f9133aec897752f3f0:.grapher/knowledge.json','source_warning':'legacy_git_snapshot_not_shared_publication'}))
+          PY
+          python research/training-data/exporter.py --graph case-source/.grapher/knowledge.json --manifest /tmp/source-manifest.json --out /tmp/result.json --metrics research/training-data/case-studies/002-pocket-synth/metrics.json
+          python - <<'PY'
+          import json,pathlib
+          r=json.loads(pathlib.Path('/tmp/result.json').read_text()); m=r['metrics']
+          pathlib.Path('research/training-data/case-studies/002-pocket-synth/sample.json').write_text(json.dumps({'examples':r['examples'][:3]},indent=2,sort_keys=True)+'\n')
+          pathlib.Path('research/training-data/case-studies/002-pocket-synth/ASSESSMENT.md').write_text(f'''# Assessment\n\nPinned graph: **{m['node_count']} nodes / {m['edge_count']} edges**. Only **{m['semantic_type_node_count']}** nodes use the current semantic-type vocabulary and **{m['canonical_semantic_node_count']}** already carry canonical semantic objects. Export result: **{m['eligible_count']}/{m['candidate_count']} eligible**.\n\nPrimary finding: this corpus is rich but structurally legacy. The next research step is a **non-inventive normalization preview** that classifies legacy node types/content and reports what can be mapped mechanically versus what requires human/agent semantic enrichment. Do not weaken exporter eligibility to admit free-form records.\n''')
+          PY
+      - name: Commit and remove runner
+        run: |
+          rm .github/workflows/rerun-case-study-002.yml
+          git config user.name seanbman
+          git config user.email seannicholasburman@gmail.com
+          git add research/training-data/case-studies/002-pocket-synth .github/workflows/rerun-case-study-002.yml
+          git commit -m "research: refine pocket-synth case study 002 metrics" || exit 0
+          git push
