@@ -8,31 +8,30 @@
   },
   "candidate_count": 13,
   "duplicate_fingerprints": 0,
-  "eligibility_rate": 0.6154,
+  "eligibility_rate": 0.3077,
   "eligible_by_kind": {
     "decision_to_outcome": 3,
-    "sequence_completion": 1,
-    "state_to_action": 2,
-    "state_to_decision": 1,
-    "verification_judgment": 1
+    "sequence_completion": 1
   },
-  "eligible_count": 8,
+  "eligible_count": 4,
   "evidence_strength": {
     "declared": 1,
-    "verified": 7
+    "verified": 3
   },
-  "exporter_version": "0.1.0",
+  "exporter_version": "0.1.1",
   "graph_hash": "fe42beb04a79833f5785ee6715199ace2c168433c1acafb7c181d3d82aeaa3e0",
-  "largest_split_group": 8,
+  "largest_split_group": 4,
   "policy_version": "research-v1",
   "rejected_by_kind": {
     "sequence_completion": 4,
-    "state_to_decision": 1
+    "state_to_action": 2,
+    "state_to_decision": 2,
+    "verification_judgment": 1
   },
-  "rejected_count": 5,
+  "rejected_count": 9,
   "rejection_reasons": {
     "input_not_canonical_semantic": 1,
-    "no_grounded_predecessor": 3,
+    "no_grounded_predecessor": 8,
     "target_not_canonical_semantic": 4
   },
   "split_group_count": 1
