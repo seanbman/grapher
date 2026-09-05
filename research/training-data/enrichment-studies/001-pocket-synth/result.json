@@ -1,0 +1,23 @@
+{
+  "accepted": [
+    {
+      "node_id": "cassio-abstraction-sounds-song-1116fd88",
+      "successor_id": "observation-enriched-2be2cc940d609f09",
+      "type": "observation"
+    },
+    {
+      "node_id": "operating-precedence-agile-sdlc-43e05582",
+      "successor_id": "decision-enriched-a3ea28412f222867",
+      "type": "decision"
+    }
+  ],
+  "accepted_count": 2,
+  "deferred": [
+    {
+      "node_id": "instruction-pdf-graphed",
+      "reason": "The source contains requirement-like instructions, but it does not provide the acceptance_condition required for a canonical requirement or the reason required for a canonical constraint. Supplying either would add meaning not present in the record."
+    }
+  ],
+  "deferred_count": 1,
+  "source_mutated": false
+}

@@ -1,0 +1,56 @@
+{
+  "relation": {
+    "created_at": "2026-09-05T09:04:11.185216+00:00",
+    "from": "decision-enriched-a3ea28412f222867",
+    "note": "Explicit semantic enrichment of preserved legacy record.",
+    "rel": "derived_from",
+    "to": "operating-precedence-agile-sdlc-43e05582"
+  },
+  "review": {
+    "candidate_type": "decision",
+    "reason": "Both the operating precedence and its verification/drift-control rationale are explicitly stated in the legacy record.",
+    "source_mutated": false,
+    "supplied_fields": [
+      "decision",
+      "rationale"
+    ],
+    "validated": true
+  },
+  "source": {
+    "content": "CASSIO agents and Grapher curation operate under agile SDLC precedence. Lifecycle stages (ideation\u2192designing\u2192planning\u2192developing\u2192launching\u2192maintaining) define where work sits, not just labels. Truth precedence when building: (1) verified current implementation, (2) canonical_spec scoped to intent, (3) proposed/designing as next increment, (4) historical/superseded as context only. Work in small developing increments; verify (smoke/tests) before marking current; supersede explicitly; graph deviations from manual rather than silent drift. Bulk v2 status fields are not authoritative until curated with evidence and explanations.",
+    "id": "operating-precedence-agile-sdlc-43e05582",
+    "path": null,
+    "stage": null,
+    "status": "current",
+    "title": "Operating precedence: Agile SDLC",
+    "type": "decision",
+    "verification": "unverified"
+  },
+  "successor": {
+    "content": "{\"decision\":\"Operate CASSIO agents and Grapher curation under agile SDLC lifecycle stages and truth precedence, favoring verified current implementation over canonical specification, proposed work, and historical or superseded context.\",\"rationale\":\"Work should proceed in small verified increments, supersession should be explicit, and deviations from the manual should be graphed rather than allowed to drift silently.\"}",
+    "evidence": [],
+    "id": "decision-enriched-a3ea28412f222867",
+    "owners": [],
+    "provenance": {
+      "actor_id": "ChatGPT",
+      "actor_kind": "agent",
+      "actor_role": "semantic-enricher",
+      "integrity": "declared",
+      "recorded_at": "2026-09-05T09:04:11.185216+00:00",
+      "source": "research_enrichment"
+    },
+    "scope": {},
+    "semantic": {
+      "decision": "Operate CASSIO agents and Grapher curation under agile SDLC lifecycle stages and truth precedence, favoring verified current implementation over canonical specification, proposed work, and historical or superseded context.",
+      "rationale": "Work should proceed in small verified increments, supersession should be explicit, and deviations from the manual should be graphed rather than allowed to drift silently."
+    },
+    "source_refs": [],
+    "stage": null,
+    "status": "proposed",
+    "title": "Operating precedence: Agile SDLC",
+    "type": "decision",
+    "verification": "unverified",
+    "workflow_state": "not_applicable"
+  },
+  "workflow_version": "0.1.0"
+}
