@@ -1,0 +1,570 @@
+[
+  {
+    "example_id": "gx-0211d5e55a939cf3850b",
+    "example_kind": "decision_to_outcome",
+    "export": {
+      "created_at": "2026-09-05T08:32:04.681146+00:00",
+      "exporter": "grapher-research-exporter",
+      "exporter_version": "0.1.0"
+    },
+    "input": {
+      "records": [
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "decision": "Maintain evaluation/training export research as a downstream consumer of Grapher rather than adding model-specific fields or training behavior to Grapher core.",
+              "rationale": "A model-agnostic work graph should remain reusable while downstream interchange and model adapters can evolve independently as experiments produce evidence."
+            }
+          },
+          "evidence_refs": [
+            "research/training-data/README.md"
+          ],
+          "id": "decision-training-data-study-boundary-20260905",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "research/training-data/AGENTS.md",
+            "research/training-data/README.md"
+          ],
+          "stage": "maintaining",
+          "status": "canonical_spec",
+          "title": "Keep evaluation and training data research downstream of Grapher",
+          "type": "decision",
+          "verification": "unverified",
+          "workflow_state": "completed"
+        },
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "proposal": "Build a read-only research exporter outside src/grapher that consumes immutable shared Grapher snapshots and emits Grapher Derived Example v1 candidates with eligibility and rejection metrics.",
+              "rationale": "Automatic extraction must be measured against real graphs before any export behavior is promoted into Grapher or used to generate model-specific training data."
+            }
+          },
+          "evidence_refs": [
+            "research/training-data/STUDY_LOG.md"
+          ],
+          "id": "proposal-training-data-exporter-study-20260905",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "research/training-data/STUDY_LOG.md",
+            "research/training-data/schema.v1.json"
+          ],
+          "stage": "planning",
+          "status": "proposed",
+          "title": "Prototype a read-only derived-example exporter",
+          "type": "proposal",
+          "verification": "unverified",
+          "workflow_state": "not_started"
+        },
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "evidence": "Release tag v0.5.0 targets commit 3df4e343; main CI passed; GitHub release 383170519 contains grapher-0.5.0-py3-none-any.whl and grapher-0.5.0.tar.gz built from that commit.",
+              "result": "Grapher v0.5.0 was packaged and published from main with synchronized human and agent documentation, strict semantic contracts, Git-backed publish/sync transport, and compact-context guidance."
+            }
+          },
+          "evidence_refs": [
+            "git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a",
+            "github:release:v0.5.0"
+          ],
+          "id": "result-grapher-v050-release-20260905",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "AGENTS.md",
+            "CHANGELOG.md",
+            "README.md",
+            "git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a",
+            "github:release:v0.5.0",
+            "pyproject.toml"
+          ],
+          "stage": "maintaining",
+          "status": "current",
+          "title": "Grapher v0.5.0 packaged and published",
+          "type": "result",
+          "verification": "verified",
+          "workflow_state": "completed"
+        }
+      ],
+      "relations": []
+    },
+    "purpose": [
+      "evaluation",
+      "training"
+    ],
+    "quality": {
+      "eligible": true,
+      "evidence_strength": "verified",
+      "policy_version": "research-v1",
+      "target_superseded": false,
+      "unresolved_contradiction": false,
+      "warnings": []
+    },
+    "schema_version": "1.0",
+    "source": {
+      "episode_id": "7537d11e83a770128a5e",
+      "generation_id": null,
+      "graph_hash": "fe42beb04a79833f5785ee6715199ace2c168433c1acafb7c181d3d82aeaa3e0",
+      "graph_version": 1,
+      "mission_id": null,
+      "project_id": "grapher",
+      "snapshot_ref": ".grapher/shared/history/fe42beb04a79833f.json"
+    },
+    "split_group": "grapher/_/_",
+    "target": {
+      "records": [
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "evidence": "research/training-data/schema.v1.json defines the interchange contract; examples/grapher-v050-sequence.json instantiates it against Grapher shared graph hash 676fe99a3507c9d0; README.md and STUDY_LOG.md define the study policy and next experiment.",
+              "result": "The repository now contains a model-agnostic Grapher Derived Example v1 JSON Schema, conservative eligibility and leakage rules, a scoped agent policy, a living study log, and a fixture derived from the verified Grapher v0.5.0 release episode."
+            }
+          },
+          "evidence_refs": [
+            "research/training-data/examples/grapher-v050-sequence.json",
+            "research/training-data/schema.v1.json"
+          ],
+          "id": "result-training-data-interchange-v1-20260905",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "research/training-data/README.md",
+            "research/training-data/STUDY_LOG.md",
+            "research/training-data/examples/grapher-v050-sequence.json",
+            "research/training-data/schema.v1.json"
+          ],
+          "stage": "planning",
+          "status": "current",
+          "title": "Grapher Derived Example v1 research contract initialized",
+          "type": "result",
+          "verification": "verified",
+          "workflow_state": "completed"
+        }
+      ],
+      "relations": [
+        {
+          "from": "result-training-data-interchange-v1-20260905",
+          "note": null,
+          "rel": "derived_from",
+          "to": "decision-training-data-study-boundary-20260905"
+        },
+        {
+          "from": "result-training-data-interchange-v1-20260905",
+          "note": "The next experiment is the read-only exporter prototype.",
+          "rel": "references",
+          "to": "proposal-training-data-exporter-study-20260905"
+        },
+        {
+          "from": "result-training-data-interchange-v1-20260905",
+          "note": "v0.5.0 is the study baseline and source of the first fixture.",
+          "rel": "derived_from",
+          "to": "result-grapher-v050-release-20260905"
+        }
+      ]
+    }
+  },
+  {
+    "example_id": "gx-0a03eb063b06974d4c98",
+    "example_kind": "decision_to_outcome",
+    "export": {
+      "created_at": "2026-09-05T08:32:04.681146+00:00",
+      "exporter": "grapher-research-exporter",
+      "exporter_version": "0.1.0"
+    },
+    "input": {
+      "records": [
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "decision": "Keep agent working context compact and persist durable detail in Grapher or repository files instead of conversation windows.",
+              "rationale": "This reduces context bloat and repeated rediscovery while preserving full durable project knowledge outside the active agent window."
+            }
+          },
+          "evidence_refs": [
+            "git:de96da05b83836c2a855a8d9400e24cd9d3fce40"
+          ],
+          "id": "decision-grapher-compact-context-20260905",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "AGENTS.md",
+            "git:de96da05b83836c2a855a8d9400e24cd9d3fce40"
+          ],
+          "stage": "maintaining",
+          "status": "canonical_spec",
+          "title": "Keep Grapher agent working context compact",
+          "type": "decision",
+          "verification": "verified",
+          "workflow_state": "completed"
+        },
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "change": "Added publish and sync transport for shared Grapher state with canonical graph hashing, publication manifests and history, unpublished-change protection, and vector rebuild on sync.",
+              "component": "Git transport boundary"
+            }
+          },
+          "evidence_refs": [
+            "git:19073806812ef23b2434243add23a5379768d8f6"
+          ],
+          "id": "implementation-grapher-git-transport-20260905",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "docs/GIT_TRANSPORT.md",
+            "git:19073806812ef23b2434243add23a5379768d8f6",
+            "src/grapher/transport.py",
+            "tests/test_transport.py"
+          ],
+          "stage": "developing",
+          "status": "current",
+          "title": "Git-backed Grapher publish and sync transport implemented",
+          "type": "implementation",
+          "verification": "verified",
+          "workflow_state": "completed"
+        },
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "change": "Added typed semantic entry contracts with exact allowed fields, field-type validation, filler rejection, unexpected-field rejection, and machine-readable contract introspection.",
+              "component": "semantic schema registry and write-time validation"
+            }
+          },
+          "evidence_refs": [
+            "git:de96da05b83836c2a855a8d9400e24cd9d3fce40"
+          ],
+          "id": "implementation-grapher-semantic-contracts-20260905",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "docs/SEMANTIC_ENTRY_SCHEMA.md",
+            "git:de96da05b83836c2a855a8d9400e24cd9d3fce40",
+            "git:e960bfbe2f4e75b395b17c1bf682acf8b81c9ac6",
+            "src/grapher/semantic.py",
+            "tests/test_semantic.py"
+          ],
+          "stage": "developing",
+          "status": "current",
+          "title": "Typed semantic contracts and schema introspection implemented",
+          "type": "implementation",
+          "verification": "verified",
+          "workflow_state": "completed"
+        },
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "evidence": "git fetch reported 23 upstream commits; grapher sync completed; validation reported zero errors after curation; capped reindex covered all 14 nodes; and scripts/test.sh -v passed 109 non-embed tests.",
+              "result": "The local Grapher checkout fast-forwarded from 73ed149 to de96da0, hydrated its local graph from the pulled shared snapshot, and restored the configured embedding and dashboard capabilities."
+            }
+          },
+          "evidence_refs": [
+            "scripts/test.sh -v"
+          ],
+          "id": "result-grapher-transport-sync-20260905",
+          "provenance": {
+            "actor_id": "codex",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "cli"
+          },
+          "source_refs": [
+            "docs/GIT_TRANSPORT.md",
+            "docs/SEMANTIC_ENTRY_SCHEMA.md",
+            "git:de96da0"
+          ],
+          "stage": "maintaining",
+          "status": "current",
+          "title": "Grapher transport synchronization verified on 2026-09-05",
+          "type": "result",
+          "verification": "verified",
+          "workflow_state": "completed"
+        },
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "evidence": "Release tag v0.5.0 targets commit 3df4e343; main CI passed; GitHub release 383170519 contains grapher-0.5.0-py3-none-any.whl and grapher-0.5.0.tar.gz built from that commit.",
+              "result": "Grapher v0.5.0 was packaged and published from main with synchronized human and agent documentation, strict semantic contracts, Git-backed publish/sync transport, and compact-context guidance."
+            }
+          },
+          "evidence_refs": [
+            "git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a",
+            "github:release:v0.5.0"
+          ],
+          "id": "result-grapher-v050-release-20260905",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "AGENTS.md",
+            "CHANGELOG.md",
+            "README.md",
+            "git:3df4e343c9dd6ecb7722e34a7e31b3bcb317081a",
+            "github:release:v0.5.0",
+            "pyproject.toml"
+          ],
+          "stage": "maintaining",
+          "status": "current",
+          "title": "Grapher v0.5.0 packaged and published",
+          "type": "result",
+          "verification": "verified",
+          "workflow_state": "completed"
+        }
+      ],
+      "relations": []
+    },
+    "purpose": [
+      "evaluation",
+      "training"
+    ],
+    "quality": {
+      "eligible": true,
+      "evidence_strength": "verified",
+      "policy_version": "research-v1",
+      "target_superseded": false,
+      "unresolved_contradiction": false,
+      "warnings": []
+    },
+    "schema_version": "1.0",
+    "source": {
+      "episode_id": "1982b4f19d6b9aa6486b",
+      "generation_id": null,
+      "graph_hash": "fe42beb04a79833f5785ee6715199ace2c168433c1acafb7c181d3d82aeaa3e0",
+      "graph_version": 1,
+      "mission_id": null,
+      "project_id": "grapher",
+      "snapshot_ref": ".grapher/shared/history/fe42beb04a79833f.json"
+    },
+    "split_group": "grapher/_/_",
+    "target": {
+      "records": [
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "evidence": "Merged semantic-entry, transport, and contract-hardening commits are present on main; Codex synchronized from the shared snapshot and reported 109 non-embed tests passing.",
+              "result": "Grapher now has typed semantic contracts, Git-backed shared transport, compact-context agent guidance, and verified cross-checkout synchronization."
+            }
+          },
+          "evidence_refs": [
+            "scripts/test.sh -v"
+          ],
+          "id": "result-grapher-20260905-maintenance-baseline",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "git:19073806812ef23b2434243add23a5379768d8f6",
+            "git:d2f1c7dee60e71649989159b747105d145eb5040",
+            "git:de96da05b83836c2a855a8d9400e24cd9d3fce40",
+            "git:e960bfbe2f4e75b395b17c1bf682acf8b81c9ac6",
+            "result-grapher-transport-sync-20260905"
+          ],
+          "stage": "maintaining",
+          "status": "current",
+          "title": "Grapher 2026-09-05 maintenance baseline established",
+          "type": "result",
+          "verification": "verified",
+          "workflow_state": "completed"
+        }
+      ],
+      "relations": [
+        {
+          "from": "result-grapher-20260905-maintenance-baseline",
+          "note": null,
+          "rel": "derived_from",
+          "to": "decision-grapher-compact-context-20260905"
+        },
+        {
+          "from": "result-grapher-20260905-maintenance-baseline",
+          "note": null,
+          "rel": "derived_from",
+          "to": "implementation-grapher-git-transport-20260905"
+        },
+        {
+          "from": "result-grapher-20260905-maintenance-baseline",
+          "note": null,
+          "rel": "derived_from",
+          "to": "implementation-grapher-semantic-contracts-20260905"
+        },
+        {
+          "from": "result-grapher-20260905-maintenance-baseline",
+          "note": null,
+          "rel": "verified_by",
+          "to": "result-grapher-transport-sync-20260905"
+        },
+        {
+          "from": "result-grapher-v050-release-20260905",
+          "note": null,
+          "rel": "derived_from",
+          "to": "result-grapher-20260905-maintenance-baseline"
+        }
+      ]
+    }
+  },
+  {
+    "example_id": "gx-111d4968d70f1942523a",
+    "example_kind": "state_to_decision",
+    "export": {
+      "created_at": "2026-09-05T08:32:04.681146+00:00",
+      "exporter": "grapher-research-exporter",
+      "exporter_version": "0.1.0"
+    },
+    "input": {
+      "records": [
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "evidence": "Merged semantic-entry, transport, and contract-hardening commits are present on main; Codex synchronized from the shared snapshot and reported 109 non-embed tests passing.",
+              "result": "Grapher now has typed semantic contracts, Git-backed shared transport, compact-context agent guidance, and verified cross-checkout synchronization."
+            }
+          },
+          "evidence_refs": [
+            "scripts/test.sh -v"
+          ],
+          "id": "result-grapher-20260905-maintenance-baseline",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "git:19073806812ef23b2434243add23a5379768d8f6",
+            "git:d2f1c7dee60e71649989159b747105d145eb5040",
+            "git:de96da05b83836c2a855a8d9400e24cd9d3fce40",
+            "git:e960bfbe2f4e75b395b17c1bf682acf8b81c9ac6",
+            "result-grapher-transport-sync-20260905"
+          ],
+          "stage": "maintaining",
+          "status": "current",
+          "title": "Grapher 2026-09-05 maintenance baseline established",
+          "type": "result",
+          "verification": "verified",
+          "workflow_state": "completed"
+        }
+      ],
+      "relations": []
+    },
+    "purpose": [
+      "evaluation",
+      "training"
+    ],
+    "quality": {
+      "eligible": true,
+      "evidence_strength": "verified",
+      "policy_version": "research-v1",
+      "target_superseded": false,
+      "unresolved_contradiction": false,
+      "warnings": []
+    },
+    "schema_version": "1.0",
+    "source": {
+      "episode_id": "a899ac42d8e1a1414312",
+      "generation_id": null,
+      "graph_hash": "fe42beb04a79833f5785ee6715199ace2c168433c1acafb7c181d3d82aeaa3e0",
+      "graph_version": 1,
+      "mission_id": null,
+      "project_id": "grapher",
+      "snapshot_ref": ".grapher/shared/history/fe42beb04a79833f.json"
+    },
+    "split_group": "grapher/_/_",
+    "target": {
+      "records": [
+        {
+          "content": {
+            "kind": "semantic",
+            "value": {
+              "decision": "Keep agent working context compact and persist durable detail in Grapher or repository files instead of conversation windows.",
+              "rationale": "This reduces context bloat and repeated rediscovery while preserving full durable project knowledge outside the active agent window."
+            }
+          },
+          "evidence_refs": [
+            "git:de96da05b83836c2a855a8d9400e24cd9d3fce40"
+          ],
+          "id": "decision-grapher-compact-context-20260905",
+          "provenance": {
+            "actor_id": "chatgpt",
+            "actor_kind": "agent",
+            "actor_role": "maintainer",
+            "integrity": "declared",
+            "source": "github"
+          },
+          "source_refs": [
+            "AGENTS.md",
+            "git:de96da05b83836c2a855a8d9400e24cd9d3fce40"
+          ],
+          "stage": "maintaining",
+          "status": "canonical_spec",
+          "title": "Keep Grapher agent working context compact",
+          "type": "decision",
+          "verification": "verified",
+          "workflow_state": "completed"
+        }
+      ],
+      "relations": [
+        {
+          "from": "result-grapher-20260905-maintenance-baseline",
+          "note": null,
+          "rel": "derived_from",
+          "to": "decision-grapher-compact-context-20260905"
+        }
+      ]
+    }
+  }
+]
