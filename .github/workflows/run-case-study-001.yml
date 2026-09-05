@@ -1,0 +1,49 @@
+name: Run training-data case study 001
+
+on:
+  push:
+    branches: [research/exporter-prototype-v1]
+
+permissions:
+  contents: write
+
+jobs:
+  case-study:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/exporter-prototype-v1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Export and record case study
+        run: |
+          python research/training-data/exporter.py --out /tmp/export.json --metrics /tmp/metrics.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('research/training-data/case-studies/001-grapher-self')
+          root.mkdir(parents=True, exist_ok=True)
+          result=json.loads(Path('/tmp/export.json').read_text())
+          metrics=result['metrics']
+          (root/'metrics.json').write_text(json.dumps(metrics,indent=2,sort_keys=True)+'\n')
+          sample=result['examples'][:3]
+          (root/'sample.json').write_text(json.dumps(sample,indent=2,sort_keys=True)+'\n')
+          (root/'README.md').write_text(
+              '# Case Study 001 — Grapher self-export\n\n'
+              'Baseline run of exporter 0.1.0 against Grapher’s own published graph. '
+              'The committed metrics and small sample are observational research artifacts; '
+              'the full export is reproducible and intentionally not committed.\n\n'
+              f"Graph hash: `{metrics['graph_hash']}`\n\n"
+              'Use this baseline to compare later Grapher releases and exporter policies.\n'
+          )
+          PY
+      - name: Commit study artifacts and remove runner workflow
+        run: |
+          git rm .github/workflows/run-case-study-001.yml
+          git add research/training-data/case-studies/001-grapher-self
+          git config user.name grapher-research-bot
+          git config user.email grapher-research-bot@users.noreply.github.com
+          git commit -m "research: record case study 001 self-export baseline"
+          git push origin HEAD:research/exporter-prototype-v1
