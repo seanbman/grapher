@@ -1,0 +1,35 @@
+{
+  "candidate_semantic_type_counts": {
+    "constraint": 1,
+    "decision": 1,
+    "failure": 78,
+    "lesson": 78,
+    "observation": 78,
+    "problem": 78,
+    "requirement": 1,
+    "result": 78
+  },
+  "disposition_counts": {
+    "context_only": 116,
+    "enrichment_required": 80
+  },
+  "graph_hash": "c94a02474322557f171820603ee736ca4554ef1d01f0dd6a21caa6ff103cf2f6",
+  "node_count": 196,
+  "node_type_counts": {
+    "checkpoint": 6,
+    "concept": 63,
+    "decision": 1,
+    "document": 1,
+    "finding": 78,
+    "image": 45,
+    "instruction": 1,
+    "video": 1
+  },
+  "preview_version": "0.1.0",
+  "reason_counts": {
+    "artifact_or_context_record_has_no_safe_semantic_retype": 116,
+    "legacy_type_is_semantically_ambiguous": 79,
+    "typed_free_text_missing_required_semantic_payload": 1
+  },
+  "source_ref": "github:seanbman/pocket-synth@33928620f31c70d86da9a4f9133aec897752f3f0:.grapher/knowledge.json"
+}
