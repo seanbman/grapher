@@ -5,6 +5,8 @@ alwaysApply: true
 
 # grapher — shared agent knowledge
 
+**Keep working context compact.** Retrieve only relevant graph slices, summarize instead of pasting large files/transcripts, avoid repeating known context, and persist durable detail in Grapher or repo files rather than the active conversation.
+
 **Cursor is the enriching LLM.** `grapher` only stores and retrieves what **you** write. A path in the graph is a pointer, not understanding. You must **deeply consume, understand, and graph** the meaning of every asset — documents, **images**, **videos**, **audio/sound files**, and anything else pending.
 
 ## Critical: media is not path metadata
@@ -28,6 +30,10 @@ grapher audit
 ```
 
 When multiple nodes cover the same topic, prefer **current** or **canonical_spec** status. Check supersession edges (`supersedes`) before treating older nodes as truth.
+
+## Git transport
+
+`.grapher/knowledge.json`, vectors, local history, and sync state are local runtime files. Git-shared knowledge lives under `.grapher/shared/`. After pulling repository changes, run `grapher sync`. Before pushing durable graph changes, run `grapher validate`, `grapher audit`, and `grapher publish`, then commit `.grapher/shared/`. Never overwrite unpublished local changes with `grapher sync --force` unless discarding them is intentional.
 
 ## Truth status (required for findings, decisions, specs)
 
@@ -56,7 +62,7 @@ Use canonical semantic types for durable reasoning and work records:
 
 `observation`, `problem`, `question`, `hypothesis`, `requirement`, `constraint`, `proposal`, `decision`, `task`, `implementation`, `test`, `result`, `failure`, `lesson`.
 
-For these types, `--content` is a JSON object with required type-specific fields (see `docs/SEMANTIC_ENTRY_SCHEMA.md`). Examples:
+For these types, `--content` must satisfy the exact JSON contract (see `docs/SEMANTIC_ENTRY_SCHEMA.md`). Missing fields, wrong field types, unexpected fields, and filler are rejected. Programmatic integrations can inspect contracts with `grapher.semantic.semantic_contract()` and `semantic_contracts()`. Examples:
 
 ```bash
 grapher add --type decision --title "Scheduler cleanup" \

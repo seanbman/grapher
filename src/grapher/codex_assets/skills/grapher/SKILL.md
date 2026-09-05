@@ -32,7 +32,11 @@ For durable reasoning/work records, use canonical semantic types:
 
 `observation`, `problem`, `question`, `hypothesis`, `requirement`, `constraint`, `proposal`, `decision`, `task`, `implementation`, `test`, `result`, `failure`, `lesson`.
 
-Their `--content` must be a JSON object containing the type-specific fields documented in `docs/SEMANTIC_ENTRY_SCHEMA.md`. Do not write free-form filler such as `TBD`, `investigate later`, or unsupported conclusions. Empty semantic stubs are temporary only; current, canonical, verified, or finalized semantic records must be complete.
+Their `--content` must satisfy the exact JSON contract documented in `docs/SEMANTIC_ENTRY_SCHEMA.md`. Missing fields, wrong field types, unexpected fields, and filler such as `TBD` or `investigate later` are rejected. Empty semantic stubs are temporary only; current, canonical, verified, or finalized semantic records must be complete. Integrations can inspect contracts with `grapher.semantic.semantic_contract()` and `semantic_contracts()`.
+
+## Git transport
+
+Keep the active conversation small and use Grapher as durable context. After `git pull`, run `grapher sync` before relying on local graph state. Before pushing graph-worthy changes, run `grapher validate`, `grapher audit`, and `grapher publish`, then commit `.grapher/shared/`. Never commit `.grapher/knowledge.json`, vectors, local history, or sync state.
 
 ## Exporting an idea for another project
 
@@ -46,5 +50,6 @@ That writes pack JSON + `GRAPHER_CONTEXT.md` + a short README.
 
 - Paths are locators; **understanding** is in `content`.
 - Do not treat empty or filename-only media nodes as successful knowledge.
+- Keep working context compact; retrieve only relevant graph slices and persist durable detail outside the conversation.
 - Prefer grapher over rediscovering after context is loaded.
 - Preserve uncertainty: hypotheses are hypotheses; results require evidence; decisions require rationale.

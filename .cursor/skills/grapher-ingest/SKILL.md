@@ -39,16 +39,20 @@ description: >-
        --path <path> --content "<deep understanding>" --tags ingest,<more>
      ```
 5. Link (`depicts`, `references`, `related`, …).
-6. Verify:
+6. Verify and publish durable shared knowledge:
    ```bash
    grapher scan <DIR>
    grapher search "<a detail that only exists inside an image/video/audio you ingested>"
+   grapher validate
+   grapher audit
+   grapher publish
    ```
+   Commit `.grapher/shared/`; keep local graph/vector/history/sync files out of Git.
 
 ## Do / Don't
 
 - Do treat image/video/audio as mandatory first-class knowledge sources
 - Do put understanding in `content`; path only locates the original
-- Do keep `content` dense and embeddable (not whole file dumps)
+- Do keep working context compact and `content` dense/embeddable (not whole file dumps)
 - Don't leave empty or filename-only media nodes
 - Don't stop while `pending_count > 0` unless the user explicitly aborts — then report remaining ids
