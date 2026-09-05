@@ -1,7 +1,7 @@
-"""Canonical semantic entry schemas and write-time validation.
+"""Canonical semantic entry contracts and write-time validation.
 
 Semantic entries may exist as empty working stubs, but once semantic content is
-written it must be a JSON object satisfying the entry type's required fields.
+written it must be a JSON object satisfying the entry type's contract.
 Durable/current/verified/finalized semantic entries may not remain empty.
 """
 
@@ -12,24 +12,42 @@ import re
 from typing import Any
 
 
-SEMANTIC_ENTRY_SCHEMAS: dict[str, tuple[str, ...]] = {
-    "observation": ("observation", "source"),
-    "problem": ("problem", "impact"),
-    "question": ("question", "importance"),
-    "hypothesis": ("hypothesis", "basis", "validation_condition"),
-    "requirement": ("requirement", "acceptance_condition"),
-    "constraint": ("constraint", "reason"),
-    "proposal": ("proposal", "rationale"),
-    "decision": ("decision", "rationale"),
-    "task": ("action", "expected_outcome"),
-    "implementation": ("change", "component"),
-    "test": ("test", "method", "outcome"),
-    "result": ("result", "evidence"),
-    "failure": ("failure", "observed_behavior"),
-    "lesson": ("lesson", "derived_from"),
+SEMANTIC_ENTRY_CONTRACTS: dict[str, dict[str, Any]] = {
+    "observation": {"required": {"observation": "string", "source": "string"}},
+    "problem": {"required": {"problem": "string", "impact": "string"}},
+    "question": {"required": {"question": "string", "importance": "string"}},
+    "hypothesis": {
+        "required": {
+            "hypothesis": "string",
+            "basis": "string",
+            "validation_condition": "string",
+        }
+    },
+    "requirement": {
+        "required": {"requirement": "string", "acceptance_condition": "string"}
+    },
+    "constraint": {"required": {"constraint": "string", "reason": "string"}},
+    "proposal": {"required": {"proposal": "string", "rationale": "string"}},
+    "decision": {"required": {"decision": "string", "rationale": "string"}},
+    "task": {"required": {"action": "string", "expected_outcome": "string"}},
+    "implementation": {"required": {"change": "string", "component": "string"}},
+    "test": {
+        "required": {"test": "string", "method": "string", "outcome": "string"}
+    },
+    "result": {"required": {"result": "string", "evidence": "string"}},
+    "failure": {
+        "required": {"failure": "string", "observed_behavior": "string"}
+    },
+    "lesson": {"required": {"lesson": "string", "derived_from": "string_list"}},
 }
 
-CANONICAL_ENTRY_TYPES: frozenset[str] = frozenset(SEMANTIC_ENTRY_SCHEMAS)
+# Backward-compatible compact view used by callers and documentation helpers.
+SEMANTIC_ENTRY_SCHEMAS: dict[str, tuple[str, ...]] = {
+    node_type: tuple(contract["required"])
+    for node_type, contract in SEMANTIC_ENTRY_CONTRACTS.items()
+}
+
+CANONICAL_ENTRY_TYPES: frozenset[str] = frozenset(SEMANTIC_ENTRY_CONTRACTS)
 DURABLE_STATUSES: frozenset[str] = frozenset({"current", "canonical_spec"})
 DURABLE_VERIFICATION: frozenset[str] = frozenset({"partially_verified", "verified"})
 TEST_OUTCOMES: frozenset[str] = frozenset({"pass", "fail", "partial", "inconclusive"})
@@ -69,6 +87,52 @@ def _has_substance(value: Any) -> bool:
     return value is not None
 
 
+def _validate_field_type(node_type: str, field: str, value: Any, field_type: str) -> None:
+    if field_type == "string":
+        if not isinstance(value, str):
+            raise ValueError(
+                f"semantic node type {node_type!r} field {field!r} must be a string"
+            )
+        return
+    if field_type == "string_list":
+        if not isinstance(value, list) or not value or not all(
+            isinstance(item, str) and _has_substance(item) for item in value
+        ):
+            raise ValueError(
+                f"semantic node type {node_type!r} field {field!r} must be a non-empty list of substantive strings"
+            )
+        return
+    raise ValueError(
+        f"semantic node type {node_type!r} has unsupported schema field type {field_type!r}"
+    )
+
+
+def semantic_contract(node_type: str) -> dict[str, Any]:
+    """Return a stable, JSON-ready description of one semantic entry contract."""
+    contract = SEMANTIC_ENTRY_CONTRACTS.get(node_type)
+    if contract is None:
+        raise ValueError(f"unknown semantic node type {node_type!r}")
+    required = dict(contract["required"])
+    return {
+        "type": node_type,
+        "required_fields": list(required),
+        "allowed_fields": list(required),
+        "field_types": required,
+        "additional_fields": False,
+        "constraints": (
+            {"outcome": sorted(TEST_OUTCOMES)} if node_type == "test" else {}
+        ),
+    }
+
+
+def semantic_contracts() -> dict[str, dict[str, Any]]:
+    """Return all canonical semantic entry contracts for agent/tool introspection."""
+    return {
+        node_type: semantic_contract(node_type)
+        for node_type in sorted(CANONICAL_ENTRY_TYPES)
+    }
+
+
 def requires_semantic_content(node: dict[str, Any]) -> bool:
     """Whether an otherwise-empty semantic node has crossed a durable boundary."""
     return bool(
@@ -91,9 +155,11 @@ def parse_semantic_content(node_type: str, content: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError(f"semantic node type {node_type!r} requires JSON object content")
 
+    contract = SEMANTIC_ENTRY_CONTRACTS[node_type]
+    required: dict[str, str] = contract["required"]
     missing = [
         field
-        for field in SEMANTIC_ENTRY_SCHEMAS[node_type]
+        for field in required
         if field not in payload or not _has_substance(payload[field])
     ]
     if missing:
@@ -102,12 +168,22 @@ def parse_semantic_content(node_type: str, content: str) -> dict[str, Any]:
             + ", ".join(missing)
         )
 
+    unexpected = sorted(set(payload) - set(required))
+    if unexpected:
+        raise ValueError(
+            f"semantic node type {node_type!r} does not allow field(s): "
+            + ", ".join(unexpected)
+            + "; allowed fields: "
+            + ", ".join(required)
+        )
+
+    for field, field_type in required.items():
+        _validate_field_type(node_type, field, payload[field], field_type)
+
     if node_type == "test" and payload["outcome"] not in TEST_OUTCOMES:
         raise ValueError(
             f"semantic test outcome must be one of {sorted(TEST_OUTCOMES)}"
         )
-    if node_type == "lesson" and not isinstance(payload["derived_from"], list):
-        raise ValueError("semantic lesson derived_from must be a non-empty list")
 
     return payload
 
