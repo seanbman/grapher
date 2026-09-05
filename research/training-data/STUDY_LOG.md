@@ -26,34 +26,27 @@ It does not establish automatic extraction reliability, optimal reasoning, suffi
 
 Implemented read-only exporter `0.1.1` outside `src/grapher/` and ran it against Grapher's own published graph (`fe42beb0...`).
 
-Results after correcting edge direction:
-
-- 13 semantic candidates;
-- 4 eligible (30.77%);
-- 9 rejected;
-- 3 eligible `decision_to_outcome`, 1 `sequence_completion`;
-- 3 eligible targets have verified evidence, 1 declared evidence;
-- 8 rejections lacked a directed grounded predecessor;
-- 4 involved legacy/non-canonical semantic targets;
-- all eligible examples remain in one leakage group.
-
-### Iteration learned from the case study
-
-The initial symmetric-neighbor extractor incorrectly allowed incoming edges to become context, which could leak later implementation/outcome state backward into earlier targets. Exporter `0.1.1` now accepts only directed antecedent relations emitted by the target.
+Results after correcting edge direction: 13 semantic candidates; 4 eligible; 9 rejected. The initial symmetric-neighbor extractor leaked later state backward, so exporter `0.1.1` now accepts only directed antecedent relations emitted by the target.
 
 ## 2026-09-05 — Case Study 002: pocket-synth legacy corpus
 
 Pinned public `seanbman/pocket-synth` at `33928620f31c70d86da9a4f9133aec897752f3f0` and analyzed its existing `.grapher/knowledge.json` without modifying or copying the source graph into Grapher.
 
-Exporter `0.1.3` reports:
+Exporter `0.1.3` found 196 nodes / 386 edges, but only 1 current semantic-type node and 0 canonical semantic objects; strict export therefore produced 0 eligible examples. This identified legacy semantic vocabulary/content—not graph size or connectivity—as the limiting factor.
 
-- 196 nodes / 386 edges;
-- 147 edges use current antecedent relation vocabulary;
-- 78 `finding`, 63 `concept`, 45 `image` nodes;
-- only 1 node uses the current semantic-type vocabulary;
-- 0 canonical semantic objects;
-- 1 candidate, 0 eligible.
+## 2026-09-05 — Legacy normalization study 001
 
-### Iteration learned from the case study
+Added read-only preview `0.1.0` and ran it against the same pinned pocket-synth graph.
 
-The limiting factor is not corpus size or graph connectivity; it is legacy semantic vocabulary/content. The exporter must not weaken eligibility or infer missing semantic fields. The next experiment is a **non-inventive normalization preview** that classifies legacy node types/content into: mechanically mappable, enrichment-required, or non-semantic/context-only. Grapher core should change only if that study reveals a general graph-model deficiency rather than a migration convenience.
+Results:
+
+- 196 nodes total;
+- 80 `enrichment_required`;
+- 116 `context_only`;
+- 0 `mechanically_mappable`.
+
+The 80 enrichment records are 78 ambiguous `finding` nodes, 1 legacy `instruction`, and 1 free-text `decision`. The remaining concepts, documents, images, video, and checkpoints have no safe semantic retype and remain context-only.
+
+### Iteration learned
+
+There is no defensible bulk auto-migration for this legacy corpus. Normalization should therefore be an explicit enrichment workflow that presents candidate types/required fields to a human or agent, preserves the original record, and creates a typed successor only when the missing semantics are actually supplied. The exporter quality bar remains unchanged.
