@@ -1,0 +1,25 @@
+{
+  "candidate_by_kind": {
+    "state_to_decision": 1
+  },
+  "candidate_count": 1,
+  "duplicate_fingerprints": 0,
+  "eligibility_rate": 0.0,
+  "eligible_by_kind": {},
+  "eligible_count": 0,
+  "evidence_strength": {},
+  "exporter_version": "0.1.2",
+  "graph_hash": "1c81ec3d333db55910054f501182e974ff4a823ca5f12008bd1fc96dbe6b5e30",
+  "largest_split_group": 0,
+  "policy_version": "research-v1",
+  "rejected_by_kind": {
+    "state_to_decision": 1
+  },
+  "rejected_count": 1,
+  "rejection_reasons": {
+    "no_grounded_predecessor": 1,
+    "target_not_canonical_semantic": 1
+  },
+  "source_warning": "legacy_git_snapshot_not_shared_publication",
+  "split_group_count": 0
+}
