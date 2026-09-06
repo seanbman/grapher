@@ -29,6 +29,13 @@ VALID_PAYLOADS = {
     "result": {"result": "No voices survived restart", "evidence": "100-loop playback trace"},
     "failure": {"failure": "Pad audio leaks into next iteration", "observed_behavior": "Previous pad continues after restart"},
     "lesson": {"lesson": "Loop boundaries must explicitly terminate owned voices", "derived_from": ["failure-1", "test-1"]},
+    "status_transition": {
+        "subject_hash": "a" * 64,
+        "from_status": "proposed",
+        "to_status": "current",
+        "reason": "Architecture review accepted the assertion.",
+        "operation_id": "operation-status-1",
+    },
 }
 
 

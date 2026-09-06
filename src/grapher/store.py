@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import tempfile
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -87,6 +88,19 @@ def load_graph(path: Path, *, normalize: bool = True) -> dict[str, Any]:
     data.setdefault("edges", [])
     if normalize:
         data = normalize_graph(data)
+        # Any record that already carries a semantic seal must verify on read.
+        # Legacy finalized records without a seal remain readable until their
+        # next canonical write bootstraps the new integrity scheme.
+        from grapher.integrity import verify_node_integrity
+
+        for node_id, node in (data.get("nodes") or {}).items():
+            if not node.get("integrity"):
+                continue
+            check = verify_node_integrity(node)
+            if not check["valid"]:
+                raise ValueError(
+                    f"semantic integrity mismatch for node {node_id!r}: {check['reason']}"
+                )
     return data
 
 
@@ -138,19 +152,43 @@ def save_graph_mutation(
 ) -> dict[str, Any]:
     """Save canonical state and append its independently queryable transitions.
 
-    If journal append fails, the canonical graph is rolled back to the exact
-    pre-mutation document. Reads and vector-cache changes do not use this API.
+    Status-field mutations are promoted into immutable, hash-linked graph child
+    records before the canonical document is saved. Finalized nodes receive a
+    semantic SHA-256 seal. If journal append fails, the canonical graph is rolled
+    back to the exact pre-mutation document. Reads and vector-cache changes do not
+    use this API.
     """
-    from grapher.provenance import make_history_entry
+    from grapher.integrity import materialize_status_transitions, seal_finalized_nodes
+    from grapher.provenance import actor_record, make_history_entry
 
     old = before if before is not None else (load_graph(path, normalize=False) if path.is_file() else None)
+    operation_id = operation_id or f"operation-{uuid.uuid4().hex}"
+    resolved_actor = actor_record(source, actor or _actor_from_context(context))
+
+    # Any explicit finalization performed by a caller is sealed before persistence.
+    seal_finalized_nodes(data)
+    transition_ids = materialize_status_transitions(
+        old,
+        data,
+        actor=resolved_actor,
+        reason=reason,
+        operation_id=operation_id,
+    )
+    # Status transitions may finalize their subject and always finalize themselves.
+    seal_finalized_nodes(data)
+
+    enriched_context = dict(context or {})
+    if transition_ids:
+        enriched_context["status_transition_ids"] = transition_ids
+
     entry = make_history_entry(
         old, data, action=action, target=target, source=source, result=result,
         before_hash=_stable_hash(old) if old is not None else None,
-        after_hash=_stable_hash(data), actor=actor or _actor_from_context(context), reason=reason,
+        after_hash=_stable_hash(data), actor=resolved_actor, reason=reason,
         evidence_refs=evidence_refs, decision_ids=decision_ids,
         requirement_ids=requirement_ids, supersedes=supersedes,
-        overrides=overrides, operation_id=operation_id, phase=phase, context=context,
+        overrides=overrides, operation_id=operation_id, phase=phase,
+        context=enriched_context or None,
     )
     save_graph(path, data)
     try:

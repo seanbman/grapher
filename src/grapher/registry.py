@@ -168,6 +168,7 @@ GENERAL_NODE_TYPES: frozenset[str] = frozenset(
         "audit_record",
         "event",
         "claim",
+        "status_transition",
     }
 )
 
@@ -219,6 +220,7 @@ PRECISE_RELS: frozenset[str] = frozenset(
         "accepts",
         "audits",
         "contradicts",
+        "status_changed_by",
     }
 )
 
@@ -263,6 +265,7 @@ REL_DESCRIPTIONS: dict[str, str] = {
     "accepts": "Acceptance record accepts the target scope",
     "audits": "Audit record examines the target scope",
     "contradicts": "Explicit unresolved disagreement with target",
+    "status_changed_by": "Subject has an immutable child record explaining a truth-status change",
 }
 
 # --- Evidence types ---
@@ -370,13 +373,14 @@ VIEW_RELATIONS: dict[str, frozenset[str] | None] = {
             "satisfies",
             "evidenced_by",
             "derived_from",
+            "status_changed_by",
         }
     ),
     "roadmap": frozenset(
         {"precedes", "follows", "depends_on", "blocks", "assigned_to", "part_of"}
     ),
     "current": frozenset(
-        {"derived_from", "implements", "verified_by", "supersedes", "evidenced_by"}
+        {"derived_from", "implements", "verified_by", "supersedes", "evidenced_by", "status_changed_by"}
     ),
     "history": frozenset(
         {
@@ -386,6 +390,7 @@ VIEW_RELATIONS: dict[str, frozenset[str] | None] = {
             "fixes",
             "caused_by",
             "verified_by",
+            "status_changed_by",
         }
     ),
     "operations": frozenset(
@@ -393,7 +398,7 @@ VIEW_RELATIONS: dict[str, frozenset[str] | None] = {
     ),
     "provenance": frozenset(
         {"applies_to", "authored_by", "performed_by", "observed_by",
-         "hands_off", "accepts", "audits", "supersedes", "contradicts"}
+         "hands_off", "accepts", "audits", "supersedes", "contradicts", "status_changed_by"}
     ),
 }
 

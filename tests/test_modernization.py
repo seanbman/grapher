@@ -127,7 +127,7 @@ def test_supersede_preserves_finalized_record_and_adds_correction_edge():
     add_node(graph, id="new", type="acceptance", title="Correction", content="corrected state", status="current")
     result = supersede(graph, "new", "old")
     assert result["edge"]["rel"] == "supersedes"
-    assert graph["nodes"]["old"]["status"] == "current"
+    assert graph["nodes"]["old"]["status"] == "superseded"
     assert graph["nodes"]["old"]["content"] == "original state"
     assert graph["nodes"]["old"]["finalized_at"] == "2026-01-01T00:00:00+00:00"
 

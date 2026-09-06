@@ -39,6 +39,15 @@ SEMANTIC_ENTRY_CONTRACTS: dict[str, dict[str, Any]] = {
         "required": {"failure": "string", "observed_behavior": "string"}
     },
     "lesson": {"required": {"lesson": "string", "derived_from": "string_list"}},
+    "status_transition": {
+        "required": {
+            "subject_hash": "string",
+            "from_status": "string",
+            "to_status": "string",
+            "reason": "string",
+            "operation_id": "string",
+        }
+    },
 }
 
 # Backward-compatible compact view used by callers and documentation helpers.
@@ -113,15 +122,22 @@ def semantic_contract(node_type: str) -> dict[str, Any]:
     if contract is None:
         raise ValueError(f"unknown semantic node type {node_type!r}")
     required = dict(contract["required"])
+    constraints: dict[str, Any] = {}
+    if node_type == "test":
+        constraints["outcome"] = sorted(TEST_OUTCOMES)
+    if node_type == "status_transition":
+        from grapher.registry import TRUTH_STATUSES
+
+        constraints["from_status"] = sorted(TRUTH_STATUSES)
+        constraints["to_status"] = sorted(TRUTH_STATUSES)
+        constraints["subject_hash"] = "64 lowercase hexadecimal SHA-256 characters"
     return {
         "type": node_type,
         "required_fields": list(required),
         "allowed_fields": list(required),
         "field_types": required,
         "additional_fields": False,
-        "constraints": (
-            {"outcome": sorted(TEST_OUTCOMES)} if node_type == "test" else {}
-        ),
+        "constraints": constraints,
     }
 
 
@@ -184,6 +200,19 @@ def parse_semantic_content(node_type: str, content: str) -> dict[str, Any]:
         raise ValueError(
             f"semantic test outcome must be one of {sorted(TEST_OUTCOMES)}"
         )
+
+    if node_type == "status_transition":
+        from grapher.registry import TRUTH_STATUSES
+
+        for field in ("from_status", "to_status"):
+            if payload[field] not in TRUTH_STATUSES:
+                raise ValueError(
+                    f"semantic status transition {field} must be one of {sorted(TRUTH_STATUSES)}"
+                )
+        if not re.fullmatch(r"[0-9a-f]{64}", payload["subject_hash"]):
+            raise ValueError(
+                "semantic status transition subject_hash must be a lowercase SHA-256 hex digest"
+            )
 
     return payload
 
