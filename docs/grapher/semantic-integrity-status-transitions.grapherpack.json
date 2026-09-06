@@ -1,0 +1,77 @@
+{
+  "format": "grapher-pack",
+  "version": 1,
+  "meta": {
+    "name": "Grapher semantic integrity and immutable status transitions",
+    "description": "Portable architecture record for tamper-evident semantic assertions and append-only status interpretation changes.",
+    "exported_at": "2026-09-06T12:15:00+00:00",
+    "source_graph": "seanbman/grapher feature/semantic-integrity-status-transitions"
+  },
+  "graph": {
+    "version": 2,
+    "nodes": {
+      "decision-semantic-integrity-status-transitions": {
+        "id": "decision-semantic-integrity-status-transitions",
+        "type": "decision",
+        "title": "Represent truth-status changes as immutable hash-linked graph records",
+        "content": "{\"decision\": \"Epistemic status changes are represented by immutable hash-linked status-transition child records rather than unjournaled rewrites of the originating semantic assertion. Existing typed content and rationale remain the thesis-bearing fields; no duplicate descriptor field is added.\", \"rationale\": \"The graph must permit classification to evolve while preserving what a record originally asserted. Hashing the assertion and recording each later classification as a separately finalized child makes mutation accountable, tamper-evident, attributable, and transferable between Grapher workspaces.\"}",
+        "semantic": {
+          "decision": "Epistemic status changes are represented by immutable hash-linked status-transition child records rather than unjournaled rewrites of the originating semantic assertion. Existing typed content and rationale remain the thesis-bearing fields; no duplicate descriptor field is added.",
+          "rationale": "The graph must permit classification to evolve while preserving what a record originally asserted. Hashing the assertion and recording each later classification as a separately finalized child makes mutation accountable, tamper-evident, attributable, and transferable between Grapher workspaces."
+        },
+        "path": null,
+        "tags": ["semantic-integrity", "status-transition", "architecture"],
+        "meta": {},
+        "created_at": "2026-09-06T12:15:00+00:00",
+        "updated_at": "2026-09-06T12:15:00+00:00",
+        "stage": ["developing"],
+        "status": "current",
+        "workflow_state": "completed",
+        "verification": "unverified",
+        "evidence": [],
+        "source_refs": ["conversation:2026-09-06:semantic-integrity-status-transitions", "github:seanbman/grapher:feature/semantic-integrity-status-transitions"],
+        "owners": [],
+        "scope": {"project_id": "grapher"},
+        "provenance": {"source": "design-conversation", "integrity": "declared", "recorded_at": "2026-09-06T12:15:00+00:00"},
+        "finalized_at": "2026-09-06T12:15:00+00:00",
+        "integrity": {"algorithm": "sha256", "scheme": "grapher-semantic-v1", "semantic_hash": "e30400b73f3c25a734a87f504d83b1e633c57907c849dc2bf0286303792df4b8"}
+      },
+      "implementation-semantic-integrity-status-transitions": {
+        "id": "implementation-semantic-integrity-status-transitions",
+        "type": "implementation",
+        "title": "Add semantic SHA-256 identity and status-transition materialization",
+        "content": "{\"change\": \"Add the grapher-semantic-v1 SHA-256 assertion hash, finalized status_transition child records at the canonical save boundary, a status_changed_by relation, integrity validation helpers, and a synchronized legacy status cache. Exclude local node IDs from semantic hashing so prefixed graph transfers preserve assertion identity.\", \"component\": \"grapher integrity, semantic registry, curation, persistence, validation, and tests\"}",
+        "semantic": {
+          "change": "Add the grapher-semantic-v1 SHA-256 assertion hash, finalized status_transition child records at the canonical save boundary, a status_changed_by relation, integrity validation helpers, and a synchronized legacy status cache. Exclude local node IDs from semantic hashing so prefixed graph transfers preserve assertion identity.",
+          "component": "grapher integrity, semantic registry, curation, persistence, validation, and tests"
+        },
+        "path": null,
+        "tags": ["semantic-integrity", "status-transition", "architecture"],
+        "meta": {},
+        "created_at": "2026-09-06T12:15:00+00:00",
+        "updated_at": "2026-09-06T12:15:00+00:00",
+        "stage": ["developing"],
+        "status": "proposed",
+        "workflow_state": "active",
+        "verification": "unverified",
+        "evidence": [],
+        "source_refs": ["conversation:2026-09-06:semantic-integrity-status-transitions", "github:seanbman/grapher:feature/semantic-integrity-status-transitions"],
+        "owners": [],
+        "scope": {"project_id": "grapher"},
+        "provenance": {"source": "design-conversation", "integrity": "declared", "recorded_at": "2026-09-06T12:15:00+00:00"},
+        "finalized_at": "2026-09-06T12:15:00+00:00",
+        "integrity": {"algorithm": "sha256", "scheme": "grapher-semantic-v1", "semantic_hash": "d704f71d13bc39212f07a5aaf025d3e7bb1df80f0ed8488c4910cb0a5d624966"}
+      }
+    },
+    "edges": [
+      {
+        "from": "implementation-semantic-integrity-status-transitions",
+        "to": "decision-semantic-integrity-status-transitions",
+        "rel": "implements",
+        "created_at": "2026-09-06T12:15:00+00:00",
+        "note": "Implementation realizes the accepted semantic-integrity architecture."
+      }
+    ]
+  },
+  "vectors": null
+}
