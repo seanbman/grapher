@@ -64,5 +64,13 @@ def test_cassio_curate_apply_on_copy(tmp_path: Path):
     ]
     assert len(supersedes) == 1
 
-    # Original node count preserved (+ checkpoints)
-    assert len(data["nodes"]) == 174 + 6
+    # Original semantic nodes are preserved (+ checkpoints); status curation now
+    # appends immutable transition records instead of hiding those mutations.
+    semantic_nodes = [
+        node for node in data["nodes"].values() if node.get("type") != "status_transition"
+    ]
+    transitions = [
+        node for node in data["nodes"].values() if node.get("type") == "status_transition"
+    ]
+    assert len(semantic_nodes) == 174 + 6
+    assert transitions
