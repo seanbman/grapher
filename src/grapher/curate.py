@@ -24,10 +24,15 @@ def set_status(
     *,
     dry_run: bool = False,
 ) -> dict[str, Any]:
+    """Update the materialized status cache through the curation boundary.
+
+    save_graph_mutation materializes the authoritative immutable status_transition
+    child. This direct cache update is therefore intentionally permitted even for
+    finalized nodes; semantic fields remain immutable.
+    """
     if status not in TRUTH_STATUSES:
         raise ValueError(f"unknown status {status!r}")
     node = get_node(graph, node_id)
-    assert_not_finalized(node, node_id=node_id, operation="change truth status")
     before = node.get("status")
     preview = {
         "action": "status",
@@ -85,16 +90,18 @@ def supersede(
         "new_id": new_id,
         "old_id": old_id,
         "dry_run": dry_run,
-        "changes": [{"edge": f"{new_id} -supersedes-> {old_id}"}],
+        "changes": [
+            {"node": old_id, "status": "superseded"},
+            {"edge": f"{new_id} -supersedes-> {old_id}"},
+        ],
     }
-    old = get_node(graph, old_id)
-    if not is_finalized(old):
-        preview["changes"].insert(0, {"node": old_id, "status": "superseded"})
     if dry_run:
         return preview
-    if not is_finalized(old):
-        old["status"] = "superseded"
-        old["updated_at"] = now_iso()
+    old = get_node(graph, old_id)
+    # Status is a derived compatibility cache. The authoritative change is the
+    # immutable status_transition child materialized when this mutation is saved.
+    old["status"] = "superseded"
+    old["updated_at"] = now_iso()
     edge = link(
         graph,
         from_id=new_id,
@@ -210,14 +217,18 @@ def compact_related(
 
 
 def finalize_node(graph: dict[str, Any], node_id: str, *, dry_run: bool = False) -> dict[str, Any]:
+    from grapher.integrity import seal_node
+
     node = get_node(graph, node_id)
     preview = {"action": "finalize", "node_id": node_id, "before": node.get("finalized_at"), "dry_run": dry_run}
     if dry_run:
         return preview
     if not node.get("finalized_at"):
+        seal_node(node)
         node["finalized_at"] = now_iso()
         node["updated_at"] = node["finalized_at"]
     preview["after"] = node["finalized_at"]
+    preview["semantic_hash"] = (node.get("integrity") or {}).get("semantic_hash")
     return preview
 
 
