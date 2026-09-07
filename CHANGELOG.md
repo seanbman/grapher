@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added an opt-in explicit truth-status admission policy that rejects newly authored `unclassified` nodes at the canonical mutation save boundary while preserving deliberate ingest/review exceptions.
+- Added a CI truth-status gate and a finite legacy review allowlist so existing classification debt cannot silently expand.
+
 ## 0.5.0 — 2026-09-05
 
 - Added strict typed semantic contracts for durable reasoning/work records, including exact allowed fields, field-type validation, filler rejection, and machine-readable contract introspection.

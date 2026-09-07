@@ -35,6 +35,8 @@ def default_config(*, profile: str = "general") -> dict[str, Any]:
         "checkpoint_definitions": [],
         "component_link_rules": [],
         "relation_aliases": {},
+        "require_explicit_status": False,
+        "truth_status_legacy_allowlist": [],
     }
 
 
