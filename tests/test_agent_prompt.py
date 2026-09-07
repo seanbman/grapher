@@ -21,7 +21,7 @@ def test_generalized_agent_prompt_is_deterministic_and_truth_aware():
         id="a",
         type="requirement",
         title="First",
-        content="required",
+        content='{"requirement":"Use the generalized agent contract.","acceptance_condition":"Rendered context is deterministic and truth-aware."}',
         status="canonical_spec",
         verification="verified",
         scope={"project_id": "grapher", "generation_id": "g1"},
