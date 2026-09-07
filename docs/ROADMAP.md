@@ -1,6 +1,6 @@
 # Grapher Canonical Roadmap
 
-[Documentation index](INDEX.md) · [Architecture](ARCHITECTURE.md) · [Procedures](PROCEDURES.md)
+[Documentation index](INDEX.md) · [Architecture](ARCHITECTURE.md) · [Procedures](PROCEDURES.md) · [Codex integration](CODEX_INTEGRATION.md)
 
 This document is the authoritative numbered implementation sequence for Grapher. Agents and humans MUST consult it before declaring the "next milestone". Remediation, bug fixes, security work, truth-state hardening, and maintenance do not renumber or displace these milestones unless this roadmap is explicitly revised.
 
@@ -15,8 +15,8 @@ This document is the authoritative numbered implementation sequence for Grapher.
 | M5 | Validation and audit | completed |
 | M6 | Truth-aware relations, supersession, and retrieval | completed |
 | M7 | Grapher-to-Dash adapter and visualization | completed |
-| M8 | Checkpoints and compaction previews | **next** |
-| M9 | Generalized prompts and **Codex integration** | planned |
+| M8 | Checkpoints and compaction previews | completed |
+| M9 | Generalized prompts and **Codex integration** | **next** |
 | M10 | **Cursor integration**, Dash export, and approved editing | planned |
 | M11 | Acceptance fixtures and tests | planned |
 | M12 | Documentation and full-suite completion | planned |
@@ -35,7 +35,7 @@ Codex is the first-class agent integration target. Grapher's generalized agent-f
 
 ## Current maintenance debt
 
-Truth-state admission hardening was merged after M7. It is maintenance/hardening, not a numbered milestone. Five grandfathered `unclassified` records remain a finite curation queue and do not displace M8.
+Truth-state admission hardening was merged after M7. It is maintenance/hardening, not a numbered milestone. Five grandfathered `unclassified` records remain a finite curation queue and do not displace M9.
 
 ## Agent rule
 
@@ -47,14 +47,14 @@ Every substantive Grapher pass must also update versioned `.grapher/shared` self
 
 ```mermaid
 flowchart LR
-    READ["Consult roadmap\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: c96ba65"]
-    CLASSIFY["Classify work\nmilestone vs maintenance\ninception: 9917cc8\ncurrent: c96ba65"]
-    EXECUTE["Implement scoped pass\nsrc/grapher/*\ninception: 9917cc8\ncurrent: c96ba65"]
-    GRAPH["Update Grapher self-state\n.grapher/shared/*\ninception: 9917cc8\ncurrent: c96ba65"]
-    CI["CI governance + tests\n.github/workflows/ci.yml\ninception: 9917cc8\ncurrent: c96ba65"]
-    ADVANCE["Advance milestone only on accepted completion\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: c96ba65"]
+    READ["Consult roadmap\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: 5bb12e1"]
+    CLASSIFY["Classify work\nmilestone vs maintenance\ninception: 9917cc8\ncurrent: 5bb12e1"]
+    EXECUTE["Implement scoped pass\nsrc/grapher/*\ninception: 9917cc8\ncurrent: M9 branch"]
+    GRAPH["Update Grapher self-state\n.grapher/shared/*\ninception: 9917cc8\ncurrent: M9 branch"]
+    CI["CI governance + tests\n.github/workflows/ci.yml\ninception: 9917cc8\ncurrent: 5bb12e1"]
+    ADVANCE["Advance milestone only on accepted completion\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: M9 branch"]
 
     READ --> CLASSIFY --> EXECUTE --> GRAPH --> CI --> ADVANCE
 ```
 
-Architecture details: [ARCHITECTURE.md](ARCHITECTURE.md). Operating procedure: [PROCEDURES.md](PROCEDURES.md).
+Architecture details: [ARCHITECTURE.md](ARCHITECTURE.md). Operating procedure: [PROCEDURES.md](PROCEDURES.md). Codex contract: [CODEX_INTEGRATION.md](CODEX_INTEGRATION.md).
