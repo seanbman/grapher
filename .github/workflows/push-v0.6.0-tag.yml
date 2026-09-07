@@ -1,0 +1,47 @@
+name: Push v0.6.0 tag
+
+on:
+  push:
+    branches:
+      - release/tag-v0.6.0
+    paths:
+      - .github/workflows/push-v0.6.0-tag.yml
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Verify exact release tree
+        run: |
+          expected='88a6be6fb8bcee516bc0fe11ecc84a19099d781f'
+          test "$(git rev-parse HEAD)" = "$expected"
+          grep -q '^version = "0.6.0"$' pyproject.toml
+          grep -q '^__version__ = "0.6.0"$' src/grapher/__init__.py
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('uv.lock').read_text()
+          block = '[[package]]\nname = "grapher"\nversion = "0.6.0"'
+          if text.count(block) != 1:
+              raise SystemExit('uv.lock does not contain exactly one Grapher 0.6.0 package block')
+          PY
+          if git rev-parse -q --verify refs/tags/v0.6.0 >/dev/null; then
+            echo 'v0.6.0 already exists locally'
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags origin refs/tags/v0.6.0 >/dev/null 2>&1; then
+            echo 'v0.6.0 already exists remotely'
+            exit 1
+          fi
+      - name: Create and push annotated tag
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a v0.6.0 -m 'Grapher v0.6.0'
+          git push origin refs/tags/v0.6.0
