@@ -11,13 +11,20 @@ from grapher.store import load_graph
 from grapher.truth_policy import unclassified_authored_node_ids
 
 
+def _config_anchor(graph_path: Path) -> Path:
+    """Resolve project config for working or published shared graph paths."""
+    if graph_path.parent.name == "shared" and (graph_path.parent.parent / "config.json").is_file():
+        return graph_path.parent.parent / "knowledge.json"
+    return graph_path
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("graph", type=Path)
     args = parser.parse_args()
 
     graph_path = args.graph.expanduser().resolve()
-    config = load_config(graph_path)
+    config = load_config(_config_anchor(graph_path))
     if not config.get("require_explicit_status", False):
         print("truth-status policy disabled")
         return 0
