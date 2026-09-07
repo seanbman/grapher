@@ -6,6 +6,7 @@ import importlib.resources as resources
 from pathlib import Path
 from typing import Any
 
+from grapher.agent_prompt import render_operating_contract
 from grapher.ingest import project_root_for
 from grapher.store import init_store, resolve_graph_path
 
@@ -14,7 +15,6 @@ ASSET_SKILL = ("cursor_assets", "skills", "grapher-ingest", "SKILL.md")
 
 
 def _read_asset(*parts: str) -> str:
-    # parts[0] is package-relative root dir name under grapher
     pkg = resources.files("grapher")
     node = pkg.joinpath(*parts)
     return node.read_text(encoding="utf-8")
@@ -40,6 +40,21 @@ def cursor_project_root(graph_path: Path | None = None) -> Path:
         return Path.cwd().resolve()
 
 
+def _cursor_rule_text() -> str:
+    base = _read_asset("cursor_assets", "rules", "grapher.mdc")
+    contract = render_operating_contract(consumer="cursor")
+    marker = "# grapher — shared agent knowledge"
+    injected = (
+        marker
+        + "\n\n## Shared operating contract\n\n"
+        + contract
+        + "\n\n"
+    )
+    if marker in base:
+        return base.replace(marker + "\n\n", injected, 1)
+    return contract + "\n\n" + base
+
+
 def install_cursor_integration(
     *,
     project_root: Path | None = None,
@@ -55,7 +70,7 @@ def install_cursor_integration(
     rule_path = root / ".cursor" / "rules" / "grapher.mdc"
     skill_path = root / ".cursor" / "skills" / "grapher-ingest" / "SKILL.md"
 
-    rule_text = _read_asset("cursor_assets", "rules", "grapher.mdc")
+    rule_text = _cursor_rule_text()
     skill_text = _read_asset(
         "cursor_assets", "skills", "grapher-ingest", "SKILL.md"
     )
@@ -63,6 +78,7 @@ def install_cursor_integration(
     results = {
         "project_root": str(root),
         "graph": str(graph_path),
+        "contract_sequence": ["READ", "SEARCH", "ACT", "RECORD", "VALIDATE", "PUBLISH"],
         "files": {
             str(rule_path.relative_to(root)): _write_file(
                 rule_path, rule_text, force=force
@@ -79,8 +95,7 @@ def install_cursor_integration(
         )
     results["ok"] = True
     results["message"] = (
-        "Cursor integration installed. Agents in this project will use grapher "
-        "via .cursor/rules and .cursor/skills."
+        "Cursor integration installed using Grapher's shared agent operating contract."
     )
     return results
 
@@ -101,13 +116,21 @@ def cursor_status(
 
     rule_path = root / ".cursor" / "rules" / "grapher.mdc"
     skill_path = root / ".cursor" / "skills" / "grapher-ingest" / "SKILL.md"
+    rule_has_contract = False
+    if rule_path.is_file():
+        text = rule_path.read_text(encoding="utf-8")
+        rule_has_contract = all(
+            f"**{step}**" in text
+            for step in ("READ", "SEARCH", "ACT", "RECORD", "VALIDATE", "PUBLISH")
+        )
     return {
         "project_root": str(root),
         "graph": str(graph_path) if graph_path else None,
         "graph_initialized": graph_ok,
         "rule_installed": rule_path.is_file(),
         "skill_installed": skill_path.is_file(),
+        "shared_contract": rule_has_contract,
         "rule_path": str(rule_path),
         "skill_path": str(skill_path),
-        "ready": graph_ok and rule_path.is_file() and skill_path.is_file(),
+        "ready": graph_ok and rule_path.is_file() and skill_path.is_file() and rule_has_contract,
     }

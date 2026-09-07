@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "project": "grapher",
+  "pass": "m10-cursor-dash-boundary",
+  "recorded_at": "2026-09-06T21:30:00-06:00",
+  "actor": {
+    "id": "chatgpt",
+    "kind": "agent",
+    "role": "maintainer"
+  },
+  "scope": {
+    "milestone": "M10",
+    "branch": "milestone/m10-cursor-dash-editing"
+  },
+  "summary": "Started M10 by making Cursor consume the generalized M9 agent operating contract and establishing a proposal-first, hash-matched, stale-state-safe, actor-attributed approval boundary for Dash status edits.",
+  "evidence": [
+    "src/grapher/agent_prompt.py",
+    "src/grapher/cursor_cmd.py",
+    "src/grapher/viz/editing.py",
+    "tests/test_m10_cursor_dash_editing.py",
+    "docs/M10_CURSOR_DASH_EDITING.md",
+    "git:abcc77ea846d206c31f59e58c5ceb858b96089f1"
+  ]
+}

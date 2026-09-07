@@ -19,6 +19,22 @@ def _node_status(node: dict[str, Any]) -> str:
     return str(node.get("status") or "unclassified")
 
 
+def render_operating_contract(*, consumer: str = "agent") -> str:
+    """Render the shared agent operating contract for integration surfaces."""
+    return "\n".join(
+        [
+            f"Consumer: `{consumer}`.",
+            "",
+            "1. **READ** Grapher context and repository instructions before making assumptions.",
+            "2. **SEARCH** Grapher before rediscovering project state: `grapher search`, `grapher get`, `grapher neighbors`.",
+            "3. **ACT** only from retrieved evidence, repository state, and explicit user instructions.",
+            "4. **RECORD** durable discoveries, decisions, implementations, tests, and results back into Grapher with explicit truth status and provenance.",
+            "5. **VALIDATE** with `grapher validate` and `grapher audit` before publication.",
+            "6. **PUBLISH** shared state with `grapher publish`; never treat local runtime state as the shared canonical artifact.",
+        ]
+    )
+
+
 def render_agent_context(
     graph: dict[str, Any],
     *,
@@ -29,8 +45,9 @@ def render_agent_context(
     """Render deterministic durable context for an agent consumer.
 
     The contract is intentionally model-agnostic. Integrations such as Codex
-    consume this renderer and may wrap it with consumer-specific installation
-    behavior, but must not redefine the underlying operating sequence.
+    and Cursor consume this renderer/contract and may wrap it with
+    consumer-specific installation behavior, but must not redefine the
+    underlying operating sequence.
     """
     nodes = graph.get("nodes") or {}
     edges = graph.get("edges") or []
@@ -50,12 +67,7 @@ def render_agent_context(
         "> Grapher is durable project state; repository files remain the implementation source.",
         "",
         "## Operating contract",
-        "1. **READ** this context and repository instructions before making assumptions.",
-        "2. **SEARCH** Grapher before rediscovering project state: `grapher search`, `grapher get`, `grapher neighbors`.",
-        "3. **ACT** only from retrieved evidence, repository state, and explicit user instructions.",
-        "4. **RECORD** durable discoveries, decisions, implementations, tests, and results back into Grapher with explicit truth status and provenance.",
-        "5. **VALIDATE** with `grapher validate` and `grapher audit` before publication.",
-        "6. **PUBLISH** shared state with `grapher publish`; never treat local runtime state as the shared canonical artifact.",
+        *render_operating_contract(consumer=consumer).splitlines()[2:],
         "",
         "## Guardrails",
         "- Keep active context compact; retrieve relevant slices instead of replaying entire histories.",

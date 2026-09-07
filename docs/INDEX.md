@@ -10,6 +10,7 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 | Procedures | [PROCEDURES.md](PROCEDURES.md) | Change procedure, self-graph publication, CI gates, checkpoints, compaction, and release flow |
 | Roadmap | [ROADMAP.md](ROADMAP.md) | Canonical M1-M12 implementation order and integration priority |
 | Codex integration | [CODEX_INTEGRATION.md](CODEX_INTEGRATION.md) | M9 generalized agent contract and Codex-first integration procedure |
+| Cursor + Dash editing | [M10_CURSOR_DASH_EDITING.md](M10_CURSOR_DASH_EDITING.md) | M10 shared Cursor contract plus proposal-first, approval-gated Dash editing architecture |
 | Git transport | [GIT_TRANSPORT.md](GIT_TRANSPORT.md) | Publish/sync boundary for local and Git-shared graph state |
 | Semantic entry schema | [SEMANTIC_ENTRY_SCHEMA.md](SEMANTIC_ENTRY_SCHEMA.md) | Typed semantic contracts and validation rules |
 | Semantic integrity | [SEMANTIC_INTEGRITY.md](SEMANTIC_INTEGRITY.md) | Finalization, integrity seals, immutable transitions, and correction rules |
@@ -32,6 +33,9 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 - [Compaction preview procedure](PROCEDURES.md#compaction-preview-procedure)
 - [Codex architecture](CODEX_INTEGRATION.md#architecture-diagram)
 - [Codex procedure](CODEX_INTEGRATION.md#procedure-flow)
+- [M10 architecture](M10_CURSOR_DASH_EDITING.md#architecture-diagram)
+- [M10 Cursor procedure](M10_CURSOR_DASH_EDITING.md#cursor-procedure)
+- [Approved Dash edit procedure](M10_CURSOR_DASH_EDITING.md#approved-dash-edit-procedure)
 
 ## Indexing policy
 
@@ -39,4 +43,4 @@ Every human-facing `.md`, `.pdf`, and `.txt` file directly under `docs/` must be
 
 ## Commit anchors
 
-M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration branches from that state; M9-specific diagrams identify the branch as the current implementation state until merge.
+M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 branches from that state.

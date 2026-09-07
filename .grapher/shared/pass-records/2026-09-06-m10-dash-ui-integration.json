@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "project": "grapher",
+  "pass": "m10-dash-ui-integration",
+  "recorded_at": "2026-09-06T21:45:00-06:00",
+  "actor": {
+    "id": "chatgpt",
+    "kind": "agent",
+    "role": "maintainer"
+  },
+  "scope": {
+    "milestone": "M10",
+    "branch": "milestone/m10-cursor-dash-editing"
+  },
+  "summary": "Wired the proposal-first Dash status edit boundary into the interactive dashboard, corrected transition acceptance coverage to use Grapher's canonical status_changed_by relationship, and removed a temporary branch marker.",
+  "evidence": [
+    "src/grapher/viz/app.py",
+    "src/grapher/viz/editing.py",
+    "tests/test_m10_cursor_dash_editing.py",
+    "docs/M10_CURSOR_DASH_EDITING.md",
+    "github-actions:34079067676"
+  ]
+}
