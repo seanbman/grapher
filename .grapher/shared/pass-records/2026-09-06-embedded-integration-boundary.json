@@ -1,0 +1,14 @@
+{
+  "id": "pass-embedded-integration-boundary-2026-09-06",
+  "type": "audit_record",
+  "title": "Embedded integration boundary added",
+  "status": "current",
+  "semantic": {
+    "change": "Added a host-agnostic embedded integration surface that delegates to Grapher canonical mutation machinery.",
+    "verification": "Contract test covers canonical history attribution; documentation defines host/Grapher authority separation."
+  },
+  "provenance": {
+    "actor_id": "chatgpt-gpt-5.6-sol",
+    "source": "grapher-self-governance"
+  }
+}
