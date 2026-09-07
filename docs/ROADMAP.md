@@ -1,6 +1,6 @@
 # Grapher Canonical Roadmap
 
-[Documentation index](INDEX.md) · [Architecture](ARCHITECTURE.md) · [Procedures](PROCEDURES.md) · [Codex integration](CODEX_INTEGRATION.md) · [M10 Cursor/Dash](M10_CURSOR_DASH_EDITING.md)
+[Documentation index](INDEX.md) · [Architecture](ARCHITECTURE.md) · [Procedures](PROCEDURES.md) · [Codex integration](CODEX_INTEGRATION.md) · [M10 Cursor/Dash](M10_CURSOR_DASH_EDITING.md) · [M11 acceptance](M11_ACCEPTANCE.md)
 
 This document is the authoritative numbered implementation sequence for Grapher. Agents and humans MUST consult it before declaring the "next milestone". Remediation, bug fixes, security work, truth-state hardening, and maintenance do not renumber or displace these milestones unless this roadmap is explicitly revised.
 
@@ -17,13 +17,13 @@ This document is the authoritative numbered implementation sequence for Grapher.
 | M7 | Grapher-to-Dash adapter and visualization | completed |
 | M8 | Checkpoints and compaction previews | completed |
 | M9 | Generalized prompts and **Codex integration** | completed |
-| M10 | **Cursor integration**, Dash export, and approved editing | **next** |
-| M11 | Acceptance fixtures and tests | planned |
+| M10 | **Cursor integration**, Dash export, and approved editing | completed |
+| M11 | Acceptance fixtures and tests | **next** |
 | M12 | Documentation and full-suite completion | planned |
 
 ## Integration priority
 
-Codex is the first-class agent integration target. M9 proved the generalized agent-facing contract with Codex. M10 reuses that stabilized contract for Cursor and extends Dash from non-canonical export toward explicit review-and-approval edit flows.
+Codex remains the first-class agent integration target. M9 proved the generalized contract with Codex; M10 successfully reused it for Cursor and completed approval-gated Dash status editing. M11 now proves the accumulated behavior against named acceptance fixtures rather than adding another integration layer.
 
 ## State rules
 
@@ -35,7 +35,7 @@ Codex is the first-class agent integration target. M9 proved the generalized age
 
 ## Current maintenance debt
 
-Truth-state admission hardening was merged after M7. It is maintenance/hardening, not a numbered milestone. Five grandfathered `unclassified` records remain a finite curation queue and do not displace M10.
+Truth-state admission hardening was merged after M7. It is maintenance/hardening, not a numbered milestone. Five grandfathered `unclassified` records remain a finite curation queue and do not displace M11.
 
 ## Agent rule
 
@@ -47,14 +47,14 @@ Every substantive Grapher pass must also update versioned `.grapher/shared` self
 
 ```mermaid
 flowchart LR
-    READ["Consult roadmap\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: abcc77e"]
-    CLASSIFY["Classify work\nmilestone vs maintenance\ninception: 9917cc8\ncurrent: abcc77e"]
-    EXECUTE["Implement scoped pass\nsrc/grapher/*\ninception: abcc77e\ncurrent: M10 branch"]
-    GRAPH["Update Grapher self-state\n.grapher/shared/*\ninception: abcc77e\ncurrent: M10 branch"]
-    CI["CI governance + tests\n.github/workflows/ci.yml\ninception: 5bb12e1\ncurrent: abcc77e"]
-    ADVANCE["Advance milestone only on accepted completion\ndocs/ROADMAP.md\ninception: abcc77e\ncurrent: M10 branch"]
+    READ["Consult roadmap\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: 0488bc0"]
+    CLASSIFY["Classify work\nmilestone vs maintenance\ninception: 9917cc8\ncurrent: 0488bc0"]
+    EXECUTE["Implement acceptance cases\ntests/fixtures + tests/*\ninception: 0488bc0\ncurrent: M11 branch"]
+    GRAPH["Update Grapher self-state\n.grapher/shared/*\ninception: 0488bc0\ncurrent: M11 branch"]
+    CI["CI governance + acceptance suite\n.github/workflows/ci.yml\ninception: 5bb12e1\ncurrent: 0488bc0"]
+    ADVANCE["Advance only after acceptance suite passes\ndocs/ROADMAP.md\ninception: 0488bc0\ncurrent: M11 branch"]
 
     READ --> CLASSIFY --> EXECUTE --> GRAPH --> CI --> ADVANCE
 ```
 
-Architecture details: [ARCHITECTURE.md](ARCHITECTURE.md). Operating procedure: [PROCEDURES.md](PROCEDURES.md). Codex contract: [CODEX_INTEGRATION.md](CODEX_INTEGRATION.md). M10 design: [M10_CURSOR_DASH_EDITING.md](M10_CURSOR_DASH_EDITING.md).
+Architecture details: [ARCHITECTURE.md](ARCHITECTURE.md). Operating procedure: [PROCEDURES.md](PROCEDURES.md). M11 acceptance suite: [M11_ACCEPTANCE.md](M11_ACCEPTANCE.md).

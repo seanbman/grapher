@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "generic-v1-migration",
+      "fixture": "museum-exhibit.json",
+      "purpose": "Prove a generic non-software v1 graph migrates losslessly and idempotently into the current model.",
+      "acceptance": ["migration", "idempotence", "generic-domain"]
+    },
+    {
+      "id": "multi-agent-generation-truth",
+      "fixture": "dreadnought-control.json",
+      "purpose": "Prove current-generation retrieval, truth ranking, generalized agent context, filtered export, and audit preserve contaminated historical evidence without treating it as current acceptance.",
+      "acceptance": ["generation-scope", "truth-ranking", "agent-context", "dashboard-export", "audit"]
+    },
+    {
+      "id": "legacy-rich-graph-read",
+      "fixture": "cassio-brain.json",
+      "purpose": "Prove Grapher continues to read a large legacy project corpus without requiring destructive normalization before inspection.",
+      "acceptance": ["legacy-read", "rich-corpus", "compatibility"]
+    }
+  ]
+}
