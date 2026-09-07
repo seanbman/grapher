@@ -3,21 +3,25 @@
   "type": "result",
   "title": "Grapher v0.6.0 release preparation",
   "status": "current",
-  "workflow_state": "active",
-  "verification": "unverified",
+  "workflow_state": "completed",
+  "verification": "verified",
   "scope": {
     "project_id": "grapher",
     "mission_id": "release",
     "generation_id": "v0.6.0"
   },
   "content": {
-    "result": "Prepared Grapher v0.6.0 from the completed M1-M12 modernization state and accepted post-modernization technology-debt sweep; synchronized package version metadata, changelog, release documentation, roadmap anchors, completion documentation, and the documentation index.",
-    "evidence": "Release requires GitHub Actions acceptance on the final release head before merge and tag creation."
+    "result": "Prepared and verified Grapher v0.6.0 from the completed M1-M12 modernization state and accepted post-modernization technology-debt sweep; synchronized package version metadata, changelog, release documentation, roadmap anchors, completion documentation, and the documentation index.",
+    "evidence": "Release PR #22 passed GitHub Actions CI run 34081587019 and was squash-merged to main at 6eef0cb681946fa66eb70b56dfeb97d0569cad7c. A final release-integrity pass verifies generated lock metadata before tag creation."
   },
   "source_refs": [
     "git:ad75fee8df1f33cd8890bfbd23924b35cc6f4903",
+    "git:6eef0cb681946fa66eb70b56dfeb97d0569cad7c",
+    "github:pr:22",
+    "github:actions:34081587019",
     "pyproject.toml",
     "src/grapher/__init__.py",
+    "uv.lock",
     "CHANGELOG.md",
     "docs/RELEASE_0.6.0.md",
     "docs/ROADMAP.md",
