@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "project": "grapher",
+  "pass": "m9-ci-regression-fix",
+  "recorded_at": "2026-09-06T21:00:00-06:00",
+  "actor": {
+    "id": "chatgpt",
+    "kind": "agent",
+    "role": "maintainer"
+  },
+  "scope": {
+    "milestone": "M9",
+    "branch": "milestone/m9-codex-integration"
+  },
+  "summary": "Corrected the M9 generalized agent prompt regression test to use Grapher's canonical requirement semantic contract after CI exposed invalid free-text semantic content.",
+  "evidence": [
+    "tests/test_agent_prompt.py",
+    "src/grapher/semantic.py",
+    "github-actions:34078606765"
+  ]
+}

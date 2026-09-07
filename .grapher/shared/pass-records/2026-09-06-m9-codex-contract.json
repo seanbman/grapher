@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "pass_id": "m9-codex-contract-2026-09-06",
+  "project": "grapher",
+  "milestone": "M9",
+  "title": "Generalized agent prompt contract consumed by Codex",
+  "status": "current",
+  "truth_status": "current",
+  "verification": "unverified",
+  "actor": {
+    "id": "chatgpt",
+    "kind": "agent",
+    "role": "maintainer"
+  },
+  "base_commit": "5bb12e176e6310759288af10354cea4ddd01703f",
+  "branch": "milestone/m9-codex-integration",
+  "summary": "Introduced a deterministic model-agnostic READ-SEARCH-ACT-RECORD-VALIDATE-PUBLISH agent context contract, routed Codex context generation through it, aligned installed Codex instructions, added regression tests, and documented/indexed the Codex-first architecture and procedure.",
+  "source_refs": [
+    "src/grapher/agent_prompt.py",
+    "src/grapher/codex_ctx.py",
+    "src/grapher/codex_assets/AGENTS.section.md",
+    "tests/test_agent_prompt.py",
+    "docs/CODEX_INTEGRATION.md",
+    "docs/ROADMAP.md",
+    "docs/INDEX.md"
+  ],
+  "acceptance": {
+    "ci_required": true,
+    "self_graph_required": true,
+    "codex_first": true,
+    "cursor_changed": false
+  }
+}
