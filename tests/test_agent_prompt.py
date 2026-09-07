@@ -36,7 +36,8 @@ def test_generalized_agent_prompt_is_deterministic_and_truth_aware():
     assert "canonical_spec" in first
     assert "historical" in first
     assert "generation_id=g1" in first
-    assert first.index("### First") < first.index("### Second")
+    # Renderer order is deterministic by type, then title, then id.
+    assert first.index("### Second") < first.index("### First")
     assert "Do not infer truth status from recency alone" in first
 
 
