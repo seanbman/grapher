@@ -11,6 +11,7 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 | Roadmap | [ROADMAP.md](ROADMAP.md) | Canonical M1-M12 implementation order and completed modernization state |
 | v0.6.1 release | [RELEASE_0.6.1.md](RELEASE_0.6.1.md) | Embedded-interface compatibility baseline and upgrade guidance |
 | v0.6.0 release | [RELEASE_0.6.0.md](RELEASE_0.6.0.md) | Release baseline, included capabilities, verification, merge, and tag procedure |
+| Interactive CLI | [INTERACTIVE_CLI.md](INTERACTIVE_CLI.md) | Arrow-key menu, guided initialization, stdin configuration editing, and automation compatibility |
 | Embedded integration | [EMBEDDED_INTEGRATION.md](EMBEDDED_INTEGRATION.md) | Host-agnostic application boundary for embedding Grapher without bypassing canonical mutation rules |
 | Embedded brokering | [EMBEDDED_BROKERING.md](EMBEDDED_BROKERING.md) | Practical read-broker/write-mediation contract, provenance, examples, and host integration pattern |
 | Codex integration | [CODEX_INTEGRATION.md](CODEX_INTEGRATION.md) | M9 generalized agent contract and Codex-first integration procedure |
@@ -38,6 +39,8 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 - [Self-graph and CI procedure](PROCEDURES.md#self-graph-and-ci-procedure)
 - [Checkpoint refresh procedure](PROCEDURES.md#checkpoint-refresh-procedure)
 - [Compaction preview procedure](PROCEDURES.md#compaction-preview-procedure)
+- [Interactive CLI architecture](INTERACTIVE_CLI.md#architecture-diagram)
+- [Interactive CLI procedure](INTERACTIVE_CLI.md#procedure-flow)
 - [Embedded integration architecture](EMBEDDED_INTEGRATION.md#architecture-diagram)
 - [Embedded integration procedure](EMBEDDED_INTEGRATION.md#procedure-flow)
 - [Embedded brokering architecture](EMBEDDED_BROKERING.md#appendix--architecture)

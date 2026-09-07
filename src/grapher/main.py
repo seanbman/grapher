@@ -1,10 +1,9 @@
-"""Top-level CLI dispatcher for transport commands and the existing CLI."""
+"""Top-level CLI dispatcher for transport, interactive UI, and long-form CLI."""
 
 from __future__ import annotations
 
 import argparse
 import sys
-from pathlib import Path
 
 from grapher.format import emit
 from grapher.store import resolve_graph_path
@@ -40,12 +39,51 @@ def _run_transport(command: str, argv: list[str]) -> None:
     emit(result, as_json=args.json)
 
 
-def main() -> None:
-    argv = sys.argv[1:]
-    if argv and argv[0] in {"publish", "sync"}:
-        _run_transport(argv[0], argv[1:])
-        return
-
+def _run_legacy(argv: list[str]) -> None:
     from grapher.cli import main as legacy_main
 
-    legacy_main()
+    previous = sys.argv
+    try:
+        sys.argv = ["grapher", *argv]
+        legacy_main()
+    finally:
+        sys.argv = previous
+
+
+def _dispatch(argv: list[str]) -> None:
+    if argv and argv[0] in {"publish", "sync"}:
+        _run_transport(argv[0], argv[1:])
+    else:
+        _run_legacy(argv)
+
+
+def _interactive_loop() -> None:
+    from grapher.interactive import menu
+
+    while True:
+        argv = menu()
+        if argv is None:
+            return
+        if not argv:
+            continue
+        _dispatch(argv)
+
+
+def main() -> None:
+    argv = sys.argv[1:]
+    interactive_terminal = sys.stdin.isatty() and sys.stdout.isatty()
+
+    if not argv and interactive_terminal:
+        _interactive_loop()
+        return
+
+    if argv == ["init"] and interactive_terminal:
+        from grapher.interactive import guided_init_args
+
+        guided = guided_init_args()
+        if guided is None:
+            return
+        _dispatch(guided)
+        return
+
+    _dispatch(argv)
