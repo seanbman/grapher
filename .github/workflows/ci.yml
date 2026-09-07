@@ -59,6 +59,14 @@ jobs:
       - name: Compile package
         run: uv run python -m compileall -q src/grapher
 
+      - name: Build package
+        run: uv build
+
+      - name: Smoke test installed CLI
+        run: |
+          uv run python -c "import grapher; import grapher.main"
+          uv run grapher --help >/dev/null
+
       - name: Run tests
         run: uv run pytest
 
