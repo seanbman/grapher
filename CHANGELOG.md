@@ -2,8 +2,17 @@
 
 ## Unreleased
 
-- Added an opt-in explicit truth-status admission policy that rejects newly authored `unclassified` nodes at the canonical mutation save boundary while preserving deliberate ingest/review exceptions.
-- Added a CI truth-status gate and a finite legacy review allowlist so existing classification debt cannot silently expand.
+## 0.6.0 — 2026-09-06
+
+- Completed the canonical M1–M12 modernization sequence and formalized the roadmap closure state; there is no implicit M13.
+- Added durable checkpoint snapshots with semantic drift detection and generation-safe, review-first compaction previews.
+- Added the generalized agent contract (`READ → SEARCH → ACT → RECORD → VALIDATE → PUBLISH`), proven with Codex first and reused by Cursor.
+- Added approval-gated Dash status editing with stable proposal IDs, stale-state protection, actor attribution, immutable status transitions, and canonical mutation journaling.
+- Added named product-level acceptance fixtures covering generic migration, Dreadnought multi-agent truth/generation behavior, generalized agent context, Dash export, audit behavior, and legacy CASSIO graph compatibility.
+- Added CI governance requiring Grapher self-state updates, indexed documentation, architecture/procedure diagrams, explicit truth statuses, package builds, and installed CLI smoke tests on Python 3.10 and 3.12.
+- Hardened explicit truth-status admission, finalized-record integrity, actor/provenance attribution, and the Grapher self-graph pass-record gate.
+- Added indexed architecture, procedures, Codex/Cursor integration, M11 acceptance, M12 completion, and post-modernization technology-debt documentation.
+- Completed the post-modernization debt sweep; retained CLI modularization, intentional v1 compatibility, five legacy `unclassified` records, and dedicated high-memory embedding verification as explicit follow-up maintenance debt.
 
 ## 0.5.0 — 2026-09-05
 

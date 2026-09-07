@@ -23,7 +23,7 @@ This document is the authoritative numbered implementation sequence for Grapher.
 
 ## Modernization state
 
-The M1–M12 modernization sequence is complete. The closure evidence is the accepted M11 product fixture suite plus the post-M12 maintenance verification that passed governance, strengthened self-state validation, package build/CLI smoke checks, truth-status enforcement, research validation, and the full Python 3.10/3.12 regression matrix.
+The M1–M12 modernization sequence is complete. The closure framework entered `main` at `1e3a15bad6b8b38b523eda9023e1ee92dc2947d2`; the post-modernization debt sweep and final verification entered `main` at `ad75fee8df1f33cd8890bfbd23924b35cc6f4903`. Release v0.6.0 packages that completed state.
 
 There is no implicit M13. Future numbered work requires an explicit roadmap revision. Until then, fixes, curation, refactors, releases, and operational improvements are maintenance work and must not be described as a new numbered milestone.
 
@@ -55,9 +55,9 @@ Every substantive Grapher pass must also update versioned `.grapher/shared` self
 flowchart LR
     M11["M11 acceptance suite\nmain: ffe7023"]
     M12["M12 closure framework\nmain: 1e3a15b"]
-    DEBT["Post-M12 debt sweep + fixes\nmaintenance branch"]
-    VERIFY["Governance + package + research + Python matrix\nCI: green"]
-    COMPLETE["M1–M12 complete\ndocs/ROADMAP.md\ncurrent: maintenance branch"]
+    DEBT["Post-M12 debt sweep + fixes\nmain: ad75fee"]
+    VERIFY["Governance + package + research + Python matrix\naccepted before ad75fee"]
+    COMPLETE["M1–M12 complete\ndocs/ROADMAP.md\nrelease: v0.6.0"]
 
     M11 --> M12 --> DEBT --> VERIFY --> COMPLETE
 ```

@@ -1,0 +1,35 @@
+{
+  "id": "release-v0.6.0-2026-09-06",
+  "type": "result",
+  "title": "Grapher v0.6.0 release preparation",
+  "status": "current",
+  "workflow_state": "active",
+  "verification": "unverified",
+  "scope": {
+    "project_id": "grapher",
+    "mission_id": "release",
+    "generation_id": "v0.6.0"
+  },
+  "content": {
+    "result": "Prepared Grapher v0.6.0 from the completed M1-M12 modernization state and accepted post-modernization technology-debt sweep; synchronized package version metadata, changelog, release documentation, roadmap anchors, completion documentation, and the documentation index.",
+    "evidence": "Release requires GitHub Actions acceptance on the final release head before merge and tag creation."
+  },
+  "source_refs": [
+    "git:ad75fee8df1f33cd8890bfbd23924b35cc6f4903",
+    "pyproject.toml",
+    "src/grapher/__init__.py",
+    "CHANGELOG.md",
+    "docs/RELEASE_0.6.0.md",
+    "docs/ROADMAP.md",
+    "docs/M12_COMPLETION.md",
+    "docs/TECH_DEBT_REVIEW_2026-09-06.md",
+    "docs/INDEX.md"
+  ],
+  "provenance": {
+    "actor_id": "chatgpt",
+    "actor_kind": "agent",
+    "actor_role": "release-maintainer",
+    "source": "github",
+    "integrity": "declared"
+  }
+}

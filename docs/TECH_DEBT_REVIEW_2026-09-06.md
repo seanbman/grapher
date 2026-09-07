@@ -1,19 +1,20 @@
 # Grapher Technology Debt Review — 2026-09-06
 
-This review follows completion of the M1–M12 modernization sequence. It is maintenance work and does not create or renumber a milestone.
+This review follows completion of the M1–M12 modernization sequence. It is maintenance work and does not create or renumber a milestone. The sweep was merged to `main` at `ad75fee8df1f33cd8890bfbd23924b35cc6f4903`.
 
 ## Summary
 
-The repository is in strong functional shape after M11 acceptance and the M12 closure framework, but several maintainability and governance debts remained. This pass resolves the safe, high-value items immediately and records larger structural work explicitly instead of hiding it inside unrelated changes.
+The repository is in strong functional shape after M11 acceptance and M12 closure. The sweep resolved the safe, high-value maintainability and governance items immediately and recorded larger structural work explicitly instead of hiding it inside unrelated changes.
 
-## Resolved in this pass
+## Resolved in the sweep
 
 | Area | Debt | Resolution |
 |---|---|---|
 | Package metadata | `pyproject.toml` still described Grapher as a Cursor/Codex-specific CLI | Reworded as a project-local durable work graph for humans and autonomous agents, matching the shipped architecture |
 | Self-graph governance | CI accepted any sufficiently large JSON file under `pass-records/` | Pass records are now parsed and structurally validated for identity, explicit status, semantic/content payload, and actor/source provenance |
 | Packaging confidence | CI compiled and tested the editable source tree but did not prove the package/CLI could actually build and start | Added `uv build`, import smoke testing, and `grapher --help` execution on Python 3.10 and 3.12 |
-| Debt visibility | No single post-modernization debt ledger existed | This indexed review now records resolved and deferred debt with ownership boundaries |
+| Research workflow dependency | `jsonschema` was installed without a bounded major version | Bounded the dependency to reduce unexpected CI breakage |
+| Debt visibility | No single post-modernization debt ledger existed | This indexed review records resolved and deferred debt with ownership boundaries |
 
 ## Structural debt retained deliberately
 
@@ -40,11 +41,11 @@ The default suite intentionally excludes the high-memory embedding integration. 
 ```mermaid
 flowchart LR
     BASE["Accepted modernization main\ncommit: 1e3a15b\ncode + tests + docs"]
-    SWEEP["Sweep code / CI / metadata / governance\nrepo-wide inspection\ncurrent: maintenance branch"]
-    CLASSIFY["Classify debt\nfix-now vs structural/deferred\ncurrent: maintenance branch"]
-    FIX["Apply safe hardening\npyproject + CI + governance scripts\ncurrent: maintenance branch"]
-    GRAPH["Record maintenance pass\n.grapher/shared/pass-records\ncurrent: maintenance branch"]
-    VERIFY["Full governance + Python matrix\n.github/workflows/ci.yml\ncurrent: maintenance branch"]
+    SWEEP["Sweep code / CI / metadata / governance\nrepo-wide inspection\nmerged: ad75fee"]
+    CLASSIFY["Classify debt\nfix-now vs structural/deferred\nmerged: ad75fee"]
+    FIX["Apply safe hardening\npyproject + CI + governance scripts\nmerged: ad75fee"]
+    GRAPH["Record maintenance pass\n.grapher/shared/pass-records\nmerged: ad75fee"]
+    VERIFY["Full governance + Python matrix\n.github/workflows/ci.yml\naccepted before ad75fee"]
 
     BASE --> SWEEP --> CLASSIFY --> FIX --> GRAPH --> VERIFY
 ```
@@ -65,6 +66,6 @@ flowchart TD
     CI -->|self-state gate| SHARED
 ```
 
-## Completion rule
+## Completion state
 
-This maintenance pass is complete only after the strengthened governance gate, package build/CLI smoke checks, truth-status gate, acceptance suite, and full Python 3.10/3.12 regression matrix all pass. Structural items listed above remain explicit follow-up debt rather than being silently treated as fixed.
+The strengthened governance gate, package build/CLI smoke checks, truth-status gate, acceptance suite, research validation, and full Python 3.10/3.12 regression matrix passed before merge at `ad75fee8df1f33cd8890bfbd23924b35cc6f4903`. Structural items above remain explicit follow-up maintenance debt.
