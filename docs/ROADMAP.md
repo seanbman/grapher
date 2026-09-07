@@ -14,10 +14,14 @@ This document is the authoritative numbered implementation sequence for Grapher.
 | M6 | Truth-aware relations, supersession, and retrieval | completed |
 | M7 | Grapher-to-Dash adapter and visualization | completed |
 | M8 | Checkpoints and compaction previews | **next** |
-| M9 | Generalized prompts and Cursor integration | planned |
-| M10 | Dash export and approved editing | planned |
+| M9 | Generalized prompts and **Codex integration** | planned |
+| M10 | **Cursor integration**, Dash export, and approved editing | planned |
 | M11 | Acceptance fixtures and tests | planned |
 | M12 | Documentation and full-suite completion | planned |
+
+## Integration priority
+
+Codex is the first-class agent integration target. Grapher's generalized agent-facing contracts should be proven with Codex before equivalent Cursor integration is advanced. Cursor support follows Codex and should reuse the stabilized agent-agnostic interfaces rather than defining them.
 
 ## State rules
 
