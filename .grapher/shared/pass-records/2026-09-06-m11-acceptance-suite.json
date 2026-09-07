@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "project": "grapher",
+  "pass": "m11-acceptance-suite",
+  "recorded_at": "2026-09-06T22:00:00-06:00",
+  "actor": {"id": "chatgpt", "kind": "agent", "role": "maintainer"},
+  "scope": {"milestone": "M11", "branch": "milestone/m11-acceptance-fixtures"},
+  "summary": "Converted Grapher's representative museum, Dreadnought, and CASSIO fixtures into a named product-level acceptance suite covering generic migration, multi-agent truth/generation behavior, generalized context and export, audit, and large legacy-corpus compatibility.",
+  "evidence": [
+    "tests/fixtures/acceptance-suite.json",
+    "tests/test_m11_acceptance_suite.py",
+    "docs/M11_ACCEPTANCE.md",
+    "git:0488bc0d1d452e4f8643124a67ed5829b0cc4175"
+  ]
+}
