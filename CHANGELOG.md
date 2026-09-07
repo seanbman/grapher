@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.6.1 — 2026-09-07
+
+- Added the host-agnostic `grapher.integrations.embedded` boundary for applications that embed Grapher as a durable knowledge substrate.
+- Preserved Grapher's standalone CLI/application behavior while allowing external control systems to own admission and authorization policy.
+- Kept all embedded mutations on Grapher's canonical `save_graph_mutation()` path, including truth policy, integrity sealing, immutable transitions, structured history, and rollback.
+- Added lossless host metadata fields (`meta`, `stage`, `source_refs`, `owners`) to the embedded contribution surface.
+- Added host-side brokering documentation covering read brokering, write mediation, provenance, scope, and publication.
+
 ## 0.6.0 — 2026-09-06
 
 - Completed the canonical M1–M12 modernization sequence and formalized the roadmap closure state; there is no implicit M13.
