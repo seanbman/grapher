@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "project": "grapher",
+  "pass": "m9-ordering-test-fix",
+  "recorded_at": "2026-09-06T21:12:00-06:00",
+  "actor": {
+    "id": "chatgpt",
+    "kind": "agent",
+    "role": "maintainer"
+  },
+  "scope": {
+    "milestone": "M9",
+    "branch": "milestone/m9-codex-integration"
+  },
+  "summary": "Aligned the M9 deterministic agent-context regression test with the renderer's documented type-title-id ordering contract without changing implementation behavior.",
+  "evidence": [
+    "tests/test_agent_prompt.py",
+    "src/grapher/agent_prompt.py",
+    "github-actions:34078761671"
+  ]
+}
