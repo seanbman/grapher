@@ -10,7 +10,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from grapher.config import default_config, save_config
+from grapher.config import default_config, load_config, save_config
 from grapher.model import empty_graph, empty_vectors, normalize_graph
 
 GRAPH_DIRNAME = ".grapher"
@@ -160,8 +160,16 @@ def save_graph_mutation(
     """
     from grapher.integrity import materialize_status_transitions, seal_finalized_nodes
     from grapher.provenance import actor_record, make_history_entry
+    from grapher.truth_policy import enforce_new_node_truth_status
 
     old = before if before is not None else (load_graph(path, normalize=False) if path.is_file() else None)
+    config = load_config(path)
+    enforce_new_node_truth_status(
+        old,
+        data,
+        enabled=bool(config.get("require_explicit_status", False)),
+    )
+
     operation_id = operation_id or f"operation-{uuid.uuid4().hex}"
     resolved_actor = actor_record(source, actor or _actor_from_context(context))
 
