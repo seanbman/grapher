@@ -1,11 +1,13 @@
 # Grapher Documentation Index
 
-This is the canonical entry point for Grapher documentation. Human and agent readers should start here, then follow the topic links below.
+This is the canonical entry point for Grapher documentation. **New users should begin with the root [`README.md`](../README.md), then use this index for deeper reference.**
 
 ## Core navigation
 
 | Topic | Document | Purpose |
 |---|---|---|
+| Linux installation + updates | [INSTALLATION_AND_UPDATES.md](INSTALLATION_AND_UPDATES.md) | Recommended no-sudo Linux install, isolated environment, upgrades, release checks, and troubleshooting |
+| v0.7.0b1 beta | [RELEASE_0.7.0b1.md](RELEASE_0.7.0b1.md) | Current public beta baseline, compatibility, and verification |
 | Architecture | [ARCHITECTURE.md](ARCHITECTURE.md) | System boundaries, canonical state, mutation path, transport, Dash, and agent integrations |
 | Procedures | [PROCEDURES.md](PROCEDURES.md) | Change procedure, self-graph publication, CI gates, checkpoints, compaction, and release flow |
 | Roadmap | [ROADMAP.md](ROADMAP.md) | Canonical M1-M12 implementation order and completed modernization state |
@@ -39,6 +41,8 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 - [Self-graph and CI procedure](PROCEDURES.md#self-graph-and-ci-procedure)
 - [Checkpoint refresh procedure](PROCEDURES.md#checkpoint-refresh-procedure)
 - [Compaction preview procedure](PROCEDURES.md#compaction-preview-procedure)
+- [Linux install/update flow](INSTALLATION_AND_UPDATES.md#appendix--process-flow)
+- [v0.7.0b1 release flow](RELEASE_0.7.0b1.md#appendix--process-flow)
 - [Interactive CLI architecture](INTERACTIVE_CLI.md#architecture-diagram)
 - [Interactive CLI procedure](INTERACTIVE_CLI.md#procedure-flow)
 - [Embedded integration architecture](EMBEDDED_INTEGRATION.md#architecture-diagram)
@@ -63,6 +67,10 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 
 Every human-facing `.md`, `.pdf`, and `.txt` file directly under `docs/` must be listed here. CI enforces this with `scripts/check_docs_index.py`. Machine-oriented Grapher packs under `docs/grapher/` are intentionally excluded from the human documentation index.
 
+## Current release state
+
+The current public beta is **v0.7.0b1**, released from `13a1f2ca016ef50c7f2fdc71a9ef9bfd437cc498`. It adds the Linux release installer and release-aware update discovery while retaining the v0.6.1 embedded integration boundary. Dreadnought v0.2.0b1 uses this Grapher beta as its matched compatibility line.
+
 ## Commit anchors
 
-M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 entered `main` at `0488bc0d1d452e4f8643124a67ed5829b0cc4175`. M11 entered `main` at `ffe702381e3b08bdee21987ea13bc2fcde6d6cf2`. The M12 closure framework entered `main` at `1e3a15bad6b38b523eda9023e1ee92dc2947d2`. The post-modernization maintenance sweep and final M12 closure verification entered `main` at `ad75fee8df1f33cd8890bfbd23924b35cc6f4903`. Embedded host integration entered `main` at `b3729dadc318b6eb65c593e47bcd8da272147d4d`. Release 0.6.1 documents and stabilizes that interface as a compatibility baseline.
+M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 entered `main` at `0488bc0d1d452e4f8643124a67ed5829b0cc4175`. M11 entered `main` at `ffe702381e3b08bdee21987ea13bc2fcde6d6cf2`. The M12 closure framework entered `main` at `1e3a15bad6b38b523eda9023e1ee92dc2947d2`. The post-modernization maintenance sweep entered `main` at `ad75fee8df1f33cd8890bfbd23924b35cc6f4903`. Embedded host integration entered `main` at `b3729dadc318b6eb65c593e47bcd8da272147d4d`. v0.6.1 stabilized that interface. v0.7.0b1 entered `main` at `13a1f2ca016ef50c7f2fdc71a9ef9bfd437cc498` and established the Linux beta distribution/update path.
