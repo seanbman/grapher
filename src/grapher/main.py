@@ -5,9 +5,11 @@ from __future__ import annotations
 import argparse
 import sys
 
+from grapher import __version__
 from grapher.format import emit
 from grapher.store import resolve_graph_path
 from grapher.transport import publish_graph, sync_graph
+from grapher.update import maybe_notify
 
 
 def _transport_parser(command: str) -> argparse.ArgumentParser:
@@ -72,6 +74,8 @@ def _interactive_loop() -> None:
 def main() -> None:
     argv = sys.argv[1:]
     interactive_terminal = sys.stdin.isatty() and sys.stdout.isatty()
+    if interactive_terminal:
+        maybe_notify(__version__)
 
     if not argv and interactive_terminal:
         _interactive_loop()

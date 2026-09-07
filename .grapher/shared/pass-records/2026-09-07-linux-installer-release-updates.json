@@ -1,0 +1,23 @@
+{
+  "id": "pass-grapher-0.7.0b1-linux-install-updates",
+  "type": "result",
+  "title": "Linux installation and release-aware update interface",
+  "content": {
+    "result": "Added per-user Linux release installer, interactive GitHub release update checks, and 0.7.0b1 beta version baseline.",
+    "interpretation": "Human installation follows published releases while programmatic CLI execution remains deterministic and offline-safe."
+  },
+  "status": "current",
+  "workflow_state": "completed",
+  "verification": "verified",
+  "provenance": {
+    "actor_id": "openai:gpt-5.6-sol",
+    "actor_kind": "agent",
+    "source": "github-change",
+    "integrity": "declared"
+  },
+  "evidence": [
+    {"type": "file", "ref": "install.sh"},
+    {"type": "file", "ref": "src/grapher/update.py"},
+    {"type": "file", "ref": "src/grapher/main.py"}
+  ]
+}
