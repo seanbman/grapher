@@ -1,239 +1,142 @@
-# grapher
+# Grapher
 
-Grapher is a local, general-purpose work graph for humans and autonomous agents. It preserves knowledge, lifecycle, truth, evidence, provenance, mission scope, and history in a searchable, inspectable form. Grapher knows; coordinating agents decide what work to perform, and auditors decide what evidence is sufficient.
+Grapher is a local durable knowledge graph for humans and autonomous agents. It preserves what is known, why it is believed, where it came from, how it changed, and what is currently actionable—without collapsing truth, workflow state, verification, provenance, and history into one status field.
 
-Runtime files (local, not Git-shared):
+**Current public beta: v0.7.0b1**
 
-- `.grapher/knowledge.json` — local canonical working graph
-- `.grapher/vectors.json` — derived semantic-search cache; safe to rebuild
-- `.grapher/config.json` — project configuration and registry extensions
-- `.grapher/history.jsonl` — append-only local semantic mutation journal
-- `.grapher/sync-state.json` — last synchronized shared graph hash
-
-Git-shared knowledge:
-
-- `.grapher/shared/knowledge.json` — deterministic normalized snapshot
-- `.grapher/shared/manifest.json` — schema, graph hash, publication id, and embedding metadata
-- `.grapher/shared/history/<publication-id>.json` — immutable publication record
-
-Local graph/history/vector state should not be committed. `grapher publish` is the boundary that creates Git-safe shared state.
-
-## Install and initialize
+## Quick start — Linux
 
 Requires Python 3.10+.
 
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install -e ".[embed,dash]"
-    grapher init --profile general --kind knowledge --all-stages
-    grapher cursor install
-    grapher codex install
+```bash
+curl -fsSL https://raw.githubusercontent.com/seanbman/grapher/main/install.sh | bash
+```
 
-Repeated and comma-separated kinds/stages are equivalent:
+If needed, add the user executable directory to your shell path:
 
-    grapher init --kind design --kind decision --stage designing,planning
-    grapher init --kind design,decision --stage designing --stage planning
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
 
-The default profile and domain are general. Profiles (general, software, product, research, campaign, operations) extend one schema; they do not fork it.
+Verify and initialize a graph:
 
-## Git transport
+```bash
+grapher --version
+grapher init --profile general --kind knowledge --all-stages
+grapher audit
+```
 
-Normal work happens against the local graph. Share durable knowledge through Git with an explicit publish/sync boundary:
+The release installer uses an isolated environment under `~/.local/share/grapher/venv`, requires no `sudo`, and interactive launches check GitHub Releases for newer versions without blocking offline use.
 
-    grapher validate
-    grapher audit
-    grapher publish
-    git add .grapher/shared
-    git commit -m "grapher: publish project knowledge"
-    git push
+## Where to go next
 
-After pulling another agent's publication:
+| I want to… | Read |
+|---|---|
+| Install, update, or troubleshoot the Linux beta | [`docs/INSTALLATION_AND_UPDATES.md`](docs/INSTALLATION_AND_UPDATES.md) |
+| Browse all documentation | [`docs/INDEX.md`](docs/INDEX.md) |
+| Understand the architecture and trust/state boundaries | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Understand graph truth/status policy | [`docs/TRUTH_STATUS_POLICY.md`](docs/TRUTH_STATUS_POLICY.md) |
+| Author strict machine-readable semantic records | [`docs/SEMANTIC_ENTRY_SCHEMA.md`](docs/SEMANTIC_ENTRY_SCHEMA.md) |
+| Understand finalization and semantic integrity | [`docs/SEMANTIC_INTEGRITY.md`](docs/SEMANTIC_INTEGRITY.md) |
+| Share graph knowledge safely through Git | [`docs/GIT_TRANSPORT.md`](docs/GIT_TRANSPORT.md) |
+| Embed Grapher in another application | [`docs/EMBEDDED_INTEGRATION.md`](docs/EMBEDDED_INTEGRATION.md) |
+| Build a broker/mediator around embedded Grapher | [`docs/EMBEDDED_BROKERING.md`](docs/EMBEDDED_BROKERING.md) |
+| Integrate Codex or Cursor | [`docs/CODEX_INTEGRATION.md`](docs/CODEX_INTEGRATION.md) |
+| Follow repository development/governance procedures | [`docs/PROCEDURES.md`](docs/PROCEDURES.md) |
 
-    git pull
-    grapher sync
+## Core model
 
-`grapher publish` refuses invalid graphs and writes a deterministic shared snapshot, manifest, and immutable publication record. `grapher sync` verifies the shared hash and refuses to overwrite unpublished local changes unless `--force` is explicit. Vectors remain local and are rebuilt from shared knowledge. See `docs/GIT_TRANSPORT.md`.
+Grapher keeps several concepts deliberately independent:
 
-## General, non-software use
+- **Truth status:** `unclassified`, `proposed`, `current`, `canonical_spec`, `superseded`, `historical`, `rejected`, `deprecated`.
+- **Workflow state:** `not_started`, `active`, `blocked`, `completed`, `cancelled`, `on_hold`, `not_applicable`.
+- **Verification:** `unverified`, `partially_verified`, `verified`, `failed`, `not_applicable`.
+- **Provenance:** actor, role, session, source mechanism, integrity, and optional external attestation.
+- **History:** semantic mutations are journaled; replacement does not erase prior state.
 
-    grapher init --name museum-exhibit --profile product --kind brainstorm,design,roadmap --stage ideation,designing,planning
-    grapher add --id goal-visitors --type goal --title "Visitor goal" --content "Visitors understand how prairie wetlands store carbon." --status canonical_spec --stage designing
-    grapher add --id task-install --type task --title "Install central case" --content '{"action":"Rig and level the central specimen case","expected_outcome":"Central case is installed level and ready for exhibit use"}' --status current --workflow-state active --stage launching --owners facilities
-    grapher link task-install goal-visitors --rel satisfies
-    grapher checkpoint create --title "Exhibit readiness" --nodes goal-visitors,task-install
-    grapher audit
+A completed task is not automatically a true claim. A recent claim is not automatically canonical. A verified record should carry evidence. Grapher preserves these distinctions so humans and agents can reason about durable state without silently rewriting history.
 
-Configured custom node types and relations in .grapher/config.json are accepted by authoring and validation.
+## Everyday commands
 
-## Graph kind and lifecycle stage
+```bash
+# Search current knowledge
+grapher search "what is true now" --exclude-superseded
 
-Kinds describe what relationships a graph emphasizes: knowledge, brainstorm, concept, requirements, decision, design, dependency, roadmap, implementation, launch, operations, or retrospective.
+# Add a typed decision
+grapher add --type decision --title "Use typed records" --status current \
+  --content '{"decision":"Normalize semantic entries at write time","rationale":"Downstream tools need stable machine-readable meaning"}'
 
-Stages describe where work sits: ideation → designing → planning → developing → launching → maintaining. Kinds and stages are independent and may both be plural. Aliases such as design, development, launch, and maintenance serialize canonically.
+# Link evidence/relationships
+grapher link SOURCE TARGET --rel evidenced_by
 
-## Truth status
+# Inspect health
+grapher validate
+grapher audit
 
-Truth status describes interpretation: unclassified, proposed, current, canonical_spec, superseded, historical, rejected, or deprecated. It is not a completion flag. Preserve replaced facts and link them in the canonical direction:
+# Create a current-state checkpoint
+grapher checkpoint create --title "Release readiness" --nodes NODE_A,NODE_B
+```
 
-    grapher curate supersede NEW_NODE OLD_NODE
-    grapher curate status NODE historical
+For the complete contracts and command behavior, follow the documentation links above rather than treating this README as the exhaustive reference.
 
-Contradictions remain explicit with the contradicts relation; a newer timestamp alone does not resolve disagreement.
+## Local state and Git-shared state
 
-## Workflow state
+Normal work happens against local runtime files under `.grapher/`, including `knowledge.json`, `history.jsonl`, `vectors.json`, `config.json`, and `sync-state.json`. These runtime files are not the Git transport contract.
 
-Work state is independent of truth: not_started, active, blocked, completed, cancelled, on_hold, or not_applicable.
+Publish durable knowledge explicitly:
 
-    grapher add --type task --title "Approve labels" --workflow-state blocked --status current --content '{"action":"Approve final exhibit labels","expected_outcome":"Accessibility-reviewed labels are approved for production"}'
+```bash
+grapher validate
+grapher audit
+grapher publish
+git add .grapher/shared
+git commit -m "grapher: publish project knowledge"
+git push
+```
 
-A completed task can produce a current finding; a field handoff does not imply acceptance or audit completion.
+After pulling shared graph state elsewhere:
 
-## Verification and evidence
+```bash
+git pull
+grapher sync
+```
 
-Verification is unverified, partially_verified, verified, failed, or not_applicable. Verified claims should carry evidence or a verified_by/evidenced_by edge.
+See [`docs/GIT_TRANSPORT.md`](docs/GIT_TRANSPORT.md) for conflict and safety semantics.
 
-    grapher add --type claim --title "Case supports rated load" --verification verified --status current --evidence '{"type":"measurement","ref":"load-test-2026-09-03","summary":"Held 200 kg for 30 minutes"}'
+## Embedded use
 
-Evidence supports tests, files, documents, images, measurements, observations, commits, conversations, external sources, commands, logs, and other domain evidence. Audit reports verified nodes without evidence.
+Grapher can operate standalone or as a durable cognition substrate behind another control plane. Embedded hosts should use `grapher.integrations.embedded` rather than bypassing canonical mutation semantics. Host software may own admission and authorization; Grapher continues to own graph representation, truth policy, semantic integrity, transitions, history, rollback, and publication semantics.
 
-## Typed semantic entries
+Start with [`docs/EMBEDDED_INTEGRATION.md`](docs/EMBEDDED_INTEGRATION.md) and [`docs/EMBEDDED_BROKERING.md`](docs/EMBEDDED_BROKERING.md).
 
-Durable reasoning/work records use strict semantic contracts for `observation`, `problem`, `question`, `hypothesis`, `requirement`, `constraint`, `proposal`, `decision`, `task`, `implementation`, `test`, `result`, `failure`, and `lesson`.
+## Updating
 
-For these types, `--content` must be a JSON object with the exact required fields for that type. Required values must have the documented type and substantive content; filler and unexpected fields are rejected. For example:
+Re-run the installer:
 
-    grapher add --type decision --title "Use typed records" --status current \
-      --content '{"decision":"Normalize semantic entries at write time","rationale":"Downstream tools need stable machine-readable meaning"}'
+```bash
+curl -fsSL https://raw.githubusercontent.com/seanbman/grapher/main/install.sh | bash
+```
 
-    grapher add --type task --title "Verify transport" --status current --workflow-state active \
-      --content '{"action":"Run cross-checkout publish/sync verification","expected_outcome":"A second checkout hydrates the identical validated graph"}'
-
-Temporary empty semantic stubs are allowed only while unclassified and unverified. Current, canonical, verified, or finalized semantic records must be complete. Programmatic integrations can inspect contracts with `grapher.semantic.semantic_contract()` and `semantic_contracts()`. See `docs/SEMANTIC_ENTRY_SCHEMA.md`.
-
-## Relations
-
-Precise built-ins cover references, dependencies, blockers, evidence, decisions, ownership, supersession, contradiction, mission records, handoffs, acceptances, and audits. related remains a legal low-information fallback. Validation diagnoses dangling, duplicate, self-superseding, and cyclic supersession edges.
-
-    grapher link HANDOFF MISSION_GENERATION --rel applies_to
-    grapher link ACCEPTANCE MISSION_GENERATION --rel accepts
-    grapher link AUDIT MISSION_GENERATION --rel audits
-
-## Search
-
-Semantic search falls back to lexical search when embeddings are unavailable. Hybrid combines both. Truth-aware reranking considers status, verification, query intent, scope/generation, provenance integrity, and checkpoints; recency is not dominant.
-
-    grapher search "what is true now" --project terminal --mission ubuntu-prototype --generation gen-2 --exclude-superseded --explain-ranking --json
-    grapher search "original requirement" --status canonical_spec --mode lexical
-    grapher search "why did the failure happen" --include-history
-    grapher search "next roadmap" --workflow-state active --status proposed
-
-Filters include kind, stage, status, workflow state, verification, type, tag, project, mission, generation, actor, role, and as-of time. History and superseded nodes remain searchable by default; --current-only and --exclude-superseded narrow current-state retrieval. Ranking explanations name semantic/base, status, verification, provenance, scope, intent, checkpoint, recency, and edge-context components.
-
-## Checkpoints
-
-A checkpoint is a traceable current-state snapshot linked to sources with derived_from edges.
-
-    grapher checkpoint create --title "Current exhibit state" --nodes goal-visitors,task-install
-    grapher checkpoint refresh CHECKPOINT_ID --dry-run
-    grapher checkpoint refresh CHECKPOINT_ID --yes
-    grapher checkpoint list
-
-Refresh is review-first: preview reports changed sources and contradictions. Audit marks a checkpoint stale when supporting state changes, fails verification, is superseded/rejected, gains contested/invalidated provenance, or participates in a contradiction.
-
-## Provenance
-
-Nodes can record actor, role, session, source mechanism, integrity, and an opaque external attestation reference. Integrity is unknown, declared, verified, contested, or invalidated. Grapher records provenance; it does not authenticate actors or infer authority from names, titles, paths, or prose. Verified provenance requires external attestation.
-
-    grapher add --type handoff --title "Field handoff" --actor codex-field --role field-agent --session session-abc --provenance-integrity declared
-    grapher curate provenance RECORD invalidated --reason "role-boundary interference"
-    grapher curate provenance RECORD verified --attestation agent-hub:event:123
-
-## Project, mission, and generation scope
-
-Scope is optional and keeps project, mission, and reopened generations distinct:
-
-    grapher add --type mission --title "Prototype generation 2" --project terminal --mission ubuntu-prototype --generation gen-2 --status current --workflow-state active
-
-CLI flags override environment defaults. External systems may set GRAPHER_WORKSPACE_ID, GRAPHER_PROJECT_ID, GRAPHER_MISSION_ID, GRAPHER_GENERATION_ID, GRAPHER_ACTOR_ID, GRAPHER_ACTOR_ROLE, GRAPHER_SESSION_ID, GRAPHER_SOURCE, and GRAPHER_ATTESTATION_REF. Values remain declared unless a trusted caller supplies attestation and explicitly requests verified integrity.
-
-## Mutation history and finalized records
-
-Canonical nodes remain fast to read, while every semantic save appends immutable structured transitions to `history.jsonl`. Each transition has a stable ID, affected entity, typed change, previous/resulting values, timestamp, actor/source kind, phase, and correlation ID. Optional rationale, evidence references, decision/requirement IDs, and supersession/override IDs preserve why state changed. Actor kinds are `human`, `agent`, `system_tool`, and `migration_import`; phases keep `proposed`, `executed`, `observed`, `verified`, and `canonical` distinct. Existing hash-only journal lines remain readable.
-
-    grapher add --type decision --id verify-release --title "Request verification" --phase proposed --actor-kind human --actor owner --reason "Release gate"
-    grapher add --type event --id verification-failed --title "Verification failed" --verification failed --phase observed --actor-kind system_tool --actor pytest --decision-id verify-release --history-evidence-ref "pytest tests/" --operation-id release-check-7
-    grapher history --entity verification-failed --json
-    grapher history --operation release-check-7 --json
-
-Canonical writes use temporary file, fsync, and atomic replace. If journal append fails, Grapher rolls the canonical graph back. Reads never reconstruct current state from history.
-
-    grapher add --type acceptance --id release-acceptance --title "Release accepted" --content "Accepted against checklist R7." --finalize
-    grapher curate finalize release-acceptance
-
-Ordinary semantic rewriting, merging, or deletion of finalized records is rejected. Correct them with a new node and supersedes. `--force-finalized` exists only for explicit administrative recovery, requires actor attribution plus a reason, and is journaled.
-
-## Audit and validation
-
-Validation performs structural/schema checks without mutation. Audit additionally reports type/stage/status/workflow/verification/provenance distributions, low-information relations, isolated and weak nodes, pending ingest, contradictions, supersession health, verified-without-evidence, stale checkpoints, and cross-generation ambiguity.
-
-    grapher validate --json
-    grapher audit --json
-
-## Migration
-
-Version 1 graphs remain readable without migration. Migration is lossless, idempotent, validated before atomic replacement, backed up by default, and journaled. Inference is separate and explicit.
-
-    grapher migrate --graph tests/fixtures/cassio-brain.json --to 2 --dry-run --infer
-    grapher migrate --graph /path/to/cassio-brain.json --to 2 --yes
-    grapher audit --graph /path/to/cassio-brain.json
-    grapher migrate infer-preview --graph /path/to/knowledge.json
-    grapher migrate infer-apply --graph /path/to/knowledge.json --only-high-confidence --yes
-
-Use --no-backup only when an external backup exists. Migration does not rewrite prose or silently replace vague relations with guesses.
-
-## Compaction
-
-    grapher curate compact --topic "exhibit readiness" --dry-run
-
-Compaction is a non-destructive review of repeated low-information relationships. Original nodes remain. Use checkpoints and explicit curation to consolidate current state without deleting disagreement or crossing mission-generation boundaries.
-
-## Deep ingest
-
-    grapher ingest ./assets
-    grapher scan ./assets
-
-Ingest queues document/image/video/audio stubs. Semantic completion requires an enriching agent to actually read, view, watch, or listen and replace every pending stub with dense grounded content. A path is only a locator. Pending zero plus a content-level search is the acceptance check; unsupported media inspection must be disclosed, never invented.
-
-## Cursor and Codex integration
-
-    grapher cursor install --force
-    grapher codex install --force
-    grapher codex export ./transplant --name "exhibit-design" --description "Current exhibit decisions"
-    grapher codex receive ./transplant
-
-Generated guidance requires compact working context, search before work, deep-media understanding, strict typed semantic contracts, graph-worthy updates during and after work, honest verification/evidence, supersession instead of history deletion, mission/provenance preservation, and explicit publish/sync at the Git boundary. Core services remain agent-agnostic.
-
-## Dashboard
-
-    grapher dash --view provenance
-    grapher dash --host 127.0.0.1 --port 8050 --open
-
-Dash reads the same normalized v1/v2 model as the CLI and never migrates on open. Selectable views are Knowledge, Lifecycle, Dependency, Decision, Roadmap, Current State, History/Supersession, Operations, and Provenance/Mission History. Shared filters cover type, truth, lifecycle, verification, mission generation, and text. Detail shows full content, evidence, scope, provenance, dates, finalization, and relations. Dashboard downloads provide interactive HTML, filtered JSON (explicitly non-canonical), node CSV, and edge CSV; Plotly provides PNG export. Reload refreshes the cached normalized graph and deterministic layout.
-
-## Software profile example
-
-    grapher init --profile software --domain software --kind knowledge,implementation,decision --stage designing,developing,maintaining
-    grapher add --type requirement --title "Token lifetime" --status canonical_spec --content '{"requirement":"Access tokens expire after 15 minutes","acceptance_condition":"Authentication tests confirm 15-minute access-token expiry"}'
-    grapher add --type finding --title "Token TTL implemented" --status current --verification verified --evidence '{"type":"test","ref":"pytest tests/test_auth.py"}'
+Interactive launches perform a best-effort GitHub Release check. Disable it explicitly with `GRAPHER_NO_UPDATE_CHECK=1`. Updates are never installed automatically.
 
 ## Development
 
-Default tests avoid the large embedding model:
+For an editable source checkout:
 
-    ./scripts/test.sh -v
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[embed,dash]"
+./scripts/test.sh -v
+```
 
-Optional embedding integration uses a larger memory cap:
+The canonical documentation map is [`docs/INDEX.md`](docs/INDEX.md).
 
-    ./scripts/test-embed.sh -v
+## Appendix — Process flow
 
-Reusable application boundaries live in grapher.store, model, graph, search, audit, migrate, curate, and checkpoint. Future Agent Hub and Auditor integrations can call these directly without a network service.
+```mermaid
+flowchart LR
+    U["User / host\ncode: README.md; src/grapher/main.py\ninception: repository founding\ncurrent beta: 13a1f2ca016ef50c7f2fdc71a9ef9bfd437cc498"] --> C["Grapher CLI / embedded API\ncode: src/grapher; src/grapher/integrations/embedded.py\ninception embedded: b3729dadc318b6eb65c593e47bcd8da272147d4d\ncurrent beta: 13a1f2ca016ef50c7f2fdc71a9ef9bfd437cc498"]
+    C --> G["Canonical graph mutation + history\ncode: src/grapher/store.py; src/grapher/graph.py\ninception: repository founding\ncurrent beta: 13a1f2ca016ef50c7f2fdc71a9ef9bfd437cc498"]
+    G --> P["Explicit Git publication\ncode: .grapher/shared; publish/sync path\ninception transport: v0.6 series\ncurrent beta: 13a1f2ca016ef50c7f2fdc71a9ef9bfd437cc498"]
+```
