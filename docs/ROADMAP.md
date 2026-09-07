@@ -18,12 +18,12 @@ This document is the authoritative numbered implementation sequence for Grapher.
 | M8 | Checkpoints and compaction previews | completed |
 | M9 | Generalized prompts and **Codex integration** | completed |
 | M10 | **Cursor integration**, Dash export, and approved editing | completed |
-| M11 | Acceptance fixtures and tests | **next** |
-| M12 | Documentation and full-suite completion | planned |
+| M11 | Acceptance fixtures and tests | completed |
+| M12 | Documentation and full-suite completion | **next** |
 
 ## Integration priority
 
-Codex remains the first-class agent integration target. M9 proved the generalized contract with Codex; M10 successfully reused it for Cursor and completed approval-gated Dash status editing. M11 now proves the accumulated behavior against named acceptance fixtures rather than adding another integration layer.
+Codex remains the first-class agent integration target. M9 proved the generalized contract with Codex; M10 reused it for Cursor and approval-gated Dash editing; M11 proved accumulated behavior against named acceptance fixtures. M12 closes the modernization sequence by reconciling documentation with shipped behavior and requiring the complete regression/governance suite to pass.
 
 ## State rules
 
@@ -35,7 +35,7 @@ Codex remains the first-class agent integration target. M9 proved the generalize
 
 ## Current maintenance debt
 
-Truth-state admission hardening was merged after M7. It is maintenance/hardening, not a numbered milestone. Five grandfathered `unclassified` records remain a finite curation queue and do not displace M11.
+Truth-state admission hardening was merged after M7. It is maintenance/hardening, not a numbered milestone. Five grandfathered `unclassified` records remain a finite curation queue and do not displace M12.
 
 ## Agent rule
 
@@ -47,14 +47,14 @@ Every substantive Grapher pass must also update versioned `.grapher/shared` self
 
 ```mermaid
 flowchart LR
-    READ["Consult roadmap\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: 0488bc0"]
-    CLASSIFY["Classify work\nmilestone vs maintenance\ninception: 9917cc8\ncurrent: 0488bc0"]
-    EXECUTE["Implement acceptance cases\ntests/fixtures + tests/*\ninception: 0488bc0\ncurrent: M11 branch"]
-    GRAPH["Update Grapher self-state\n.grapher/shared/*\ninception: 0488bc0\ncurrent: M11 branch"]
-    CI["CI governance + acceptance suite\n.github/workflows/ci.yml\ninception: 5bb12e1\ncurrent: 0488bc0"]
-    ADVANCE["Advance only after acceptance suite passes\ndocs/ROADMAP.md\ninception: 0488bc0\ncurrent: M11 branch"]
+    READ["Consult roadmap\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: ffe7023"]
+    RECONCILE["Reconcile shipped behavior and docs\nREADME.md + docs/*\ninception: ffe7023\ncurrent: M12 branch"]
+    VERIFY["Run acceptance + full regression suite\ntests/*\ninception: ffe7023\ncurrent: M12 branch"]
+    GRAPH["Update Grapher self-state\n.grapher/shared/*\ninception: ffe7023\ncurrent: M12 branch"]
+    CI["Governance + Python matrix\n.github/workflows/ci.yml\ninception: 5bb12e1\ncurrent: ffe7023"]
+    CLOSE["Mark modernization sequence complete only after green suite\ndocs/ROADMAP.md\ninception: ffe7023\ncurrent: M12 branch"]
 
-    READ --> CLASSIFY --> EXECUTE --> GRAPH --> CI --> ADVANCE
+    READ --> RECONCILE --> VERIFY --> GRAPH --> CI --> CLOSE
 ```
 
 Architecture details: [ARCHITECTURE.md](ARCHITECTURE.md). Operating procedure: [PROCEDURES.md](PROCEDURES.md). M11 acceptance suite: [M11_ACCEPTANCE.md](M11_ACCEPTANCE.md).
