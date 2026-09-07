@@ -5,6 +5,7 @@ import pytest
 
 from grapher.cursor_cmd import install_cursor_integration, cursor_status
 from grapher.graph import add_node
+from grapher.integrity import status_transition_nodes
 from grapher.model import empty_graph
 from grapher.store import init_store, load_graph, save_graph
 from grapher.viz.editing import (
@@ -65,11 +66,7 @@ def test_dash_status_edit_requires_matching_explicit_approval(tmp_path: Path):
     assert result["applied"] is True
     updated = load_graph(graph_path)
     assert updated["nodes"]["n"]["status"] == "historical"
-    transitions = [
-        node for node in updated["nodes"].values()
-        if node.get("type") == "status_transition" and (node.get("meta") or {}).get("subject_id") == "n"
-    ]
-    assert transitions
+    assert status_transition_nodes(updated, "n")
 
     history = [json.loads(line) for line in (graph_path.parent / "history.jsonl").read_text().splitlines()]
     assert history[-1]["action"] == "dashboard_status_edit_approved"
