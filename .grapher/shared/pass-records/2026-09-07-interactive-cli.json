@@ -1,0 +1,13 @@
+{
+  "id": "grapher-interactive-cli-2026-09-07",
+  "type": "implementation",
+  "title": "Human-friendly interactive CLI and guided initialization",
+  "status": "current",
+  "content": "Adds an arrow-key terminal menu and guided initialization while preserving the existing long-form CLI as the programmatic interface. Interactive operations translate into existing command handlers rather than creating a new persistence path.",
+  "provenance": {
+    "actor_id": "dreadnought:control-plane",
+    "actor_kind": "system_tool",
+    "source": "interactive-cli-usability-pass",
+    "integrity": "declared"
+  }
+}
