@@ -1,0 +1,28 @@
+{
+  "id": "inline-cli-menus-2026-09-07",
+  "type": "implementation",
+  "title": "Inline command-line menus and cancellable initialization",
+  "status": "current",
+  "workflow_state": "active",
+  "verification": "unverified",
+  "scope": {
+    "project_id": "grapher",
+    "mission_id": "cli-ux",
+    "generation_id": "inline-menu"
+  },
+  "content": {
+    "implementation": "Replaced prompt-toolkit full-screen dialogs with inline terminal prompts. Menus support numbered selection and arrow-key cycling; q, Escape, Ctrl-C, and EOF cancel cleanly. Guided initialization now propagates cancellation at every step instead of falling through to defaults.",
+    "result": "Awaiting GitHub Actions verification."
+  },
+  "source_refs": [
+    "src/grapher/interactive.py",
+    "tests/test_interactive_cli.py"
+  ],
+  "provenance": {
+    "actor_id": "chatgpt",
+    "actor_kind": "agent",
+    "actor_role": "implementation-agent",
+    "source": "github",
+    "integrity": "declared"
+  }
+}
