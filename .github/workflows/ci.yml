@@ -40,3 +40,6 @@ jobs:
 
       - name: Run tests
         run: uv run pytest
+
+      - name: Enforce explicit truth statuses
+        run: uv run python scripts/check_truth_status.py .grapher/shared/knowledge.json
