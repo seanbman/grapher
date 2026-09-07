@@ -1,0 +1,11 @@
+{
+  "id": "release-0.6.1-embedded-brokering",
+  "type": "release",
+  "title": "Grapher 0.6.1 embedded brokering compatibility baseline",
+  "status": "current",
+  "content": "Version 0.6.1 stabilizes the host-agnostic embedded application boundary and documents the read-broker/write-mediation contract while preserving standalone Grapher operation and canonical mutation semantics.",
+  "provenance": {
+    "actor_id": "openai:chatgpt",
+    "source": "repository-maintenance"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "release-0.6.1-docs-verification",
+  "type": "verification",
+  "title": "Grapher 0.6.1 release documentation and version verification",
+  "status": "current",
+  "content": "Adds indexed 0.6.1 release and embedded brokering documentation plus a package-version regression test.",
+  "provenance": {
+    "actor_id": "openai:chatgpt",
+    "source": "repository-maintenance"
+  }
+}
