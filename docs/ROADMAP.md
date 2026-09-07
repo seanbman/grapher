@@ -1,5 +1,7 @@
 # Grapher Canonical Roadmap
 
+[Documentation index](INDEX.md) · [Architecture](ARCHITECTURE.md) · [Procedures](PROCEDURES.md)
+
 This document is the authoritative numbered implementation sequence for Grapher. Agents and humans MUST consult it before declaring the "next milestone". Remediation, bug fixes, security work, truth-state hardening, and maintenance do not renumber or displace these milestones unless this roadmap is explicitly revised.
 
 ## Milestones
@@ -38,3 +40,21 @@ Truth-state admission hardening was merged after M7. It is maintenance/hardening
 ## Agent rule
 
 Before answering roadmap questions such as "what is next?", agents should consult this file and, where available, the corresponding canonical Grapher roadmap records. Repository state and recent PR chronology are not substitutes for the declared roadmap.
+
+Every substantive Grapher pass must also update versioned `.grapher/shared` self-state. CI enforces this rule; see [PROCEDURES.md](PROCEDURES.md#self-graph-and-ci-procedure).
+
+## Appendix: roadmap procedure flow
+
+```mermaid
+flowchart LR
+    READ["Consult roadmap\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: c96ba65"]
+    CLASSIFY["Classify work\nmilestone vs maintenance\ninception: 9917cc8\ncurrent: c96ba65"]
+    EXECUTE["Implement scoped pass\nsrc/grapher/*\ninception: 9917cc8\ncurrent: c96ba65"]
+    GRAPH["Update Grapher self-state\n.grapher/shared/*\ninception: 9917cc8\ncurrent: c96ba65"]
+    CI["CI governance + tests\n.github/workflows/ci.yml\ninception: 9917cc8\ncurrent: c96ba65"]
+    ADVANCE["Advance milestone only on accepted completion\ndocs/ROADMAP.md\ninception: 9917cc8\ncurrent: c96ba65"]
+
+    READ --> CLASSIFY --> EXECUTE --> GRAPH --> CI --> ADVANCE
+```
+
+Architecture details: [ARCHITECTURE.md](ARCHITECTURE.md). Operating procedure: [PROCEDURES.md](PROCEDURES.md).

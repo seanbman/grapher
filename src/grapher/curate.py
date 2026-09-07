@@ -171,6 +171,15 @@ def merge_nodes(
     return preview
 
 
+def _scope_boundary(node: dict[str, Any]) -> tuple[str | None, str | None, str | None]:
+    scope = node.get("scope") or {}
+    return (
+        scope.get("project_id"),
+        scope.get("mission_id"),
+        scope.get("generation_id"),
+    )
+
+
 def compact_related(
     graph: dict[str, Any], *, topic: str | None = None,
     dry_run: bool = False, limit: int = 50,
@@ -194,12 +203,30 @@ def compact_related(
                       and (edge.get("from") in ids or edge.get("to") in ids)]
     provenance_concerns = [node["id"] for node in candidates
                            if (node.get("provenance") or {}).get("integrity") in ("contested", "invalidated")]
-    generations = sorted({(node.get("scope") or {}).get("generation_id") for node in candidates
-                          if (node.get("scope") or {}).get("generation_id")})
+
+    boundary_groups: dict[tuple[str | None, str | None, str | None], list[str]] = {}
+    for node in candidates:
+        boundary_groups.setdefault(_scope_boundary(node), []).append(node["id"])
+    crosses_scope_boundary = len(boundary_groups) > 1
+    scope_boundaries = [
+        {
+            "project_id": boundary[0],
+            "mission_id": boundary[1],
+            "generation_id": boundary[2],
+            "node_ids": node_ids,
+        }
+        for boundary, node_ids in sorted(
+            boundary_groups.items(),
+            key=lambda item: tuple(value or "" for value in item[0]),
+        )
+    ]
+
     winners = [node for node in candidates if node.get("status") in ("current", "canonical_spec", "proposed")
                and node.get("status") not in ("superseded", "rejected", "deprecated")]
-    content = "\n".join(f"- {node.get('title') or node['id']}: {(node.get('content') or '').strip()[:240]}"
-                        for node in winners)
+    content = "" if crosses_scope_boundary else "\n".join(
+        f"- {node.get('title') or node['id']}: {(node.get('content') or '').strip()[:240]}"
+        for node in winners
+    )
     relationship_suggestions = []
     for edge in edges:
         if edge.get("rel") == "related" and edge.get("from") in ids and edge.get("to") in ids:
@@ -211,7 +238,12 @@ def compact_related(
                       "generation": (node.get("scope") or {}).get("generation_id")} for node in candidates],
         "excluded": excluded[:limit], "proposed_content": content,
         "proposed_status": "current", "proposed_relationships": relationship_suggestions[:limit],
-        "contradictions": contradictions, "generation_boundaries": generations,
+        "contradictions": contradictions,
+        "blocked": crosses_scope_boundary,
+        "block_reason": "scope_boundary" if crosses_scope_boundary else None,
+        "scope_boundaries": scope_boundaries,
+        "generation_boundaries": sorted({(node.get("scope") or {}).get("generation_id") for node in candidates
+                                         if (node.get("scope") or {}).get("generation_id")}),
         "provenance_concerns": provenance_concerns, "count": len(candidates),
     }
 

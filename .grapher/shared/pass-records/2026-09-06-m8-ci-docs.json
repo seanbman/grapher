@@ -1,0 +1,39 @@
+{
+  "id": "pass-grapher-m8-ci-docs-20260906",
+  "type": "result",
+  "title": "M8 checkpoint, compaction, CI, and documentation pass recorded",
+  "status": "current",
+  "workflow_state": "active",
+  "verification": "unverified",
+  "stage": "developing",
+  "scope": {
+    "project_id": "grapher",
+    "milestone_id": "M8"
+  },
+  "semantic": {
+    "result": "Milestone 8 hardens checkpoint snapshots and compaction previews, adds CI enforcement for Grapher self-state updates, and establishes indexed architecture and procedure documentation with traceable Mermaid diagrams.",
+    "evidence": "Implementation is carried by PR #16 on branch milestone/m8-checkpoints-compaction; CI verification remains required before milestone completion."
+  },
+  "source_refs": [
+    "git:9917cc8af31553841294d69000ac33cc2c53daa6",
+    "git:453b543a64851b0c63797c049c04bcc5f848bf8d",
+    "src/grapher/checkpoint.py",
+    "src/grapher/curate.py",
+    "tests/test_m8_checkpoint_compaction.py",
+    "scripts/check_self_graph_update.py",
+    "scripts/check_docs_index.py",
+    "docs/INDEX.md",
+    "docs/ARCHITECTURE.md",
+    "docs/PROCEDURES.md",
+    "github:pr:16"
+  ],
+  "provenance": {
+    "actor_id": "chatgpt",
+    "actor_kind": "agent",
+    "actor_role": "maintainer",
+    "source": "github",
+    "integrity": "declared"
+  },
+  "created_at": "2026-09-07T02:55:00Z",
+  "note": "This lightweight shared pass record satisfies the per-pass self-state gate. If canonical graph semantics are changed, grapher publish must additionally update knowledge.json, manifest.json, and shared history."
+}
