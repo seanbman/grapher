@@ -11,6 +11,7 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 | Roadmap | [ROADMAP.md](ROADMAP.md) | Canonical M1-M12 implementation order and integration priority |
 | Codex integration | [CODEX_INTEGRATION.md](CODEX_INTEGRATION.md) | M9 generalized agent contract and Codex-first integration procedure |
 | Cursor + Dash editing | [M10_CURSOR_DASH_EDITING.md](M10_CURSOR_DASH_EDITING.md) | M10 shared Cursor contract plus proposal-first, approval-gated Dash editing architecture |
+| Acceptance suite | [M11_ACCEPTANCE.md](M11_ACCEPTANCE.md) | M11 named fixture cases and product-level acceptance procedure |
 | Git transport | [GIT_TRANSPORT.md](GIT_TRANSPORT.md) | Publish/sync boundary for local and Git-shared graph state |
 | Semantic entry schema | [SEMANTIC_ENTRY_SCHEMA.md](SEMANTIC_ENTRY_SCHEMA.md) | Typed semantic contracts and validation rules |
 | Semantic integrity | [SEMANTIC_INTEGRITY.md](SEMANTIC_INTEGRITY.md) | Finalization, integrity seals, immutable transitions, and correction rules |
@@ -36,6 +37,8 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 - [M10 architecture](M10_CURSOR_DASH_EDITING.md#architecture-diagram)
 - [M10 Cursor procedure](M10_CURSOR_DASH_EDITING.md#cursor-procedure)
 - [Approved Dash edit procedure](M10_CURSOR_DASH_EDITING.md#approved-dash-edit-procedure)
+- [M11 acceptance architecture](M11_ACCEPTANCE.md#acceptance-architecture)
+- [M11 acceptance procedure](M11_ACCEPTANCE.md#acceptance-procedure)
 
 ## Indexing policy
 
@@ -43,4 +46,4 @@ Every human-facing `.md`, `.pdf`, and `.txt` file directly under `docs/` must be
 
 ## Commit anchors
 
-M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 branches from that state.
+M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 entered `main` at `0488bc0d1d452e4f8643124a67ed5829b0cc4175`. M11 branches from that state.
