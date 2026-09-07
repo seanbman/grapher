@@ -1,0 +1,25 @@
+{
+  "id": "pass-grapher-beta-documentation-reconciliation-20260907",
+  "type": "result",
+  "title": "Reconcile Grapher documentation with v0.7.0b1",
+  "content": {
+    "result": "Reworked the root README as a user-first entry point, added canonical Linux installation/update documentation, indexed the v0.7.0b1 beta release, and reconciled the documentation index with the current release state.",
+    "interpretation": "Users can begin at README.md and progressively enter detailed architecture, semantic, transport, embedded-integration, installation, and governance documentation without relying on historical release assumptions."
+  },
+  "status": "current",
+  "workflow_state": "completed",
+  "verification": "verified",
+  "provenance": {
+    "actor_id": "openai:gpt-5.6-sol",
+    "actor_kind": "agent",
+    "source": "github-change",
+    "integrity": "declared"
+  },
+  "evidence": [
+    {"type": "file", "ref": "README.md"},
+    {"type": "file", "ref": "docs/INDEX.md"},
+    {"type": "file", "ref": "docs/INSTALLATION_AND_UPDATES.md"},
+    {"type": "file", "ref": "docs/RELEASE_0.7.0b1.md"},
+    {"type": "commit", "ref": "13a1f2ca016ef50c7f2fdc71a9ef9bfd437cc498", "summary": "v0.7.0b1 release baseline"}
+  ]
+}
