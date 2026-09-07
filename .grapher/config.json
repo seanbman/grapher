@@ -25,6 +25,7 @@
     "auth-module-c42c23a6",
     "finding-github-publication-v041",
     "finding-grapher-hardening-v041",
+    "finding-grapher-v041-release-hardening",
     "finding-token-ttl"
   ]
 }
