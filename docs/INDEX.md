@@ -9,6 +9,7 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 | Architecture | [ARCHITECTURE.md](ARCHITECTURE.md) | System boundaries, canonical state, mutation path, transport, Dash, and agent integrations |
 | Procedures | [PROCEDURES.md](PROCEDURES.md) | Change procedure, self-graph publication, CI gates, checkpoints, compaction, and release flow |
 | Roadmap | [ROADMAP.md](ROADMAP.md) | Canonical M1-M12 implementation order and integration priority |
+| Codex integration | [CODEX_INTEGRATION.md](CODEX_INTEGRATION.md) | M9 generalized agent contract and Codex-first integration procedure |
 | Git transport | [GIT_TRANSPORT.md](GIT_TRANSPORT.md) | Publish/sync boundary for local and Git-shared graph state |
 | Semantic entry schema | [SEMANTIC_ENTRY_SCHEMA.md](SEMANTIC_ENTRY_SCHEMA.md) | Typed semantic contracts and validation rules |
 | Semantic integrity | [SEMANTIC_INTEGRITY.md](SEMANTIC_INTEGRITY.md) | Finalization, integrity seals, immutable transitions, and correction rules |
@@ -29,6 +30,8 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 - [Self-graph and CI procedure](PROCEDURES.md#self-graph-and-ci-procedure)
 - [Checkpoint refresh procedure](PROCEDURES.md#checkpoint-refresh-procedure)
 - [Compaction preview procedure](PROCEDURES.md#compaction-preview-procedure)
+- [Codex architecture](CODEX_INTEGRATION.md#architecture-diagram)
+- [Codex procedure](CODEX_INTEGRATION.md#procedure-flow)
 
 ## Indexing policy
 
@@ -36,4 +39,4 @@ Every human-facing `.md`, `.pdf`, and `.txt` file directly under `docs/` must be
 
 ## Commit anchors
 
-The architecture and procedure diagrams are point-in-time documentation. For the M8 documentation pass, the inception/base state is `9917cc8af31553841294d69000ac33cc2c53daa6` and the implementation state before documentation hardening is `453b543a64851b0c63797c049c04bcc5f848bf8d`.
+M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration branches from that state; M9-specific diagrams identify the branch as the current implementation state until merge.
