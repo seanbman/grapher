@@ -46,8 +46,21 @@ jobs:
             echo "Release $TAG already exists; nothing to do."
             exit 0
           fi
+          cat > release-notes.md <<'EOF'
+          Linux beta for Grapher's human installation and release-aware update interface.
+
+          Install on Linux:
+
+          ```bash
+          curl -fsSL https://raw.githubusercontent.com/seanbman/grapher/main/install.sh | bash
+          ```
+
+          The installer creates an isolated environment under `~/.local/share/grapher/venv` and links `grapher` into `~/.local/bin` without requiring sudo. Interactive launches query published GitHub releases and print a non-blocking notice when a newer version is available; offline and non-interactive use remains unaffected.
+
+          This is a beta release. Existing long-form CLI commands and Grapher's canonical mutation model remain the automation contract while the Linux distribution flow is validated.
+          EOF
           gh release create "$TAG" \
             --target "$GITHUB_SHA" \
             --prerelease \
-            --generate-notes \
+            --notes-file release-notes.md \
             --title "Grapher $TAG (Beta)"
