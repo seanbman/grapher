@@ -11,6 +11,7 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 | Roadmap | [ROADMAP.md](ROADMAP.md) | Canonical M1-M12 implementation order and completed modernization state |
 | v0.6.0 release | [RELEASE_0.6.0.md](RELEASE_0.6.0.md) | Release baseline, included capabilities, verification, merge, and tag procedure |
 | Embedded integration | [EMBEDDED_INTEGRATION.md](EMBEDDED_INTEGRATION.md) | Host-agnostic application boundary for embedding Grapher without bypassing canonical mutation rules |
+| Embedded brokering | [EMBEDDED_BROKERING.md](EMBEDDED_BROKERING.md) | Practical read-broker/write-mediation contract, provenance, examples, and host integration pattern |
 | Codex integration | [CODEX_INTEGRATION.md](CODEX_INTEGRATION.md) | M9 generalized agent contract and Codex-first integration procedure |
 | Cursor + Dash editing | [M10_CURSOR_DASH_EDITING.md](M10_CURSOR_DASH_EDITING.md) | M10 shared Cursor contract plus proposal-first, approval-gated Dash editing architecture |
 | Acceptance suite | [M11_ACCEPTANCE.md](M11_ACCEPTANCE.md) | M11 named fixture cases and product-level acceptance procedure |
@@ -38,6 +39,8 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 - [Compaction preview procedure](PROCEDURES.md#compaction-preview-procedure)
 - [Embedded integration architecture](EMBEDDED_INTEGRATION.md#architecture-diagram)
 - [Embedded integration procedure](EMBEDDED_INTEGRATION.md#procedure-flow)
+- [Embedded brokering architecture](EMBEDDED_BROKERING.md#appendix--architecture)
+- [Embedded brokering process](EMBEDDED_BROKERING.md#appendix--process-flow)
 - [Codex architecture](CODEX_INTEGRATION.md#architecture-diagram)
 - [Codex procedure](CODEX_INTEGRATION.md#procedure-flow)
 - [M10 architecture](M10_CURSOR_DASH_EDITING.md#architecture-diagram)
@@ -57,4 +60,4 @@ Every human-facing `.md`, `.pdf`, and `.txt` file directly under `docs/` must be
 
 ## Commit anchors
 
-M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 entered `main` at `0488bc0d1d452e4f8643124a67ed5829b0cc4175`. M11 entered `main` at `ffe702381e3b08bdee21987ea13bc2fcde6d6cf2`. The M12 closure framework entered `main` at `1e3a15bad6b8b38b523eda9023e1ee92dc2947d2`. The post-modernization maintenance sweep and final M12 closure verification entered `main` at `ad75fee8df1f33cd8890bfbd23924b35cc6f4903`. Release v0.6.0 is cut from the subsequent release commit after CI acceptance.
+M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 entered `main` at `0488bc0d1d452e4f8643124a67ed5829b0cc4175`. M11 entered `main` at `ffe702381e3b08bdee21987ea13bc2fcde6d6cf2`. The M12 closure framework entered `main` at `1e3a15bad6b8b38b523eda9023e1ee92dc2947d2`. The post-modernization maintenance sweep and final M12 closure verification entered `main` at `ad75fee8df1f33cd8890bfbd23924b35cc6f4903`. Embedded host integration entered `main` at `b3729dadc318b6eb65c593e47bcd8da272147d4d`. Release 0.6.1 documents and stabilizes that interface as a compatibility baseline.
