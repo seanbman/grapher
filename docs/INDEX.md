@@ -12,6 +12,7 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 | Codex integration | [CODEX_INTEGRATION.md](CODEX_INTEGRATION.md) | M9 generalized agent contract and Codex-first integration procedure |
 | Cursor + Dash editing | [M10_CURSOR_DASH_EDITING.md](M10_CURSOR_DASH_EDITING.md) | M10 shared Cursor contract plus proposal-first, approval-gated Dash editing architecture |
 | Acceptance suite | [M11_ACCEPTANCE.md](M11_ACCEPTANCE.md) | M11 named fixture cases and product-level acceptance procedure |
+| Modernization completion | [M12_COMPLETION.md](M12_COMPLETION.md) | M12 documentation reconciliation and full-suite closure gate |
 | Git transport | [GIT_TRANSPORT.md](GIT_TRANSPORT.md) | Publish/sync boundary for local and Git-shared graph state |
 | Semantic entry schema | [SEMANTIC_ENTRY_SCHEMA.md](SEMANTIC_ENTRY_SCHEMA.md) | Typed semantic contracts and validation rules |
 | Semantic integrity | [SEMANTIC_INTEGRITY.md](SEMANTIC_INTEGRITY.md) | Finalization, integrity seals, immutable transitions, and correction rules |
@@ -39,6 +40,8 @@ This is the canonical entry point for Grapher documentation. Human and agent rea
 - [Approved Dash edit procedure](M10_CURSOR_DASH_EDITING.md#approved-dash-edit-procedure)
 - [M11 acceptance architecture](M11_ACCEPTANCE.md#acceptance-architecture)
 - [M11 acceptance procedure](M11_ACCEPTANCE.md#acceptance-procedure)
+- [M12 completion architecture](M12_COMPLETION.md#completion-architecture)
+- [M12 completion procedure](M12_COMPLETION.md#completion-procedure)
 
 ## Indexing policy
 
@@ -46,4 +49,4 @@ Every human-facing `.md`, `.pdf`, and `.txt` file directly under `docs/` must be
 
 ## Commit anchors
 
-M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 entered `main` at `0488bc0d1d452e4f8643124a67ed5829b0cc4175`. M11 branches from that state.
+M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 entered `main` at `0488bc0d1d452e4f8643124a67ed5829b0cc4175`. M11 entered `main` at `ffe702381e3b08bdee21987ea13bc2fcde6d6cf2`. M12 branches from that accepted state.
