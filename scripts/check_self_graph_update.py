@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Fail CI when substantive Grapher changes omit a versioned self-graph record."""
+"""Fail CI when substantive Grapher changes omit valid versioned self-state."""
 
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 SUBSTANTIVE_PREFIXES = (
     "src/grapher/",
@@ -17,6 +19,7 @@ SUBSTANTIVE_PREFIXES = (
 )
 SUBSTANTIVE_FILES = {"README.md", "AGENTS.md", "pyproject.toml", "uv.lock"}
 SELF_GRAPH_PREFIX = ".grapher/shared/"
+REQUIRED_PASS_FIELDS = {"id", "type", "title", "status", "provenance"}
 
 
 def changed_files(base: str) -> list[str]:
@@ -30,6 +33,55 @@ def is_substantive(path: str) -> bool:
     if path.startswith(SELF_GRAPH_PREFIX):
         return False
     return path in SUBSTANTIVE_FILES or path.startswith(SUBSTANTIVE_PREFIXES)
+
+
+def _nonempty(value: Any) -> bool:
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, dict):
+        return bool(value)
+    if isinstance(value, list):
+        return bool(value)
+    return value is not None
+
+
+def validate_pass_record(path: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"invalid JSON: {exc}"]
+
+    if not isinstance(data, dict):
+        return ["top-level value must be a JSON object"]
+
+    missing = sorted(REQUIRED_PASS_FIELDS - set(data))
+    if missing:
+        errors.append("missing required fields: " + ", ".join(missing))
+
+    for field in ("id", "type", "title", "status"):
+        if field in data and not _nonempty(data[field]):
+            errors.append(f"{field} must be non-empty")
+
+    if data.get("status") == "unclassified":
+        errors.append("status must be explicit, not unclassified")
+
+    semantic_payload = data.get("semantic") or data.get("content")
+    if not _nonempty(semantic_payload):
+        errors.append("record must contain non-empty semantic or content payload")
+
+    provenance = data.get("provenance")
+    if not isinstance(provenance, dict):
+        errors.append("provenance must be an object")
+    else:
+        actor_id = provenance.get("actor_id")
+        source = provenance.get("source")
+        if not _nonempty(actor_id):
+            errors.append("provenance.actor_id must be non-empty")
+        if not _nonempty(source):
+            errors.append("provenance.source must be non-empty")
+
+    return errors
 
 
 def main() -> int:
@@ -69,18 +121,21 @@ def main() -> int:
             file=sys.stderr,
         )
         print(
-            "Add .grapher/shared/pass-records/<pass>.json or publish knowledge.json + manifest.json + history record.",
+            "Add a valid .grapher/shared/pass-records/<pass>.json or publish knowledge.json + manifest.json + history record.",
             file=sys.stderr,
         )
         return 1
 
     for record in pass_records:
         path = Path(record)
-        if not path.is_file() or path.stat().st_size < 40:
+        errors = validate_pass_record(path)
+        if errors:
             print(f"ERROR: invalid self-graph pass record: {record}", file=sys.stderr)
+            for error in errors:
+                print(f"  - {error}", file=sys.stderr)
             return 1
 
-    mode = "canonical publication" if canonical_publication else "pass record"
+    mode = "canonical publication" if canonical_publication else "validated pass record"
     print(f"self-graph gate: satisfied by {mode}")
     return 0
 
