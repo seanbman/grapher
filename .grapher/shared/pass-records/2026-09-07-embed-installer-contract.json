@@ -1,0 +1,33 @@
+{
+  "id": "embed-installer-contract-2026-09-07",
+  "type": "incident",
+  "title": "Managed installer omitted semantic-search runtime",
+  "status": "current",
+  "workflow_state": "active",
+  "verification": "unverified",
+  "scope": {
+    "project_id": "grapher",
+    "mission_id": "maintenance",
+    "generation_id": "post-0.7.0b1"
+  },
+  "content": {
+    "failure": "Grapher's managed install paths installed the base package without the optional embed runtime even though sync and semantic search are normal supported operations. Users could complete a successful install and later receive a developer-oriented instruction to install the embed extra manually.",
+    "impact": "Shared-state sync succeeded but vector rebuild remained pending, leaving semantic search unavailable in an otherwise healthy managed installation.",
+    "root_cause": "The installation contract treated the embed dependency as optional packaging metadata while runtime behavior treated embeddings as an expected capability. Installer acceptance tests verified CLI installation but not semantic-search readiness.",
+    "remediation": "Install the embed extra in both release and --local modes, verify fastembed and numpy imports before success, document the contract, and regression-test both install paths.",
+    "prevention": "Any capability presented as normal user-facing runtime behavior must be included in the managed installation or explicitly gated as optional. Installer CI must test capability readiness, not merely executable presence."
+  },
+  "source_refs": [
+    "install.sh",
+    "pyproject.toml",
+    "tests/test_install_script.py",
+    "docs/INSTALLATION_AND_UPDATES.md"
+  ],
+  "provenance": {
+    "actor_id": "chatgpt",
+    "actor_kind": "agent",
+    "actor_role": "implementation-agent",
+    "source": "github-connector",
+    "integrity": "declared"
+  }
+}
