@@ -109,7 +109,7 @@ def create_app(graph_path: Path, *, view_mode: str = "knowledge") -> Any:
                             dcc.Dropdown(
                                 id="filter-types",
                                 options=type_options,
-                                value=sorted(NODE_TYPES),
+                                value=[],
                                 multi=True,
                                 placeholder="All types",
                                 style={"background": "#1a1d24"},
