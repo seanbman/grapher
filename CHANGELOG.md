@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fixed the managed Linux installer so normal release and `--local` installs include both the embedding and Dash visualization runtimes; `grapher dash` no longer requires a separate follow-up extra installation.
+- Added installer verification for `dash` and `plotly` alongside `fastembed` and `numpy`, so an incomplete managed runtime fails during installation instead of later at command execution.
+
 ## 0.6.1 — 2026-09-07
 
 - Added the host-agnostic `grapher.integrations.embedded` boundary for applications that embed Grapher as a durable knowledge substrate.
