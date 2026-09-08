@@ -1,0 +1,23 @@
+{
+  "id": "local-installer-fix-2026-09-07",
+  "type": "implementation",
+  "title": "Fix Grapher local installer mode",
+  "status": "current",
+  "workflow_state": "active",
+  "verification": "unverified",
+  "scope": {
+    "project_id": "grapher",
+    "mission_id": "maintenance",
+    "generation_id": "post-0.7.0b1"
+  },
+  "content": {
+    "implementation": "Added real --local handling to install.sh so a repository checkout installs its own source instead of silently resolving the latest published release. Added regression coverage and updated installation/troubleshooting documentation.",
+    "result": "Awaiting CI before merge."
+  },
+  "provenance": {
+    "actor_id": "chatgpt",
+    "actor_role": "implementation-agent",
+    "source": "github-connector",
+    "integrity": "declared"
+  }
+}
