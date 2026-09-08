@@ -1,0 +1,32 @@
+{
+  "id": "unmerged-pull-instruction-incident-2026-09-07",
+  "type": "failure",
+  "title": "Told user to pull before installer fix was merged",
+  "status": "current",
+  "workflow_state": "completed",
+  "verification": "verified",
+  "scope": {
+    "project_id": "grapher",
+    "mission_id": "maintenance",
+    "generation_id": "post-0.7.0b1"
+  },
+  "content": {
+    "failure": "After discovering the Grapher local-installer bug and preparing PR #30, the agent gave the user pull/install instructions without first verifying that PR #30 had been merged into main.",
+    "impact": "The user was told to pull a fix that was not yet present on main, creating another broken update path and additional confusion immediately after the installer incident.",
+    "root_cause": "The agent conflated prepared/open PR state with merged/deployable state and failed to gate user-facing update instructions on repository merge status.",
+    "remediation": "Verify PR state, CI, and mergeability; merge PR #30 before giving pull instructions. Record this failure separately from the installer implementation bug.",
+    "prevention": "Before telling a user to pull, update, install, or consume a repository change, explicitly verify that the referenced change exists on the target branch or published release. Prepared/open PR state is never equivalent to deployed state."
+  },
+  "source_refs": [
+    "PR #30",
+    "install.sh",
+    "docs/INSTALLATION_AND_UPDATES.md"
+  ],
+  "provenance": {
+    "actor_id": "chatgpt",
+    "actor_kind": "agent",
+    "actor_role": "implementation-agent",
+    "source": "github",
+    "integrity": "declared"
+  }
+}
