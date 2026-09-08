@@ -44,6 +44,8 @@ bash install.sh --local
 
 The installer creates an isolated Python environment under `~/.local/share/grapher/venv` and exposes the executable through `~/.local/bin/grapher`.
 
+Both release and `--local` installs include Grapher's `embed` runtime (`fastembed` and `numpy`) because semantic search and vector rebuilding are part of normal Grapher operation. The installer verifies those imports before declaring the installation complete.
+
 In normal mode it resolves and installs a published Grapher GitHub release. In `--local` mode it installs the repository checkout containing `install.sh`.
 
 If `~/.local/bin` is not already on `PATH`, add it in your shell profile:
@@ -61,6 +63,8 @@ grapher --version
 grapher --help
 command -v grapher
 ```
+
+A successful install also prints `Embedding runtime: available` and `Semantic search: enabled`.
 
 For a local checkout install, `command -v grapher` should normally resolve to `~/.local/bin/grapher` unless another earlier PATH entry shadows it.
 
@@ -122,17 +126,20 @@ command -v grapher
 
 The intended managed launcher is `~/.local/bin/grapher`. An earlier PATH entry can shadow it. Also confirm that `./install.sh --local` printed `Installing Grapher from local checkout:` rather than a release tag.
 
+If `sync` reports that semantic search requires the embed extra after a managed install, rerun the current installer. That condition indicates an installation-contract failure rather than a normal user configuration state.
+
 If Python is too old, install Python 3.10+ using the Linux distribution's package mechanism and rerun the installer. For update-check network failures, no repair is required: the check is intentionally best-effort and Grapher continues offline.
 
 ## Appendix — Process flow
 
 ```mermaid
 flowchart LR
-    R["Published GitHub release\ncode: .github/workflows/publish-beta.yml\ninception: 13a1f2c\ncurrent: main"] --> I["Release install\ncode: install.sh\ninception: 13a1f2c\ncurrent: fix/local-installer"]
-    L["Local source checkout\ncode: install.sh --local\ninception: 619b329\ncurrent: fix/local-installer"] --> I2["Local checkout install\ncode: install.sh\ninception: 619b329\ncurrent: fix/local-installer"]
+    R["Published GitHub release\ncode: .github/workflows/publish-beta.yml\ninception: 13a1f2c\ncurrent: main"] --> I["Release install + embed extra\ncode: install.sh\ninception: 13a1f2c\ncurrent: fix/install-embed-runtime"]
+    L["Local source checkout\ncode: install.sh --local\ninception: 619b329\ncurrent: fix/install-embed-runtime"] --> I2["Local checkout + embed extra\ncode: install.sh\ninception: 619b329\ncurrent: fix/install-embed-runtime"]
     I --> V["Isolated user environment\ncode: ~/.local/share/grapher/venv\ninception: 13a1f2c\ncurrent: main"]
     I2 --> V
-    V --> C["Interactive launch\ncode: src/grapher/main.py\ninception: 13a1f2c\ncurrent: main"]
+    V --> E["Embedding runtime verification\ncode: install.sh\ninception: fix/install-embed-runtime\ncurrent: fix/install-embed-runtime"]
+    E --> C["Interactive launch\ncode: src/grapher/main.py\ninception: 13a1f2c\ncurrent: main"]
     C --> U["Non-blocking release check\ncode: src/grapher/update.py\ninception: 13a1f2c\ncurrent: main"]
 ```
 

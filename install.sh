@@ -30,7 +30,7 @@ python3 -m venv "$VENV"
 
 if [[ "$LOCAL_INSTALL" -eq 1 ]]; then
   echo "Installing Grapher from local checkout: $SCRIPT_DIR"
-  "$VENV/bin/python" -m pip install --upgrade "$SCRIPT_DIR"
+  "$VENV/bin/python" -m pip install --upgrade "$SCRIPT_DIR[embed]"
   INSTALLED_LABEL="local checkout"
 else
   TAG="${GRAPHER_VERSION:-}"
@@ -50,15 +50,22 @@ PY
 )"
   fi
   echo "Installing Grapher $TAG"
-  "$VENV/bin/python" -m pip install --upgrade "git+https://github.com/$REPO.git@$TAG"
+  "$VENV/bin/python" -m pip install --upgrade "grapher[embed] @ git+https://github.com/$REPO.git@$TAG"
   INSTALLED_LABEL="$TAG"
 fi
+
+"$VENV/bin/python" - <<'PY'
+import fastembed
+import numpy
+print("Embedding runtime: available")
+PY
 
 ln -sfn "$VENV/bin/grapher" "$BIN_HOME/grapher"
 
 cat <<EOF
 Installed Grapher $INSTALLED_LABEL
 Launcher: $BIN_HOME/grapher
+Semantic search: enabled
 
 Ensure $BIN_HOME is on PATH. Then run:
   grapher
