@@ -65,6 +65,7 @@ jobs:
 
       - name: Build committed candidate locally
         run: |
+          git checkout origin/main -- .github/workflows/publish-beta.yml
           rm -f .github/workflows/hard-stop-build.yml .github/hard-stop-request.json scripts/_hard_stop_build.py scripts/_hard_stop_fixups.py scripts/_hard_stop_finalfix.py
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
