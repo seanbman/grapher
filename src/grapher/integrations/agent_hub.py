@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import copy
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from grapher import graph as G
+from grapher import curate as C
 from grapher import search as S
 from grapher.ingest import ingest_directory
 from grapher.linking import infer_from_config
@@ -170,18 +172,29 @@ def contribute_context(
     before = load_graph(graph_path, normalize=False)
     graph = load_graph(graph_path)
     edge_count_before = len(before.get("edges") or [])
+    original_id = node_id if node_id and node_id in (before.get("nodes") or {}) else None
+    effective_id = node_id
+    if original_id:
+        effective_id = f"{node_id}-revision-{uuid.uuid4().hex[:8]}"
     node = G.add_node(
         graph,
         type=type,
         title=title,
         content=content,
-        id=node_id,
+        id=effective_id,
         path=path,
         tags=tags,
         status=status, workflow_state=workflow_state, verification=verification,
         evidence=evidence, scope=scope, provenance=provenance, finalized_at=finalized_at,
     )
     existing = before.get("nodes", {}).get(node["id"])
+    if original_id:
+        C.supersede(
+            graph,
+            node["id"],
+            original_id,
+            note="append-only revision created by integration contribution",
+        )
     for edge in edges or []:
         G.link(
             graph,
@@ -190,7 +203,7 @@ def contribute_context(
             rel=edge["rel"],
             note=edge.get("note"),
         )
-    action = "node_created" if existing is None else "node_updated"
+    action = "node_superseded" if original_id else "node_created"
     if existing is not None and existing == graph["nodes"][node["id"]] and len(graph.get("edges") or []) > edge_count_before:
         action = "relationship_created"
     save_graph_mutation(

@@ -102,12 +102,20 @@ def test_link_preserves_actor(tmp_path: Path):
     assert entry["actor"]["id"] == "linker"
 
 
-def test_rm_preserves_actor(tmp_path: Path):
+def test_rm_preserves_actor_for_pending_ingest_draft(tmp_path: Path):
     graph_path = _graph_path(tmp_path)
     graph = load_graph(graph_path)
-    add_node(graph, id="n", type="claim", title="N")
+    add_node(
+        graph,
+        id="n",
+        type="document",
+        title="N",
+        content="",
+        status="unclassified",
+        meta={"source": "ingest", "status": "pending"},
+    )
     save_graph(graph_path, graph)
-    r = _run("rm", "n", "--graph", str(graph_path), "--actor", "janitor", "--actor-kind", "agent", "--reason", "cleanup")
+    r = _run("rm", "n", "--graph", str(graph_path), "--actor", "janitor", "--actor-kind", "agent", "--reason", "remove abandoned draft")
     assert r.returncode == 0, r.stderr
     entry = _history_entries(graph_path)[-1]
     assert entry["action"] == "node_removed"
@@ -222,69 +230,26 @@ def test_infer_links_preserves_actor(tmp_path: Path):
     assert entry["actor"]["id"] == "inferer"
 
 
-def test_force_finalized_requires_explicit_actor_and_reason(tmp_path: Path):
+def test_force_finalized_is_not_a_supported_cli_option(tmp_path: Path):
     graph_path = _graph_path(tmp_path)
     graph = load_graph(graph_path)
-    add_node(
-        graph,
-        id="a",
-        type="acceptance",
-        title="Accepted",
-        content="decision",
-        finalized_at="2026-01-01T00:00:00+00:00",
-    )
+    add_node(graph, id="a", type="finding", title="Accepted", content="decision", status="current")
     save_graph(graph_path, graph)
     r = _run(
-        "add",
-        "--id",
-        "a",
-        "--type",
-        "acceptance",
-        "--title",
-        "Accepted",
-        "--content",
-        "changed",
-        "--force-finalized",
-        "--graph",
-        str(graph_path),
+        "add", "--id", "a", "--type", "image", "--title", "Rewrite", "--content", "changed",
+        "--force-finalized", "--graph", str(graph_path),
     )
     assert r.returncode != 0
-    assert "--force-finalized requires explicit" in (r.stderr or r.stdout)
+    assert "unrecognized arguments: --force-finalized" in (r.stderr or r.stdout)
+    assert load_graph(graph_path)["nodes"]["a"]["type"] == "finding"
 
 
-def test_force_finalized_delete_requires_audit_and_journals_admin_removal(tmp_path: Path):
+def test_rm_rejects_committed_record(tmp_path: Path):
     graph_path = _graph_path(tmp_path)
     graph = load_graph(graph_path)
-    add_node(
-        graph,
-        id="a",
-        type="acceptance",
-        title="Accepted",
-        content="decision",
-        finalized_at="2026-01-01T00:00:00+00:00",
-    )
+    add_node(graph, id="a", type="finding", title="Accepted", content="decision", status="current")
     save_graph(graph_path, graph)
-    denied = _run("rm", "a", "--force-finalized", "--graph", str(graph_path))
-    assert denied.returncode != 0
-    assert "requires explicit" in (denied.stderr or denied.stdout)
-
-    allowed = _run(
-        "rm",
-        "a",
-        "--force-finalized",
-        "--graph",
-        str(graph_path),
-        "--actor",
-        "admin",
-        "--actor-kind",
-        "human",
-        "--reason",
-        "remove contaminated forensic test record",
-    )
-    assert allowed.returncode == 0, allowed.stderr
-    assert "a" not in load_graph(graph_path)["nodes"]
-    entry = _history_entries(graph_path)[-1]
-    assert entry["action"] == "node_removed_administratively"
-    assert entry["actor"]["id"] == "admin"
-    assert entry["context"]["administrative"] is True
-    assert entry["context"]["force_finalized"] is True
+    r = _run("rm", "a", "--graph", str(graph_path), "--actor", "admin", "--actor-kind", "human", "--reason", "attempt deletion")
+    assert r.returncode != 0
+    assert "committed record" in (r.stderr or r.stdout)
+    assert "a" in load_graph(graph_path)["nodes"]

@@ -301,7 +301,7 @@ def ingest_directory(
             "audio file: deeply consume it (vision for images/video frames; "
             "listen/transcribe/describe audio), understand it in project "
             "context, then write that deep understanding into --content. "
-            "grapher add --id <node_id> --type <type> --title <title> "
+            "grapher add --enrich-pending --id <node_id> --type <type> --title <title> "
             "--path <path> --content <deep summary> --tags ... "
             "Use the exact path from the pending entry. Finish only when "
             "grapher scan <DIR> shows pending 0."

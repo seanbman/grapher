@@ -127,37 +127,38 @@ def merge_graph(
     *,
     prefix: str = "",
 ) -> dict[str, Any]:
-    """Merge incoming into local. Incoming nodes win on id conflict."""
+    """Append incoming records; never overwrite a local id."""
     src = _apply_prefix(incoming, prefix)
     local = copy.deepcopy(local)
     local.setdefault("nodes", {})
     local.setdefault("edges", [])
 
     nodes_added = 0
-    nodes_updated = 0
     for nid, node in (src.get("nodes") or {}).items():
         if nid in local["nodes"]:
-            nodes_updated += 1
-        else:
-            nodes_added += 1
+            if local["nodes"][nid] == node:
+                continue
+            raise TransferError(
+                f"incoming node id {nid!r} collides with an existing local record; "
+                "imports are append-only. Use a prefix or create a distinct correcting record."
+            )
         local["nodes"][nid] = copy.deepcopy(node)
+        nodes_added += 1
 
-    existing = {
-        (e.get("from"), e.get("to"), e.get("rel")) for e in local["edges"]
-    }
+    existing = {(e.get("from"), e.get("to"), e.get("rel")) for e in local["edges"]}
     edges_added = 0
-    for e in src.get("edges") or []:
-        key = (e.get("from"), e.get("to"), e.get("rel"))
+    for edge in src.get("edges") or []:
+        key = (edge.get("from"), edge.get("to"), edge.get("rel"))
         if key in existing:
             continue
-        local["edges"].append(copy.deepcopy(e))
+        local["edges"].append(copy.deepcopy(edge))
         existing.add(key)
         edges_added += 1
 
     return {
         "graph": local,
         "nodes_added": nodes_added,
-        "nodes_updated": nodes_updated,
+        "nodes_updated": 0,
         "edges_added": edges_added,
         "nodes_total": len(local["nodes"]),
         "edges_total": len(local["edges"]),
@@ -272,6 +273,11 @@ def unpack_graph(
     hint = None
 
     if mode == "replace":
+        if (before.get("nodes") or {}) or (before.get("edges") or []):
+            raise TransferError(
+                "replace-mode unpack is forbidden for a non-empty graph by the hard-stop immutable-record policy; "
+                "use a fresh graph or merge with a collision-free prefix"
+            )
         graph = _apply_prefix(incoming, prefix)
         save_graph_mutation(graph_path, graph, action="graph_replaced", before=before,
                             source="unpack", context={"pack": str(pack_path), "prefix": prefix})

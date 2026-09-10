@@ -74,3 +74,7 @@ The current public beta is **v0.7.0b1**, released from `13a1f2ca016ef50c7f2fdc71
 ## Commit anchors
 
 M8 governance/documentation entered `main` at `5bb12e176e6310759288af10354cea4ddd01703f`. M9 Codex-first integration entered `main` at `abcc77ea846d206c31f59e58c5ceb858b96089f1`. M10 entered `main` at `0488bc0d1d452e4f8643124a67ed5829b0cc4175`. M11 entered `main` at `ffe702381e3b08bdee21987ea13bc2fcde6d6cf2`. The M12 closure framework entered `main` at `1e3a15bad6b38b523eda9023e1ee92dc2947d2`. The post-modernization maintenance sweep entered `main` at `ad75fee8df1f33cd8890bfbd23924b35cc6f4903`. Embedded host integration entered `main` at `b3729dadc318b6eb65c593e47bcd8da272147d4d`. v0.6.1 stabilized that interface. v0.7.0b1 entered `main` at `13a1f2ca016ef50c7f2fdc71a9ef9bfd437cc498` and established the Linux beta distribution/update path.
+
+## Hard-stop immutable-record beta
+
+- [`HARD_STOP_MUTATION_POLICY.md`](HARD_STOP_MUTATION_POLICY.md) — write-once committed-record boundary, pending-ingest draft exception, and correction workflow.

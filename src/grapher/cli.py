@@ -144,27 +144,6 @@ def _history_kwargs(
     }
 
 
-def _require_administrative_attribution(
-    args: argparse.Namespace,
-    provenance: dict[str, Any],
-    *,
-    flag: str,
-) -> None:
-    missing: list[str] = []
-    if not provenance.get("actor_id"):
-        missing.append("--actor or GRAPHER_ACTOR_ID")
-    if not getattr(args, "reason", None):
-        missing.append("--reason")
-    if missing:
-        _die(f"{flag} requires explicit {' and '.join(missing)}")
-
-
-def _administrative_delete_context(args: argparse.Namespace) -> tuple[dict[str, Any], dict[str, Any]]:
-    scope, provenance = _scope_and_provenance(args)
-    _require_administrative_attribution(args, provenance, flag="--force-finalized")
-    return scope, provenance
-
-
 def _add_mutation_context_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--workspace", default=None)
     parser.add_argument("--project", default=None)
@@ -258,28 +237,38 @@ def cmd_add(args: argparse.Namespace) -> None:
             _die(str(exc))
     if args.type not in allowed:
         _die(f"unknown node type {args.type!r}; configure it in custom_node_types")
+    if args.enrich_pending and not args.id:
+        _die("--enrich-pending requires an explicit --id from grapher ingest")
     content = sys.stdin.read() if args.content == "-" else args.content
     tags = _parse_tags(args.tags) if args.tags is not None else None
     scope, provenance = _scope_and_provenance(args)
-    if args.force_finalized:
-        _require_administrative_attribution(args, provenance, flag="--force-finalized")
+    kwargs = dict(
+        type=args.type,
+        title=args.title,
+        content=content,
+        path=args.path,
+        tags=tags,
+        stage=args.stage,
+        status=args.status,
+        workflow_state=args.workflow_state,
+        verification=args.verification,
+        evidence=_json_values(args.evidence, "evidence"),
+        source_refs=_parse_tags(args.source_refs) if args.source_refs is not None else None,
+        owners=_parse_tags(args.owners) if args.owners is not None else None,
+        scope=scope or None,
+        provenance=provenance or None,
+        finalized_at=now_iso() if args.finalize else None,
+    )
     try:
-        node = G.add_node(
-            g, type=args.type, title=args.title, content=content, path=args.path,
-            tags=tags, id=args.id, stage=args.stage, status=args.status,
-            workflow_state=args.workflow_state, verification=args.verification,
-            evidence=_json_values(args.evidence, "evidence"),
-            source_refs=_parse_tags(args.source_refs) if args.source_refs is not None else None,
-            owners=_parse_tags(args.owners) if args.owners is not None else None,
-            scope=scope or None, provenance=provenance or None,
-            finalized_at=now_iso() if args.finalize else None,
-            force_finalized=args.force_finalized,
-        )
+        if args.enrich_pending:
+            node = G.enrich_pending_node(g, args.id, **kwargs)
+        else:
+            node = G.add_node(g, id=args.id, **kwargs)
     except (ValueError, G.GraphError) as exc:
         _die(str(exc))
     old = before.get("nodes", {}).get(node["id"])
-    action = "node_updated" if old else "node_created"
-    if args.finalize:
+    action = "node_enriched" if args.enrich_pending else "node_created"
+    if args.finalize and old is None:
         action = "node_finalized"
     save_graph_mutation(
         path,
@@ -291,7 +280,7 @@ def cmd_add(args: argparse.Namespace) -> None:
             args,
             scope=scope,
             provenance=provenance,
-            extra_context={"force_finalized": args.force_finalized},
+            extra_context={"draft_enrichment": bool(args.enrich_pending)},
         ),
     )
     if old is None or embed_text(old) != embed_text(node):
@@ -468,28 +457,18 @@ def cmd_rm(args: argparse.Namespace) -> None:
     path = _graph_path(args)
     before = load_graph(path, normalize=False)
     g = load_graph(path)
-    if args.force_finalized:
-        scope, provenance = _administrative_delete_context(args)
-        action = "node_removed_administratively"
-        extra_context = {"administrative": True, "force_finalized": True}
-    else:
-        scope, provenance = _scope_and_provenance(args)
-        action = "node_removed"
-        extra_context = None
+    scope, provenance = _scope_and_provenance(args)
     try:
-        if args.force_finalized:
-            G._remove_node_unchecked(g, args.id)
-        else:
-            G.remove_node(g, args.id)
+        G.remove_node(g, args.id)
     except G.GraphError as e:
         _die(str(e))
     save_graph_mutation(
         path,
         g,
-        action=action,
+        action="node_removed",
         target=args.id,
         before=before,
-        **_history_kwargs(args, scope=scope, provenance=provenance, extra_context=extra_context),
+        **_history_kwargs(args, scope=scope, provenance=provenance),
     )
     S.remove_node_vector(path, args.id)
     _out({"removed": args.id}, args)
@@ -1110,7 +1089,7 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser(
         "add",
         parents=[common],
-        help="add or upsert a node (title, type, content, path, tags)",
+        help="create a node; pending ingest drafts require explicit --enrich-pending",
     )
     s.add_argument("--type", required=True)
     s.add_argument("--title", required=True)
@@ -1121,7 +1100,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     s.add_argument("--path", default=None)
     s.add_argument("--tags", default=None, help="comma-separated tags")
-    s.add_argument("--id", default=None, help="explicit node id (upsert if exists)")
+    s.add_argument("--id", default=None, help="explicit id for a new node, or the ingest stub id with --enrich-pending")
+    s.add_argument("--enrich-pending", action="store_true", help="explicitly enrich an existing pending ingest draft; never rewrites committed records")
     s.add_argument("--stage", default=None, help="canonical lifecycle stage")
     s.add_argument("--status", choices=sorted(TRUTH_STATUSES), default=None)
     s.add_argument("--workflow-state", choices=sorted(WORKFLOW_STATES), default=None)
@@ -1141,7 +1121,6 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--attestation", default=None)
     s.add_argument("--provenance-integrity", choices=sorted(PROVENANCE_INTEGRITIES), default=None)
     s.add_argument("--finalize", action="store_true", help="finalize this durable record")
-    s.add_argument("--force-finalized", action="store_true", help="administrative recovery: rewrite finalized record and journal it")
     s.add_argument("--phase", choices=["proposed", "executed", "observed", "verified", "canonical"], default="executed")
     s.add_argument("--reason", default=None, help="rationale recorded with every resulting transition")
     s.add_argument("--operation-id", default=None, help="correlate changes belonging to one action")
@@ -1308,14 +1287,9 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser(
         "rm",
         parents=[common],
-        help="remove a node and its edges (and vector)",
+        help="remove a pending ingest draft; committed records cannot be deleted",
     )
     s.add_argument("id")
-    s.add_argument(
-        "--force-finalized",
-        action="store_true",
-        help="administrative finalized-record deletion; requires --actor and --reason",
-    )
     _add_mutation_context_args(s)
     _add_mutation_history_args(s)
     s.set_defaults(func=cmd_rm)

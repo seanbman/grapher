@@ -31,15 +31,15 @@ def test_meaningful_node_changes_are_independent_transitions(tmp_path: Path):
     before = load_graph(path, normalize=False)
     graph = load_graph(path)
     graph["nodes"]["req"].update(status="current", workflow_state="completed",
-                                  verification="verified",
-                                  evidence=[{"type": "test", "ref": "pytest"}])
+                                  verification="verified")
     saved = save_graph_mutation(path, graph, action="node_updated", target="req", before=before,
                                 actor={"kind": "agent", "id": "worker"}, phase="verified",
                                 decision_ids=["decision-request-verification"],
                                 evidence_refs=["pytest"], operation_id="op-2")
     kinds = {item["event_type"] for item in saved["transitions"]}
     assert {"node_status_changed", "workflow_state_changed",
-            "verification_state_changed", "evidence_attached"} <= kinds
+            "verification_state_changed"} <= kinds
+    assert "evidence_attached" not in kinds
     assert all(item["related_decision_ids"] == ["decision-request-verification"]
                for item in saved["transitions"])
     assert load_graph(path)["nodes"]["req"]["verification"] == "verified"

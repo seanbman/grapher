@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from grapher.graph import add_node
+from grapher.graph import GraphError, add_node
 from grapher.model import empty_graph
 from grapher.registry import BUILTIN_NODE_TYPES
 from grapher.semantic import (
@@ -187,7 +187,7 @@ def test_lesson_derived_from_requires_substantive_string_ids():
         )
 
 
-def test_unchanged_legacy_semantic_content_can_be_operationally_updated():
+def test_legacy_semantic_record_cannot_be_updated_through_add():
     graph = empty_graph()
     graph["nodes"]["legacy"] = {
         "id": "legacy",
@@ -204,16 +204,15 @@ def test_unchanged_legacy_semantic_content_can_be_operationally_updated():
         "created_at": "2026-01-01T00:00:00+00:00",
         "updated_at": "2026-01-01T00:00:00+00:00",
     }
-    node = add_node(
-        graph,
-        id="legacy",
-        type="decision",
-        title="Legacy decision",
-        content="old free-form decision",
-        workflow_state="active",
-    )
-    assert node["content"] == "old free-form decision"
-    assert "semantic" not in node
+    with pytest.raises(GraphError, match="create-only"):
+        add_node(
+            graph,
+            id="legacy",
+            type="decision",
+            title="Legacy decision",
+            content="old free-form decision",
+            workflow_state="active",
+        )
 
 
 def test_rewriting_legacy_semantic_content_requires_normalization():
@@ -225,7 +224,7 @@ def test_rewriting_legacy_semantic_content_requires_normalization():
         "content": "old free-form decision",
         "meta": {},
     }
-    with pytest.raises(ValueError, match="JSON object"):
+    with pytest.raises(GraphError, match="create-only"):
         add_node(
             graph,
             id="legacy",

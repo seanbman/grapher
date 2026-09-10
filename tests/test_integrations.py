@@ -123,7 +123,7 @@ def test_get_neighbors_and_infer_links_context(graph_dir: Path):
     assert result["proposed"] == 1
 
 
-def test_contribute_context_preserves_originating_actor_and_create_update_labels(graph_dir: Path):
+def test_contribute_context_preserves_originating_actor_and_appends_revision(graph_dir: Path):
     provenance = {
         "actor_id": "hub-worker",
         "actor_kind": "agent",
@@ -148,8 +148,14 @@ def test_contribute_context_preserves_originating_actor_and_create_update_labels
         provenance=provenance,
     )
     entries = _history_entries(graph_dir)
-    assert [entry["action"] for entry in entries] == ["node_created", "node_updated"]
+    assert [entry["action"] for entry in entries] == ["node_created", "node_superseded"]
     assert all(entry["actor"]["id"] == "hub-worker" for entry in entries)
+    graph = load_graph(graph_dir)
+    revisions = [node for node in graph["nodes"].values() if node["id"].startswith("finding-1-revision-")]
+    assert len(revisions) == 1
+    assert graph["nodes"]["finding-1"]["content"] == "initial"
+    assert graph["nodes"]["finding-1"]["status"] == "superseded"
+    assert any(edge["from"] == revisions[0]["id"] and edge["to"] == "finding-1" and edge["rel"] == "supersedes" for edge in graph["edges"])
 
 
 def test_link_context_preserves_originating_actor(graph_dir: Path):
