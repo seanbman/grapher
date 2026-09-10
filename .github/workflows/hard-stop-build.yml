@@ -66,7 +66,7 @@ jobs:
       - name: Verify governance gates
         run: |
           python scripts/check_docs_index.py
-          python scripts/check_self_graph_update.py --base main
+          python scripts/check_self_graph_update.py --base origin/main
 
       - name: Commit release candidate
         run: |
