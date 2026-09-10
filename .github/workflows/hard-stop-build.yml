@@ -1,0 +1,551 @@
+name: Build hard-stop immutable-records beta
+
+on:
+  push:
+    branches:
+      - hard-stop/immutable-records
+    paths:
+      - .github/hard-stop-request.json
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: hard-stop/immutable-records
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply hard-stop implementation
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          def read(path):
+              return Path(path).read_text(encoding='utf-8')
+
+          def write(path, text):
+              Path(path).write_text(text, encoding='utf-8')
+
+          def replace_once(path, old, new):
+              text = read(path)
+              if text.count(old) != 1:
+                  raise SystemExit(f'{path}: expected exactly one occurrence of replacement target, found {text.count(old)}')
+              write(path, text.replace(old, new))
+
+          def regex_once(path, pattern, replacement):
+              text = read(path)
+              text, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one regex replacement, found {count}')
+              write(path, text)
+
+          graph_add = '''def add_node(
+              graph: dict[str, Any],
+              *,
+              type: str,
+              title: str,
+              content: str | None = "",
+              path: str | None = None,
+              tags: list[str] | None = None,
+              meta: dict[str, Any] | None = None,
+              id: str | None = None,
+              stage: str | list[str] | None = None,
+              status: str | None = None,
+              workflow_state: str | None = None,
+              verification: str | None = None,
+              evidence: list[dict[str, Any]] | None = None,
+              source_refs: list[str] | None = None,
+              owners: list[str] | None = None,
+              scope: dict[str, Any] | None = None,
+              provenance: dict[str, Any] | None = None,
+              finalized_at: str | None = None,
+          ) -> dict[str, Any]:
+              """Create a new node. Existing ids and paths are never upsert targets."""
+              from pathlib import Path
+
+              nodes = graph["nodes"]
+              if id and id in nodes:
+                  raise GraphError(
+                      f"node {id!r} already exists; grapher add is create-only. "
+                      "Create a correcting record, or explicitly enrich a pending ingest draft."
+                  )
+
+              if path:
+                  want = Path(path).as_posix()
+                  for existing in nodes.values():
+                      existing_path = existing.get("path")
+                      if existing_path and Path(existing_path).as_posix() == want:
+                          raise GraphError(
+                              f"path {path!r} is already represented by node {existing.get('id')!r}; "
+                              "grapher add does not upsert by path"
+                          )
+
+              node_id = id or make_id(title)
+              while node_id in nodes:
+                  node_id = make_id(title)
+
+              node = make_node(
+                  id=node_id,
+                  type=type,
+                  title=title,
+                  content=content or "",
+                  path=path,
+                  tags=tags,
+                  meta=meta,
+                  stage=stage,
+                  status=status,
+                  workflow_state=workflow_state,
+                  verification=verification,
+                  evidence=evidence,
+                  source_refs=source_refs,
+                  owners=owners,
+                  scope=scope,
+                  provenance=provenance,
+                  finalized_at=finalized_at,
+              )
+              nodes[node_id] = node
+              return node
+
+
+          def enrich_pending_node(
+              graph: dict[str, Any],
+              node_id: str,
+              *,
+              type: str,
+              title: str,
+              content: str | None = None,
+              path: str | None = None,
+              tags: list[str] | None = None,
+              meta: dict[str, Any] | None = None,
+              stage: str | list[str] | None = None,
+              status: str | None = None,
+              workflow_state: str | None = None,
+              verification: str | None = None,
+              evidence: list[dict[str, Any]] | None = None,
+              source_refs: list[str] | None = None,
+              owners: list[str] | None = None,
+              scope: dict[str, Any] | None = None,
+              provenance: dict[str, Any] | None = None,
+              finalized_at: str | None = None,
+          ) -> dict[str, Any]:
+              """Explicitly enrich a pending ingest draft without changing its identity."""
+              from grapher.mutation_policy import assert_draft_identity_unchanged, is_pending_ingest_draft
+
+              existing = graph["nodes"].get(node_id)
+              if existing is None:
+                  raise GraphError(f"node not found: {node_id}")
+              if not is_pending_ingest_draft(existing):
+                  raise GraphError(
+                      f"node {node_id!r} is not an editable pending ingest draft; "
+                      "committed records cannot be rewritten"
+                  )
+
+              node = make_node(
+                  id=node_id,
+                  type=type,
+                  title=title,
+                  content=(existing.get("content", "") if content is None else content),
+                  path=path,
+                  tags=tags,
+                  meta=meta,
+                  existing=existing,
+                  stage=stage,
+                  status=status,
+                  workflow_state=workflow_state,
+                  verification=verification,
+                  evidence=evidence,
+                  source_refs=source_refs,
+                  owners=owners,
+                  scope=scope,
+                  provenance=provenance,
+                  finalized_at=finalized_at,
+              )
+              try:
+                  assert_draft_identity_unchanged(existing, node, node_id=node_id)
+              except ValueError as exc:
+                  raise GraphError(str(exc)) from exc
+              graph["nodes"][node_id] = node
+              return node
+          '''
+          regex_once('src/grapher/graph.py', r'def add_node\(.*?\n\ndef get_node\(', graph_add + '\n\ndef get_node(')
+
+          graph_remove = '''def remove_node(graph: dict[str, Any], node_id: str) -> None:
+              from grapher.mutation_policy import is_pending_ingest_draft
+
+              node = graph["nodes"].get(node_id)
+              if node is None:
+                  raise GraphError(f"node not found: {node_id}")
+              if not is_pending_ingest_draft(node):
+                  raise GraphError(
+                      f"node {node_id!r} is a committed record; removal is forbidden. "
+                      "Create a correcting record and preserve the original."
+                  )
+              _remove_node_unchecked(graph, node_id)
+          '''
+          regex_once('src/grapher/graph.py', r'def remove_node\(.*?\n\ndef list_nodes\(', graph_remove + '\n\ndef list_nodes(')
+
+          store = read('src/grapher/store.py')
+          needle = '    from grapher.integrity import materialize_status_transitions, seal_finalized_nodes\n    from grapher.provenance import actor_record, make_history_entry\n'
+          replacement = needle + '    from grapher.mutation_policy import enforce_hard_stop\n'
+          if needle not in store:
+              raise SystemExit('store.py import insertion target missing')
+          store = store.replace(needle, replacement, 1)
+          needle = '    old = before if before is not None else (load_graph(path, normalize=False) if path.is_file() else None)\n    config = load_config(path)\n'
+          replacement = '    old = before if before is not None else (load_graph(path, normalize=False) if path.is_file() else None)\n    enforce_hard_stop(old, data)\n    config = load_config(path)\n'
+          if needle not in store:
+              raise SystemExit('store.py hard-stop insertion target missing')
+          write('src/grapher/store.py', store.replace(needle, replacement, 1))
+
+          cli_add = '''def cmd_add(args: argparse.Namespace) -> None:
+              from grapher.config import allowed_node_types, canonical_stage, load_config
+
+              path = _graph_path(args, create=True)
+              if not path.is_file():
+                  init_store(path)
+              before = load_graph(path, normalize=False)
+              g = load_graph(path)
+              cfg = load_config(path)
+              allowed = allowed_node_types(cfg)
+              if args.stage:
+                  args.stage = canonical_stage(args.stage, cfg)
+                  try:
+                      args.stage = validate_stages([args.stage])[0]
+                  except ValueError as exc:
+                      _die(str(exc))
+              if args.type not in allowed:
+                  _die(f"unknown node type {args.type!r}; configure it in custom_node_types")
+              if args.enrich_pending and not args.id:
+                  _die("--enrich-pending requires an explicit --id from grapher ingest")
+              content = sys.stdin.read() if args.content == "-" else args.content
+              tags = _parse_tags(args.tags) if args.tags is not None else None
+              scope, provenance = _scope_and_provenance(args)
+              kwargs = dict(
+                  type=args.type,
+                  title=args.title,
+                  content=content,
+                  path=args.path,
+                  tags=tags,
+                  stage=args.stage,
+                  status=args.status,
+                  workflow_state=args.workflow_state,
+                  verification=args.verification,
+                  evidence=_json_values(args.evidence, "evidence"),
+                  source_refs=_parse_tags(args.source_refs) if args.source_refs is not None else None,
+                  owners=_parse_tags(args.owners) if args.owners is not None else None,
+                  scope=scope or None,
+                  provenance=provenance or None,
+                  finalized_at=now_iso() if args.finalize else None,
+              )
+              try:
+                  if args.enrich_pending:
+                      node = G.enrich_pending_node(g, args.id, **kwargs)
+                  else:
+                      node = G.add_node(g, id=args.id, **kwargs)
+              except (ValueError, G.GraphError) as exc:
+                  _die(str(exc))
+              old = before.get("nodes", {}).get(node["id"])
+              action = "node_enriched" if args.enrich_pending else "node_created"
+              if args.finalize and old is None:
+                  action = "node_finalized"
+              save_graph_mutation(
+                  path,
+                  g,
+                  action=action,
+                  target=node["id"],
+                  before=before,
+                  **_history_kwargs(
+                      args,
+                      scope=scope,
+                      provenance=provenance,
+                      extra_context={"draft_enrichment": bool(args.enrich_pending)},
+                  ),
+              )
+              if old is None or embed_text(old) != embed_text(node):
+                  try:
+                      S.upsert_node_vector(path, node)
+                  except EmbedError:
+                      pass
+              _out(node, args)
+          '''
+          regex_once('src/grapher/cli.py', r'def cmd_add\(.*?\n\ndef cmd_scan\(', cli_add + '\n\ndef cmd_scan(')
+
+          cli_rm = '''def cmd_rm(args: argparse.Namespace) -> None:
+              path = _graph_path(args)
+              before = load_graph(path, normalize=False)
+              g = load_graph(path)
+              scope, provenance = _scope_and_provenance(args)
+              try:
+                  G.remove_node(g, args.id)
+              except G.GraphError as e:
+                  _die(str(e))
+              save_graph_mutation(
+                  path,
+                  g,
+                  action="node_removed",
+                  target=args.id,
+                  before=before,
+                  **_history_kwargs(args, scope=scope, provenance=provenance),
+              )
+              S.remove_node_vector(path, args.id)
+              _out({"removed": args.id}, args)
+          '''
+          regex_once('src/grapher/cli.py', r'def cmd_rm\(.*?\n\ndef cmd_reindex\(', cli_rm + '\n\ndef cmd_reindex(')
+          regex_once('src/grapher/cli.py', r'\ndef _require_administrative_attribution\(.*?\ndef _add_mutation_context_args\(', '\ndef _add_mutation_context_args(')
+
+          cli = read('src/grapher/cli.py')
+          cli = cli.replace('help="add or upsert a node (title, type, content, path, tags)"', 'help="create a node; pending ingest drafts require explicit --enrich-pending"')
+          cli = cli.replace('s.add_argument("--id", default=None, help="explicit node id (upsert if exists)")', 's.add_argument("--id", default=None, help="explicit id for a new node, or the ingest stub id with --enrich-pending")\n    s.add_argument("--enrich-pending", action="store_true", help="explicitly enrich an existing pending ingest draft; never rewrites committed records")')
+          cli = re.sub(r'\n    s\.add_argument\("--force-finalized", action="store_true", help="administrative recovery: rewrite finalized record and journal it"\)', '', cli)
+          cli = cli.replace('help="remove a node and its edges (and vector)"', 'help="remove a pending ingest draft; committed records cannot be deleted"')
+          cli = re.sub(r'\n    s\.add_argument\(\n        "--force-finalized",\n        action="store_true",\n        help="administrative finalized-record deletion; requires --actor and --reason",\n    \)', '', cli)
+          if 'force_finalized' in cli or '--force-finalized' in cli:
+              raise SystemExit('cli.py still contains force-finalized bypass')
+          write('src/grapher/cli.py', cli)
+
+          curate_merge = '''def merge_nodes(
+              graph: dict[str, Any],
+              keep_id: str,
+              drop_id: str,
+              *,
+              dry_run: bool = False,
+          ) -> dict[str, Any]:
+              get_node(graph, keep_id)
+              get_node(graph, drop_id)
+              preview = {
+                  "action": "merge",
+                  "keep_id": keep_id,
+                  "drop_id": drop_id,
+                  "dry_run": dry_run,
+                  "blocked": True,
+                  "reason": "hard_stop_immutable_records",
+              }
+              if dry_run:
+                  return preview
+              raise GraphError(
+                  "node merge is disabled by the hard-stop immutable-record policy; "
+                  "create a consolidation or correcting record and relate the originals"
+              )
+          '''
+          regex_once('src/grapher/curate.py', r'def merge_nodes\(.*?\n\ndef _scope_boundary\(', curate_merge + '\n\ndef _scope_boundary(')
+
+          transfer_merge = '''def merge_graph(
+              local: dict[str, Any],
+              incoming: dict[str, Any],
+              *,
+              prefix: str = "",
+          ) -> dict[str, Any]:
+              """Append incoming records; never overwrite a local id."""
+              src = _apply_prefix(incoming, prefix)
+              local = copy.deepcopy(local)
+              local.setdefault("nodes", {})
+              local.setdefault("edges", [])
+
+              nodes_added = 0
+              for nid, node in (src.get("nodes") or {}).items():
+                  if nid in local["nodes"]:
+                      if local["nodes"][nid] == node:
+                          continue
+                      raise TransferError(
+                          f"incoming node id {nid!r} collides with an existing local record; "
+                          "imports are append-only. Use a prefix or create a distinct correcting record."
+                      )
+                  local["nodes"][nid] = copy.deepcopy(node)
+                  nodes_added += 1
+
+              existing = {
+                  (e.get("from"), e.get("to"), e.get("rel")) for e in local["edges"]
+              }
+              edges_added = 0
+              for e in src.get("edges") or []:
+                  key = (e.get("from"), e.get("to"), e.get("rel"))
+                  if key in existing:
+                      continue
+                  local["edges"].append(copy.deepcopy(e))
+                  existing.add(key)
+                  edges_added += 1
+
+              return {
+                  "graph": local,
+                  "nodes_added": nodes_added,
+                  "nodes_updated": 0,
+                  "edges_added": edges_added,
+                  "nodes_total": len(local["nodes"]),
+                  "edges_total": len(local["edges"]),
+              }
+          '''
+          regex_once('src/grapher/transfer.py', r'def merge_graph\(.*?\n\ndef merge_vectors\(', transfer_merge + '\n\ndef merge_vectors(')
+          transfer = read('src/grapher/transfer.py')
+          needle = '    if mode == "replace":\n        graph = _apply_prefix(incoming, prefix)\n'
+          replacement = '    if mode == "replace":\n        if (before.get("nodes") or {}) or (before.get("edges") or []):\n            raise TransferError(\n                "replace-mode unpack is forbidden for a non-empty graph by the hard-stop immutable-record policy; "\n                "use a fresh graph or merge with a collision-free prefix"\n            )\n        graph = _apply_prefix(incoming, prefix)\n'
+          if needle not in transfer:
+              raise SystemExit('transfer replace target missing')
+          write('src/grapher/transfer.py', transfer.replace(needle, replacement, 1))
+
+          ingest = read('src/grapher/ingest.py').replace(
+              'grapher add --id <node_id>',
+              'grapher add --enrich-pending --id <node_id>'
+          )
+          write('src/grapher/ingest.py', ingest)
+
+          # Keep installed agent instructions aligned with the explicit draft-enrichment path.
+          roots = [Path('.agents'), Path('.cursor'), Path('src/grapher/cursor_assets'), Path('src/grapher/codex_assets')]
+          for root in roots:
+              if not root.exists():
+                  continue
+              for path in root.rglob('*'):
+                  if not path.is_file() or path.suffix.lower() not in {'.md', '.mdc', '.txt', '.py'}:
+                      continue
+                  try:
+                      text = path.read_text(encoding='utf-8')
+                  except UnicodeDecodeError:
+                      continue
+                  updated = text.replace('grapher add --id <node_id>', 'grapher add --enrich-pending --id <node_id>')
+                  if updated != text:
+                      path.write_text(updated, encoding='utf-8')
+
+          # Update CLI tests from administrative bypass behavior to hard-stop behavior.
+          tests = read('tests/test_cli.py')
+          tests = tests.replace(
+          '''def test_rm_preserves_actor(tmp_path: Path):
+              graph_path = _graph_path(tmp_path)
+              graph = load_graph(graph_path)
+              add_node(graph, id="n", type="claim", title="N")
+              save_graph(graph_path, graph)
+              r = _run("rm", "n", "--graph", str(graph_path), "--actor", "janitor", "--actor-kind", "agent", "--reason", "cleanup")
+              assert r.returncode == 0, r.stderr
+              entry = _history_entries(graph_path)[-1]
+              assert entry["action"] == "node_removed"
+              assert entry["actor"]["id"] == "janitor"
+          ''',
+          '''def test_rm_preserves_actor_for_pending_ingest_draft(tmp_path: Path):
+              graph_path = _graph_path(tmp_path)
+              graph = load_graph(graph_path)
+              add_node(
+                  graph,
+                  id="n",
+                  type="document",
+                  title="N",
+                  content="",
+                  status="unclassified",
+                  meta={"source": "ingest", "status": "pending"},
+              )
+              save_graph(graph_path, graph)
+              r = _run("rm", "n", "--graph", str(graph_path), "--actor", "janitor", "--actor-kind", "agent", "--reason", "remove abandoned draft")
+              assert r.returncode == 0, r.stderr
+              entry = _history_entries(graph_path)[-1]
+              assert entry["action"] == "node_removed"
+              assert entry["actor"]["id"] == "janitor"
+          ''')
+          tests = re.sub(
+              r'\n\ndef test_force_finalized_requires_explicit_actor_and_reason\(.*\Z',
+              '''\n\ndef test_force_finalized_is_not_a_supported_cli_option(tmp_path: Path):
+              graph_path = _graph_path(tmp_path)
+              graph = load_graph(graph_path)
+              add_node(graph, id="a", type="finding", title="Accepted", content="decision", status="current")
+              save_graph(graph_path, graph)
+              r = _run(
+                  "add", "--id", "a", "--type", "image", "--title", "Rewrite", "--content", "changed",
+                  "--force-finalized", "--graph", str(graph_path),
+              )
+              assert r.returncode != 0
+              assert "unrecognized arguments: --force-finalized" in (r.stderr or r.stdout)
+              assert load_graph(graph_path)["nodes"]["a"]["type"] == "finding"
+
+
+def test_rm_rejects_committed_record(tmp_path: Path):
+              graph_path = _graph_path(tmp_path)
+              graph = load_graph(graph_path)
+              add_node(graph, id="a", type="finding", title="Accepted", content="decision", status="current")
+              save_graph(graph_path, graph)
+              r = _run("rm", "a", "--graph", str(graph_path), "--actor", "admin", "--actor-kind", "human", "--reason", "attempt deletion")
+              assert r.returncode != 0
+              assert "committed record" in (r.stderr or r.stdout)
+              assert "a" in load_graph(graph_path)["nodes"]
+''',
+              tests,
+              flags=re.S,
+          )
+          write('tests/test_cli.py', tests)
+
+          # Version the hard-stop beta.
+          replace_once('pyproject.toml', 'version = "0.7.0b1"', 'version = "0.7.0b2"')
+          replace_once('src/grapher/__init__.py', '__version__ = "0.7.0b1"', '__version__ = "0.7.0b2"')
+
+          # Index the new policy document.
+          index = read('docs/INDEX.md')
+          if 'HARD_STOP_MUTATION_POLICY.md' not in index:
+              index += '\n## Hard-stop immutable-record beta\n\n- [`HARD_STOP_MUTATION_POLICY.md`](HARD_STOP_MUTATION_POLICY.md) — write-once committed-record boundary, pending-ingest draft exception, and correction workflow.\n'
+          write('docs/INDEX.md', index)
+
+          # Release notes must describe this beta, not the previous installer-only beta.
+          release = read('.github/workflows/publish-beta.yml')
+          release = re.sub(
+              r"          cat > release-notes\.md <<'EOF'\n.*?\n          EOF",
+              """          cat > release-notes.md <<'EOF'\n          Hard-stop beta for Grapher record immutability.\n\n          This release closes the mutation path exposed by the BitCritter provenance incident:\n\n          - `grapher add` is create-only and will not upsert an existing id or path.\n          - Pending ingest stubs require explicit `--enrich-pending` and cannot change id, type, path, or creation identity.\n          - `--force-finalized` rewrite/deletion bypasses are removed.\n          - The canonical save boundary rejects in-place rewrites or deletion of committed records, including unfinalized records.\n          - Existing graph relations cannot be removed or rewritten through canonical mutation saves.\n          - Pack merge id collisions, non-empty replace-mode unpack, and destructive node merge are blocked.\n          - Status changes remain supported through immutable `status_transition` records.\n\n          This is intentionally a hard-stop beta before the later authoritative event-ledger architecture.\n          EOF""",
+              release,
+              count=1,
+              flags=re.S,
+          )
+          write('.github/workflows/publish-beta.yml', release)
+          PY
+
+      - name: Install and test
+        run: |
+          python -m pip install --disable-pip-version-check uv
+          uv lock
+          uv sync --extra dev
+          uv run python -m compileall -q src/grapher
+          uv run pytest
+          uv run grapher help add | grep -q -- '--enrich-pending'
+          if uv run grapher help add | grep -q -- '--force-finalized'; then
+            echo 'force-finalized still exposed by add' >&2
+            exit 1
+          fi
+          if uv run grapher help rm | grep -q -- '--force-finalized'; then
+            echo 'force-finalized still exposed by rm' >&2
+            exit 1
+          fi
+
+      - name: Record Grapher self-state for the release
+        run: |
+          mkdir -p .grapher/shared/pass-records
+          cat > .grapher/shared/pass-records/2026-09-10-hard-stop-immutable-records.json <<'EOF'
+          {
+            "id": "hard-stop-immutable-records-0.7.0b2",
+            "type": "implementation",
+            "title": "Hard-stop committed-record immutability",
+            "status": "current",
+            "semantic": {
+              "change": "Make add create-only, preserve only a narrow pending-ingest draft enrichment path, reject committed record rewrites/deletion at the save boundary, remove force-finalized bypasses, and block destructive merge/import surfaces.",
+              "component": "graph mutation boundary, CLI, transfer, curation and regression tests"
+            },
+            "provenance": {
+              "actor_id": "chatgpt",
+              "actor_kind": "agent",
+              "source": "hard-stop-release-build"
+            }
+          }
+          EOF
+
+      - name: Verify governance gates
+        run: |
+          python scripts/check_docs_index.py
+          python scripts/check_self_graph_update.py --base main
+
+      - name: Remove one-off builder and commit release candidate
+        run: |
+          rm -f .github/workflows/hard-stop-build.yml .github/hard-stop-request.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Enforce hard-stop immutable records in v0.7.0b2'
+          git push origin HEAD:hard-stop/immutable-records
