@@ -5,7 +5,7 @@ def test_install_script_supports_local_checkout_mode():
     script = Path("install.sh").read_text()
 
     assert 'if [[ "${1:-}" == "--local" ]]' in script
-    assert 'pip install --upgrade "$SCRIPT_DIR[embed]"' in script
+    assert 'pip install --upgrade "$SCRIPT_DIR[embed,dash]"' in script
     assert 'Installing Grapher from local checkout:' in script
     assert 'usage: $0 [--local]' in script
 
@@ -19,7 +19,7 @@ def test_local_mode_does_not_require_curl():
 def test_release_install_includes_embed_extra():
     script = Path("install.sh").read_text()
 
-    assert 'grapher[embed] @ git+https://github.com/$REPO.git@$TAG' in script
+    assert 'grapher[embed,dash] @ git+https://github.com/$REPO.git@$TAG' in script
 
 
 def test_installer_verifies_embedding_runtime():

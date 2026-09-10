@@ -120,55 +120,22 @@ def merge_nodes(
     *,
     dry_run: bool = False,
 ) -> dict[str, Any]:
-    keep = get_node(graph, keep_id)
-    drop = get_node(graph, drop_id)
-    if keep.get("finalized_at") or drop.get("finalized_at"):
-        raise GraphError("finalized records cannot be merged; supersede with a correcting node")
+    get_node(graph, keep_id)
+    get_node(graph, drop_id)
     preview = {
         "action": "merge",
         "keep_id": keep_id,
         "drop_id": drop_id,
         "dry_run": dry_run,
-        "rewire_edges": 0,
+        "blocked": True,
+        "reason": "hard_stop_immutable_records",
     }
-    edges = graph.get("edges") or []
-    rewire = []
-    for e in edges:
-        if e.get("from") == drop_id or e.get("to") == drop_id:
-            rewire.append(dict(e))
-    preview["rewire_edges"] = len(rewire)
     if dry_run:
         return preview
-
-    # Merge content/tags
-    if drop.get("content") and drop["content"] not in (keep.get("content") or ""):
-        keep["content"] = (
-            (keep.get("content") or "")
-            + ("\n\n--- merged from " + drop_id + " ---\n\n")
-            + drop["content"]
-        ).strip()
-    keep_tags = set(keep.get("tags") or [])
-    keep_tags.update(drop.get("tags") or [])
-    keep["tags"] = sorted(keep_tags)
-    keep["updated_at"] = now_iso()
-
-    new_edges: list[dict[str, Any]] = []
-    for e in edges:
-        frm, to = e.get("from"), e.get("to")
-        if frm == drop_id:
-            frm = keep_id
-        if to == drop_id:
-            to = keep_id
-        if frm == to:
-            continue
-        ne = dict(e)
-        ne["from"] = frm
-        ne["to"] = to
-        new_edges.append(ne)
-    graph["edges"] = new_edges
-    remove_node(graph, drop_id)
-    preview["applied"] = True
-    return preview
+    raise GraphError(
+        "node merge is disabled by the hard-stop immutable-record policy; "
+        "create a consolidation or correcting record and relate the originals"
+    )
 
 
 def _scope_boundary(node: dict[str, Any]) -> tuple[str | None, str | None, str | None]:

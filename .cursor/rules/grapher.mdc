@@ -91,7 +91,7 @@ Then for **every** item in `pending`:
 3. **Graph that understanding** (path is secondary; `content` is the knowledge):
 
 ```bash
-grapher add --id <node_id> --type document|image|video|audio --title "<name>" \
+grapher add --enrich-pending --id <node_id> --type document|image|video|audio --title "<name>" \
   --path <path> --content "<deep grounded understanding>" --tags relevant,tags
 ```
 

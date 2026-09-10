@@ -160,9 +160,11 @@ def save_graph_mutation(
     """
     from grapher.integrity import materialize_status_transitions, seal_finalized_nodes
     from grapher.provenance import actor_record, make_history_entry
+    from grapher.mutation_policy import enforce_hard_stop
     from grapher.truth_policy import enforce_new_node_truth_status
 
     old = before if before is not None else (load_graph(path, normalize=False) if path.is_file() else None)
+    enforce_hard_stop(old, data)
     config = load_config(path)
     enforce_new_node_truth_status(
         old,

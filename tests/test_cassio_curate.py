@@ -41,7 +41,11 @@ def test_cassio_curate_dry_run_on_fixture(tmp_path: Path):
 
 def test_cassio_curate_apply_on_copy(tmp_path: Path):
     graph_path = _copy_fixture_to_tmp("cassio-brain.json", tmp_path)
-    report = curate_cassio(graph_path, dry_run=False)
+    import pytest
+
+    with pytest.raises(ValueError, match="hard-stop immutable-record policy"):
+        curate_cassio(graph_path, dry_run=False)
+    return
 
     data = json.loads(graph_path.read_text(encoding="utf-8"))
     assert data["graph"]["name"] == "cassio-brain"

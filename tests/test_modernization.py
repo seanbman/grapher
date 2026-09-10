@@ -34,7 +34,7 @@ def test_vector_identity_excludes_operational_metadata():
 def test_finalized_record_rejects_semantic_rewrite():
     graph = empty_graph()
     add_node(graph, id="a", type="acceptance", title="Accepted", content="decision", finalized_at="2026-01-01T00:00:00+00:00")
-    with pytest.raises(GraphError, match="finalized"):
+    with pytest.raises(GraphError, match="create-only"):
         add_node(graph, id="a", type="acceptance", title="Accepted", content="changed")
     corrected = add_node(graph, id="b", type="acceptance", title="Correction", content="correct state")
     assert corrected["id"] == "b" and graph["nodes"]["a"]["content"] == "decision"
@@ -90,7 +90,7 @@ def test_finalized_record_rejects_major_semantic_field_rewrites(field: str, valu
         "content": "decision",
     }
     payload[field] = value
-    with pytest.raises(GraphError, match="finalized"):
+    with pytest.raises(GraphError, match="create-only"):
         add_node(graph, **payload)
 
 
@@ -105,7 +105,7 @@ def test_finalized_record_cannot_be_removed_or_have_provenance_rewritten():
         provenance={"actor_id": "arbiter", "actor_kind": "human", "integrity": "declared"},
         finalized_at="2026-01-01T00:00:00+00:00",
     )
-    with pytest.raises(GraphError, match="finalized"):
+    with pytest.raises(GraphError, match="committed record"):
         from grapher.graph import remove_node
 
         remove_node(graph, "a")

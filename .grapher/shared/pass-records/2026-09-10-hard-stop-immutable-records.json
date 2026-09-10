@@ -1,0 +1,15 @@
+{
+  "id": "hard-stop-immutable-records-0.7.0b2",
+  "type": "implementation",
+  "title": "Hard-stop committed-record immutability",
+  "status": "current",
+  "semantic": {
+    "change": "Make add create-only, preserve only a narrow pending-ingest draft enrichment path, reject committed record rewrites/deletion at the save boundary, remove force-finalized bypasses, and block destructive merge/import surfaces.",
+    "component": "graph mutation boundary, CLI, transfer, curation and regression tests"
+  },
+  "provenance": {
+    "actor_id": "chatgpt",
+    "actor_kind": "agent",
+    "source": "hard-stop-release-build"
+  }
+}

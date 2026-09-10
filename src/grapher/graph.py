@@ -49,7 +49,7 @@ def add_node(
     *,
     type: str,
     title: str,
-    content: str = "",
+    content: str | None = "",
     path: str | None = None,
     tags: list[str] | None = None,
     meta: dict[str, Any] | None = None,
@@ -64,46 +64,80 @@ def add_node(
     scope: dict[str, Any] | None = None,
     provenance: dict[str, Any] | None = None,
     finalized_at: str | None = None,
-    force_finalized: bool = False,
 ) -> dict[str, Any]:
-    from pathlib import Path
-
+    """Create a new node. Existing ids and paths are never upsert targets."""
     nodes = graph["nodes"]
-    existing = None
-    node_id = id
+    if id and id in nodes:
+        raise GraphError(
+            f"node {id!r} already exists; grapher add is create-only. "
+            "Create a correcting record, or explicitly enrich a pending ingest draft."
+        )
 
-    if node_id:
-        existing = nodes.get(node_id)
-    elif path:
-        want = Path(path).as_posix()
-        for n in nodes.values():
-            p = n.get("path")
-            if p and Path(p).as_posix() == want:
-                existing = n
-                node_id = n["id"]
-                break
-
-    if not node_id:
+    node_id = id or make_id(title)
+    while node_id in nodes:
         node_id = make_id(title)
-        existing = nodes.get(node_id)
-        if existing:
-            node_id = make_id(title)
-            existing = None
-
-    # Preserve fields on upsert when caller omits them
-    if existing:
-        if not title:
-            title = existing.get("title") or title
-        if tags is None:
-            tags = list(existing.get("tags") or [])
-        if path is None:
-            path = existing.get("path")
 
     node = make_node(
         id=node_id,
         type=type,
         title=title,
-        content=content if content is not None else (existing or {}).get("content", ""),
+        content=content or "",
+        path=path,
+        tags=tags,
+        meta=meta,
+        stage=stage,
+        status=status,
+        workflow_state=workflow_state,
+        verification=verification,
+        evidence=evidence,
+        source_refs=source_refs,
+        owners=owners,
+        scope=scope,
+        provenance=provenance,
+        finalized_at=finalized_at,
+    )
+    nodes[node_id] = node
+    return node
+
+
+def enrich_pending_node(
+    graph: dict[str, Any],
+    node_id: str,
+    *,
+    type: str,
+    title: str,
+    content: str | None = None,
+    path: str | None = None,
+    tags: list[str] | None = None,
+    meta: dict[str, Any] | None = None,
+    stage: str | list[str] | None = None,
+    status: str | None = None,
+    workflow_state: str | None = None,
+    verification: str | None = None,
+    evidence: list[dict[str, Any]] | None = None,
+    source_refs: list[str] | None = None,
+    owners: list[str] | None = None,
+    scope: dict[str, Any] | None = None,
+    provenance: dict[str, Any] | None = None,
+    finalized_at: str | None = None,
+) -> dict[str, Any]:
+    """Explicitly enrich a pending ingest draft without changing its identity."""
+    from grapher.mutation_policy import assert_draft_identity_unchanged, is_pending_ingest_draft
+
+    existing = graph["nodes"].get(node_id)
+    if existing is None:
+        raise GraphError(f"node not found: {node_id}")
+    if not is_pending_ingest_draft(existing):
+        raise GraphError(
+            f"node {node_id!r} is not an editable pending ingest draft; "
+            "committed records cannot be rewritten"
+        )
+
+    node = make_node(
+        id=node_id,
+        type=type,
+        title=title,
+        content=(existing.get("content", "") if content is None else content),
         path=path,
         tags=tags,
         meta=meta,
@@ -119,14 +153,11 @@ def add_node(
         provenance=provenance,
         finalized_at=finalized_at,
     )
-    if existing and is_finalized(existing) and not force_finalized:
-        changed = finalized_field_changes(existing, node)
-        if changed:
-            raise GraphError(
-                f"node {node_id!r} is finalized; immutable fields changed: {', '.join(changed)}. "
-                "Create a correcting node and supersede it, or use the explicit administrative force option."
-            )
-    nodes[node_id] = node
+    try:
+        assert_draft_identity_unchanged(existing, node, node_id=node_id)
+    except ValueError as exc:
+        raise GraphError(str(exc)) from exc
+    graph["nodes"][node_id] = node
     return node
 
 
@@ -210,13 +241,15 @@ def _remove_node_unchecked(graph: dict[str, Any], node_id: str) -> None:
 
 
 def remove_node(graph: dict[str, Any], node_id: str) -> None:
+    from grapher.mutation_policy import is_pending_ingest_draft
+
     node = graph["nodes"].get(node_id)
     if node is None:
         raise GraphError(f"node not found: {node_id}")
-    if is_finalized(node):
+    if not is_pending_ingest_draft(node):
         raise GraphError(
-            f"node {node_id!r} is finalized; ordinary removal is forbidden. "
-            "Preserve it and attach a correcting record instead."
+            f"node {node_id!r} is a committed record; removal is forbidden. "
+            "Create a correcting record and preserve the original."
         )
     _remove_node_unchecked(graph, node_id)
 

@@ -35,7 +35,7 @@ description: >-
    - Write a **deep** grounded summary into `--content` (the knowledge payload)
    - Upsert with the exact pending `path` and `node_id`:
      ```bash
-     grapher add --id <node_id> --type <type> --title "<title>" \
+     grapher add --enrich-pending --id <node_id> --type <type> --title "<title>" \
        --path <path> --content "<deep understanding>" --tags ingest,<more>
      ```
 5. Link (`depicts`, `references`, `related`, …).

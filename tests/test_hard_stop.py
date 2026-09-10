@@ -54,17 +54,19 @@ def test_add_is_create_only_by_id():
     assert graph["nodes"]["record-a"]["type"] == "finding"
 
 
-def test_add_is_create_only_by_path():
+def test_same_path_creates_distinct_record_instead_of_upserting():
     graph = _committed_graph()
-    with pytest.raises(G.GraphError, match="does not upsert by path"):
-        G.add_node(
-            graph,
-            type="finding",
-            title="Duplicate path",
-            content="new content",
-            path="grapher://finding/original",
-        )
-    assert len(graph["nodes"]) == 1
+    created = G.add_node(
+        graph,
+        id="record-b",
+        type="finding",
+        title="Independent finding from same source",
+        content="new content",
+        path="grapher://finding/original",
+    )
+    assert created["id"] == "record-b"
+    assert len(graph["nodes"]) == 2
+    assert graph["nodes"]["record-a"]["content"] == "Original assertion"
 
 
 def test_pending_ingest_draft_can_be_explicitly_enriched(tmp_path):

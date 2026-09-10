@@ -390,6 +390,10 @@ def curate_cassio(
     report["edges"] = len(graph["edges"])
 
     if not dry_run:
+        raise ValueError(
+            "cassio curate apply is disabled by the hard-stop immutable-record policy; "
+            "use the dry-run report to create new correcting records instead"
+        )
         mutation_context = {"kind": "cassio_acceptance"}
         if context:
             mutation_context.update(context)

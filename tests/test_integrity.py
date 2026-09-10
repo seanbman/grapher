@@ -208,7 +208,7 @@ def test_finalized_semantic_tampering_is_rejected_before_save(tmp_path) -> None:
     before = load_graph(path, normalize=False)
     tampered = load_graph(path)
     tampered["nodes"]["decision-a"]["title"] = "Tampered decision"
-    with pytest.raises(ValueError, match="semantic integrity mismatch"):
+    with pytest.raises(ValueError, match="committed record.*immutable"):
         save_graph_mutation(
             path,
             tampered,
