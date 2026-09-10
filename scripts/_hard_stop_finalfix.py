@@ -11,10 +11,10 @@ semantic.write_text(text.replace(old, new, 1), encoding="utf-8")
 modern = Path("tests/test_modernization.py")
 text = modern.read_text(encoding="utf-8")
 needle = '''    with pytest.raises(GraphError, match="create-only"):
-        C.set_provenance_integrity(graph, "a", "invalidated", reason="bad")
+        set_provenance_integrity(graph, "a", "invalidated", reason="later dispute")
 '''
 replacement = '''    with pytest.raises(GraphError, match="finalized"):
-        C.set_provenance_integrity(graph, "a", "invalidated", reason="bad")
+        set_provenance_integrity(graph, "a", "invalidated", reason="later dispute")
 '''
 if needle not in text:
     raise SystemExit("modernization provenance expectation target missing")
