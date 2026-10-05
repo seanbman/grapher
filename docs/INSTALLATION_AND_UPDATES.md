@@ -16,7 +16,7 @@ This guide is the canonical human-facing installation and update reference for G
 
 ## Supported beta
 
-The current public beta line is **v0.7.0b1**. GitHub Releases are the distribution/version authority for normal installations; `main` is development state and is not treated as an installed release.
+The current public beta line is **v0.7.0b3**. GitHub Releases are the distribution/version authority for normal installations; `main` is development state and is not treated as an installed release.
 
 ## Linux installation
 
@@ -144,4 +144,4 @@ flowchart LR
     C --> U["Non-blocking release check\ncode: src/grapher/update.py\ncurrent: main"]
 ```
 
-Release anchor: `13a1f2ca016ef50c7f2fdc71a9ef9bfd437cc498` (v0.7.0b1).
+Release line: v0.7.0b3 and later beta releases are distributed through GitHub Releases and the managed installer.
