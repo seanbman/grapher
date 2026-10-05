@@ -5,9 +5,15 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
+# grapher:runtime:start
+# Grapher local runtime state. Git-safe Grapher state is config.json + shared/**.
 .grapher/knowledge.json
 .grapher/history.jsonl
 .grapher/vectors.json
 .grapher/sync-state.json
+.grapher/GRAPHER_CONTEXT.md
 .grapher/knowledge.*backup*.json
+.grapher/.grapher-*.tmp
+.grapher/backups/
+# grapher:runtime:end
 tests/fixtures/vectors.json

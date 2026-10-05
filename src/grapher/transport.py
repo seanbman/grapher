@@ -10,6 +10,7 @@ from typing import Any
 from grapher.audit import validate_graph
 from grapher.embed import DEFAULT_MODEL, EmbedError
 from grapher.model import normalize_graph, now_iso
+from grapher.repo_guard import assert_repository_safe, ensure_repository_guard
 from grapher.store import load_graph, load_vectors, save_graph, vectors_path_for
 
 SHARED_DIRNAME = "shared"
@@ -58,6 +59,10 @@ def shared_paths(graph_path: Path) -> dict[str, Path]:
 
 
 def publish_graph(graph_path: Path) -> dict[str, Any]:
+    # Upgraded projects self-heal their selective ignore policy on publish.
+    # Tracked local runtime state remains a hard failure until explicitly untracked.
+    ensure_repository_guard(graph_path)
+    repository_guard = assert_repository_safe(graph_path)
     graph = load_graph(graph_path)
     validation = validate_graph(graph, graph_path)
     if not validation["valid"]:
@@ -77,6 +82,8 @@ def publish_graph(graph_path: Path) -> dict[str, Any]:
             "reason": "unchanged",
             "graph_hash": current_hash,
             "shared_graph": str(paths["graph"]),
+            "repository_guard": repository_guard,
+            "git_stage": [".grapher/config.json", ".grapher/shared/"],
         }
 
     ts = now_iso()
@@ -120,6 +127,8 @@ def publish_graph(graph_path: Path) -> dict[str, Any]:
         "shared_graph": str(paths["graph"]),
         "history_record": str(history_path),
         "manifest": str(paths["manifest"]),
+        "repository_guard": repository_guard,
+        "git_stage": [".grapher/config.json", ".grapher/shared/"],
     }
 
 

@@ -22,7 +22,10 @@ Rules:
 - For semantic types (`observation`, `problem`, `question`, `hypothesis`, `requirement`, `constraint`, `proposal`, `decision`, `task`, `implementation`, `test`, `result`, `failure`, `lesson`), write `--content` as the exact JSON contract documented in `docs/SEMANTIC_ENTRY_SCHEMA.md`; wrong types, filler, missing fields, and unexpected fields are rejected.
 - Temporary empty semantic stubs are allowed while unclassified/unverified, but current, canonical, verified, or finalized semantic records must be complete.
 - After discoveries: `grapher add` / `grapher link` with dense, grounded content and precise relations.
-- Before pushing durable knowledge: run `grapher validate`, `grapher audit`, and `grapher publish`; commit `.grapher/shared/`, not local runtime graph/vector/history files.
+- Before pushing durable knowledge: run `grapher validate`, `grapher audit`, `grapher repo-guard`, and `grapher publish`; commit only Git-safe Grapher state.
+- Repository commit boundary is mandatory: run `grapher repo-guard` before committing Grapher state.
+- Only `.grapher/config.json` and `.grapher/shared/**` are Git-safe. Never stage `.grapher/knowledge.json`, `history.jsonl`, `vectors.json`, `sync-state.json`, `GRAPHER_CONTEXT.md`, backups, or other runtime files.
+- Never use `git add .grapher` or `git add -f` to bypass Grapher's ignore policy. Publish first, then stage only `.grapher/config.json` (when intentionally changed) and `.grapher/shared/`.
 - After pulling another agent's shared publication: run `grapher sync` before relying on local graph state.
 - To transplant: `grapher codex export ./kit/` then elsewhere `grapher codex receive ./kit/`.
 <!-- grapher:codex:end -->

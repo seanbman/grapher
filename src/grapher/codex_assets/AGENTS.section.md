@@ -24,8 +24,9 @@ Rules:
 - Do not rewrite finalized history; use curation/supersession paths.
 - Do not consolidate state across mission or generation boundaries.
 - For semantic types, obey the exact JSON contracts in `docs/SEMANTIC_ENTRY_SCHEMA.md`.
-- Before publication run `grapher validate`, `grapher audit`, and `grapher publish`.
-- Commit `.grapher/shared/`; do not commit local runtime graph/vector/history files.
+- Before publication run `grapher validate`, `grapher audit`, `grapher repo-guard`, and `grapher publish`.
+- Only `.grapher/config.json` and `.grapher/shared/**` are Git-safe. Never stage local runtime graph/vector/history/sync/context/backup files.
+- Never use `git add .grapher` or force-add ignored Grapher runtime state. Stage only intentional config changes plus `.grapher/shared/`.
 - After another agent publishes shared state, run `grapher sync` before relying on local knowledge.
 - To transplant: `grapher codex export ./kit/` then elsewhere `grapher codex receive ./kit/`.
 <!-- grapher:codex:end -->

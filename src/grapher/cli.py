@@ -203,11 +203,14 @@ def cmd_init(args: argparse.Namespace) -> None:
         stages=stages,
         profile=profile,
     )
+    from grapher.repo_guard import repository_guard_status
+
     _out(
         {
             "graph": str(gpath),
             "vectors": str(vpath),
             "created": True,
+            "repository_guard": repository_guard_status(gpath),
             "version": 2,
             "kinds": kinds,
             "stages": stages,
@@ -697,6 +700,16 @@ def cmd_audit(args: argparse.Namespace) -> None:
     path = _graph_path(args)
     g = load_graph(path)
     _out(audit_graph(g, path), args)
+
+
+def cmd_repo_guard(args: argparse.Namespace) -> None:
+    from grapher.repo_guard import repository_guard_status
+
+    path = resolve_graph_path(getattr(args, "graph", None), create=True)
+    result = repository_guard_status(path)
+    _out(result, args)
+    if not result.get("clean", True):
+        raise SystemExit(1)
 
 
 def cmd_history(args: argparse.Namespace) -> None:
@@ -1467,6 +1480,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="health report: type/status/relation distribution and issues",
     )
     s.set_defaults(func=cmd_audit)
+
+    s = sub.add_parser(
+        "repo-guard",
+        parents=[common],
+        help="fail when local Grapher runtime state is tracked by Git",
+    )
+    s.set_defaults(func=cmd_repo_guard)
 
     s = sub.add_parser(
         "history", parents=[common],

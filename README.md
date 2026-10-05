@@ -2,7 +2,7 @@
 
 Grapher is a local durable knowledge graph for humans and autonomous agents. It preserves what is known, why it is believed, where it came from, how it changed, and what is currently actionable—without collapsing truth, workflow state, verification, provenance, and history into one status field.
 
-**Current public beta: v0.7.0b1**
+**Current public beta: v0.7.0b3**
 
 ## Quick start — Linux
 
@@ -81,15 +81,17 @@ For the complete contracts and command behavior, follow the documentation links 
 
 ## Local state and Git-shared state
 
-Normal work happens against local runtime files under `.grapher/`, including `knowledge.json`, `history.jsonl`, `vectors.json`, `config.json`, and `sync-state.json`. These runtime files are not the Git transport contract.
+Normal work happens against local runtime files under `.grapher/`, including `knowledge.json`, `history.jsonl`, `vectors.json`, and `sync-state.json`. Git-safe Grapher state is deliberately limited to `.grapher/config.json` plus explicit publications under `.grapher/shared/**`. `grapher init` installs selective ignore rules and a local pre-commit guard when it can do so without overwriting an existing hook.
 
 Publish durable knowledge explicitly:
 
 ```bash
 grapher validate
 grapher audit
+grapher repo-guard
 grapher publish
-git add .grapher/shared
+git add .grapher/config.json .grapher/shared/
+grapher repo-guard
 git commit -m "grapher: publish project knowledge"
 git push
 ```

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.7.0b3 — 2026-10-04
+
+- Added repository commit guardrails that keep Grapher's local runtime brain out of product Git history while preserving `.grapher/config.json` and explicit `.grapher/shared/**` publications.
+- `grapher init` now installs selective runtime ignore rules and a non-destructive managed pre-commit guard when no existing hook would be overwritten.
+- Added `grapher repo-guard`; audit reports tracked runtime state as critical, and publish refuses to proceed while forbidden Grapher runtime paths are tracked.
+- Existing projects self-heal broad `.grapher/` ignore rules on publish so shared publications remain stageable without force-add.
 - Fixed the managed Linux installer so normal release and `--local` installs include both the embedding and Dash visualization runtimes; `grapher dash` no longer requires a separate follow-up extra installation.
 - Added installer verification for `dash` and `plotly` alongside `fastembed` and `numpy`, so an incomplete managed runtime fails during installation instead of later at command execution.
 
