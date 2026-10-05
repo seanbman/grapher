@@ -254,4 +254,11 @@ def init_store(
     vpath = vectors_path_for(graph_path)
     if not vpath.is_file():
         save_vectors(vpath, empty_vectors())
+
+    # Every initialized project gets the repository boundary automatically.
+    # This is a no-op outside Git repositories and never overwrites an existing
+    # non-Grapher pre-commit hook.
+    from grapher.repo_guard import ensure_repository_guard
+
+    ensure_repository_guard(graph_path)
     return graph_path, vpath
