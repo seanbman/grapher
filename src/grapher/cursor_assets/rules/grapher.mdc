@@ -33,7 +33,7 @@ When multiple nodes cover the same topic, prefer **current** or **canonical_spec
 
 ## Git transport
 
-`.grapher/knowledge.json`, vectors, local history, and sync state are local runtime files. Git-shared knowledge lives under `.grapher/shared/`. After pulling repository changes, run `grapher sync`. Before pushing durable graph changes, run `grapher validate`, `grapher audit`, and `grapher publish`, then commit `.grapher/shared/`. Never overwrite unpublished local changes with `grapher sync --force` unless discarding them is intentional.
+`.grapher/knowledge.json`, vectors, local history, sync state, transplant context, backups, and other runtime files are local-only. Git-safe Grapher state is limited to `.grapher/config.json` and `.grapher/shared/**`. After pulling repository changes, run `grapher sync`. Before pushing durable graph changes, run `grapher validate`, `grapher audit`, `grapher repo-guard`, and `grapher publish`, then stage only `.grapher/config.json` when intentionally changed and `.grapher/shared/`. Never run `git add .grapher` or force-add local Grapher runtime state. Grapher init installs selective ignore rules and, when no pre-existing hook would be overwritten, a pre-commit guard that blocks runtime-state commits. Never overwrite unpublished local changes with `grapher sync --force` unless discarding them is intentional.
 
 ## Truth status (required for findings, decisions, specs)
 

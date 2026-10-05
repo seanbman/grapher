@@ -221,7 +221,18 @@ def audit_graph(graph: dict[str, Any], graph_path: Path | None = None) -> dict[s
         if ids:
             issues.append({"level": level, "code": code, "count": len(ids), "sample": ids[:10]})
     from grapher.provenance import validate_history
+    from grapher.repo_guard import repository_guard_status
+
     history = validate_history(graph_path) if graph_path else None
+    repository_guard = repository_guard_status(graph_path) if graph_path else None
+    if repository_guard and repository_guard.get("forbidden_tracked"):
+        forbidden = repository_guard["forbidden_tracked"]
+        issues.append({
+            "level": "critical",
+            "code": "tracked_grapher_runtime",
+            "count": len(forbidden),
+            "sample": forbidden[:10],
+        })
     return {
         "version": graph_version(graph), "graph_meta": graph.get("graph"),
         "history": history,
@@ -231,7 +242,9 @@ def audit_graph(graph: dict[str, Any], graph_path: Path | None = None) -> dict[s
                    "weakly_connected_nodes": len(weak), "superseded_no_edge": len(superseded_no_edge),
                    "contradictions": len(contradictions), "dependency_cycles": len(dependency_cycles), "verified_without_evidence": len(verified_without_evidence),
                    "stale_checkpoints": len(stale_checkpoints), "generation_ambiguity": len(generation_ambiguity),
-                   "canonical_specs": len(canonical_specs), "current_findings": len(current_findings)},
+                   "canonical_specs": len(canonical_specs), "current_findings": len(current_findings),
+                   "repository_guard_clean": repository_guard.get("clean", True) if repository_guard else True},
+        "repository_guard": repository_guard,
         "issues": issues,
         "samples": {"pending_ingest": pending[:10], "low_quality_ingest": low_quality_ingest[:10], "isolated_nodes": isolated[:10],
                     "superseded_no_edge": superseded_no_edge[:10], "canonical_specs": canonical_specs[:10],

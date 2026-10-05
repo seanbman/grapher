@@ -1,0 +1,15 @@
+{
+  "id": "pass-2026-10-04-repository-commit-guardrails",
+  "type": "result",
+  "title": "Repository commit guardrails",
+  "status": "current",
+  "content": {
+    "result": "Grapher now separates Git-safe config/shared publication from local runtime state with selective ignore management, repository guard checks, publish refusal for tracked runtime files, and a non-destructive managed pre-commit hook when no hook already exists."
+  },
+  "verification": "verified",
+  "provenance": {
+    "actor_id": "chatgpt",
+    "actor_kind": "agent",
+    "source": "implementation"
+  }
+}
