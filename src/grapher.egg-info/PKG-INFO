@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: grapher
-Version: 0.7.0b2
+Version: 0.7.0b3
 Summary: Project-local durable work graph for humans and autonomous agents
 Author: grapher
 License: MIT
@@ -23,7 +23,7 @@ Dynamic: license-file
 
 Grapher is a local durable knowledge graph for humans and autonomous agents. It preserves what is known, why it is believed, where it came from, how it changed, and what is currently actionable—without collapsing truth, workflow state, verification, provenance, and history into one status field.
 
-**Current public beta: v0.7.0b1**
+**Current public beta: v0.7.0b3**
 
 ## Quick start — Linux
 
